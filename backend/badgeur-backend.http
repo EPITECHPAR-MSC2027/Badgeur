@@ -1,0 +1,14 @@
+@badgeur_backend_HostAddress = http://localhost:5159
+
+GET {{badgeur_backend_HostAddress}}/users/
+Accept: application/json
+
+###
+
+GET {{badgeur_backend_HostAddress}}/users/1
+Accept: application/json
+
+###
+
+GET {{badgeur_backend_HostAddress}}/users/1
+Accept: application/json
