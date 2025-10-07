@@ -1,5 +1,5 @@
 import './style/theme.css'
-import './Test.css'
+import './index.css'
 
 function Test() {
     return (
