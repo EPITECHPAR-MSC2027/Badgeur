@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import './style/theme.css'
-import './index.css'
+import '../style/theme.css'
+import '../index.css'
 
-function Test() {
+function ParamTre() {
     const [selectedTheme, setSelectedTheme] = useState('main');
 
     const themes = [
@@ -64,4 +64,4 @@ function Test() {
     );
 }
 
-export default Test;
+export default ParamTre;
