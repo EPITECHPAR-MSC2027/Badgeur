@@ -16,7 +16,8 @@ packages/
 # User secrets and environment files (e.g., for Supabase keys)
 *.env
 *.secrets.json
-appsettings.Development.json  # If it contains local secrets
+appsettings.json
+appsettings.Development.json
 
 # Logs and temp files
 *.log
@@ -26,3 +27,4 @@ appsettings.Development.json  # If it contains local secrets
 # Other common ignores
 Thumbs.db
 .DS_Store
+
