@@ -3,7 +3,7 @@ import '../style/theme.css'
 import '../index.css'
 
 function ParamTre() {
-    const [selectedTheme, setSelectedTheme] = useState('main');
+    const [selectedTheme, setSelectedTheme] = useState(() => localStorage.getItem('theme') || 'main');
 
     const themes = [
         { value: 'main', label: 'Principal' },
@@ -19,6 +19,7 @@ function ParamTre() {
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', selectedTheme);
+        localStorage.setItem('theme', selectedTheme)
     }, [selectedTheme]);
 
     const handleThemeChange = (event) => {

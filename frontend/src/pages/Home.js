@@ -1,5 +1,6 @@
 import React from 'react'
-
+import '../index.css'
+import '../style/theme.css'
 function Home() {
     return (
         <div className="App">
