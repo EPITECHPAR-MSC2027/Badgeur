@@ -1,15 +1,15 @@
 import React from 'react'
 
-function Home() {
+function Planning() {
     return (
         <div className="App">
             <header className="App-header">
-                <h1>Homepage</h1>
+                <h1>Planning</h1>
             </header>
         </div>
     )
 }
 
-export default Home
+export default Planning
 
 
