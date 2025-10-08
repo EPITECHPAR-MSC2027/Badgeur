@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import '../index.css'
 import '../style/theme.css'
+import LastPunch from '../component/LastPunch'
+import WeekHours from '../component/WeekHours'
+import DayPlanning from '../component/DayPlanning'
+import Notifications from '../component/Notifications'
 function Home() {
     const [now, setNow] = useState(new Date())
 
@@ -40,6 +44,13 @@ function Home() {
         height : '110px'
     }
 
+    const gridStyle = {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: 20,
+        padding: '0 20px'
+    }
+
     return (
         <div className="App">
             <header className="App-header">
@@ -51,8 +62,14 @@ function Home() {
                 <div style={{ fontSize: '38px', fontWeight: 600 }}>{timeText}</div>
                 <div style={{ fontSize: '14px' }}>{dateText}</div>
             </div>
-            <div className="summary">Summary</div>
-            <div>Notification</div>
+            <div style={gridStyle}>
+                <LastPunch />
+                <WeekHours />
+                <DayPlanning />
+            </div>
+            <div style={{ padding: '20px' }}>
+                <Notifications />
+            </div>
         </div>
     )
 }
