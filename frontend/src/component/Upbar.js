@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import '../index.css'
+import icon from '../assets/icon.png'
 
  function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
@@ -40,22 +41,29 @@ import '../index.css'
 
     return (
         <div className="header">
-            <button onClick={() => onNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>Homepage</button>
-
-            <div className="dropdown" style={dropdownStyle}>
-                <button className="dropdown-toggle" onClick={() => setIsActionsOpen(v => !v)} style={{ ...buttonStyle, ...isActive('actions') }}>
-                    Actions <span className="caret" style={caretStyle}>▼</span>
-                </button>
-                <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
-                    <button style={buttonStyle} onClick={() => { onNavigate('pointage'); setIsActionsOpen(false) }}>Pointage</button>
-                    <button style={buttonStyle} onClick={() => { onNavigate('planning'); setIsActionsOpen(false) }}>Planning</button>
-                </div>
+            <div style={{display: 'flex', alignItems: 'center', paddingLeft: 25}}>
+                <img src={icon} alt="Logo" style={{height: 55, width: 'auto'}}/>
+                <h1 style={{color:'var(--color-secondary)', fontWeight:'700', letterSpacing:'3px', paddingLeft:'10px'}}>BADGEUR</h1>
             </div>
 
-            <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
-            <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
-            <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
-            <button style={buttonStyle}>Déconnexion</button>
+            <div style={{display: 'flex', alignItems: 'center', gap: 16, paddingRight: 16 }}>
+                <button onClick={() => onNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>Homepage</button>
+
+                <div className="dropdown" style={dropdownStyle}>
+                    <button className="dropdown-toggle" onClick={() => setIsActionsOpen(v => !v)} style={{ ...buttonStyle, ...isActive('actions') }}>
+                        Actions <span className="caret" style={caretStyle}>▼</span>
+                    </button>
+                    <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
+                        <button style={buttonStyle} onClick={() => { onNavigate('pointage'); setIsActionsOpen(false) }}>Pointage</button>
+                        <button style={buttonStyle} onClick={() => { onNavigate('planning'); setIsActionsOpen(false) }}>Planning</button>
+                    </div>
+                </div>
+
+                <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
+                <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
+                <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
+                <button style={buttonStyle}>Déconnexion</button>
+            </div>
         </div>
     )
 }

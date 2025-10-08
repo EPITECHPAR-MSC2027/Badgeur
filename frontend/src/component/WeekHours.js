@@ -23,9 +23,9 @@ function WeekHours() {
                 <div style={barFill} />
             </div>
             <div style={{ marginTop: 12, fontSize: 12, lineHeight: '18px' }}>
-                <div>4 jours complets</div>
-                <div>1 absence non justifiée</div>
-                <div>0 badgeage manqué</div>
+                <div><p>4 jours complets</p></div>
+                <div><p>1 absence non justifiée</p></div>
+                <div><p>0 badgeage manqué</p></div>
             </div>
         </div>
     )
