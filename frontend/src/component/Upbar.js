@@ -54,7 +54,7 @@ import '../index.css'
 
             <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
             <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
-            <button onClick={() => onNavigate('parametre')} style={{ ...buttonStyle, ...isActive('parametre') }}>Paramètre</button>
+            <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
             <button style={buttonStyle}>Déconnexion</button>
         </div>
     )
