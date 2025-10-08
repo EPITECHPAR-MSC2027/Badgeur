@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AAoEd0WNnLg=",
+  "dgSpecHash": "Hei9DJNzpSM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mrand\\source\\repos\\badgeur-backend\\badgeur-backend\\badgeur-backend.csproj",
+  "projectFilePath": "C:\\Users\\mrand\\source\\repos\\EPITECHPAR-MSC2027\\Badgeur\\backend\\badgeur-backend.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\mrand\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.20\\microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\8.0.20\\microsoft.dotnet.ilcompiler.8.0.20.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
@@ -11,6 +12,8 @@
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.5.1\\microsoft.identitymodel.abstractions.7.5.1.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.5.1\\microsoft.identitymodel.jsonwebtokens.7.5.1.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.logging\\7.5.1\\microsoft.identitymodel.logging.7.5.1.nupkg.sha512",
+    "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.protocols\\7.1.2\\microsoft.identitymodel.protocols.7.1.2.nupkg.sha512",
+    "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\7.1.2\\microsoft.identitymodel.protocols.openidconnect.7.1.2.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.5.1\\microsoft.identitymodel.tokens.7.5.1.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.io.recyclablememorystream\\3.0.0\\microsoft.io.recyclablememorystream.3.0.0.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.20\\microsoft.net.illink.tasks.8.0.20.nupkg.sha512",
