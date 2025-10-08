@@ -6,6 +6,9 @@ html, body {
     background-color: var(--color-background);
 }
 
+.App {
+    padding : 20px;
+}
 
 h1 {
     font-family: "Alata", sans-serif;

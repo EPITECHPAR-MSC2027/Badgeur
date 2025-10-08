@@ -31,11 +31,13 @@ function Home() {
     const timeBoxStyle = {
         backgroundColor: 'var(--color-third)',
         borderRadius: '9px',
-        padding: '16px 20px',
+        padding: '12px 20px',
         display: 'inline-block',
-        color: 'var(--color-primary)',
+        color: 'var(--color-background)',
         fontFamily: 'Alata, sans-serif',
-        margin: '12px 0'
+        margin: '12px 20px',
+        width : '94%',
+        height : '110px'
     }
 
     return (
@@ -45,8 +47,9 @@ function Home() {
                 <h2>Bienvenue sur votre espace employé</h2>
             </header>
             <div className="time" style={timeBoxStyle}>
-                <div style={{ fontSize: '24px', fontWeight: 600 }}>{timeText}</div>
-                <div style={{ fontSize: '16px' }}>{dateText}</div>
+                <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-primary)' }}>Heures et date actuelle</h1>
+                <div style={{ fontSize: '38px', fontWeight: 600 }}>{timeText}</div>
+                <div style={{ fontSize: '14px' }}>{dateText}</div>
             </div>
             <div className="summary">Summary</div>
             <div>Notification</div>
