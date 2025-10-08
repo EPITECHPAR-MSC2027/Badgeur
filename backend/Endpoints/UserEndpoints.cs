@@ -1,7 +1,7 @@
 ﻿using badgeur_backend.Contracts.Requests;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
-using Supabase;
+using badgeur_backend.Services;
 
 namespace badgeur_backend.Endpoints
 {
@@ -11,67 +11,33 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/users");
 
-            group.MapPost("/", async (CreateUserRequest request, Client client) =>
+            group.MapPost("/", async (CreateUserRequest request, UserService userService) =>
             {
-                var user = new User
-                {
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    RoleId = request.RoleId,
-                    TeamId = request.TeamId
-                };
+                var id = await userService.CreateUserAsync(request);
 
-                var response = await client.From<User>().Insert(user);
-                var newUser = response.Models.First();
-                return Results.Ok(newUser.Id);
+                if (id == null)
+                    return Results.BadRequest("Failed to create a new user.");
+
+                return Results.Ok(id);
             });
 
-            group.MapGet("/", async (Client client) =>
+            group.MapGet("/", async (UserService userService) =>
             {
-                var response = await client.From<User>().Get();
-
-                var users = response.Models;
-                
+                var users = await userService.GetAllUsersAsync();
                 if (!users.Any()) return Results.NotFound("No users found.");
-
-                var userResponses = users.Select(u => new UserResponse
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    RoleId = u.RoleId,
-                    TeamId = u.TeamId != null ? (long) u.TeamId : 0
-
-                }).ToList();
-
-                return Results.Ok(userResponses);
+                return Results.Ok(users);
             });
 
-            group.MapGet("/{id:long}", async (long id, Client client) =>
+            group.MapGet("/{id:long}", async (long id, UserService userService) =>
             {
-                var response = await client.From<User>()
-                    .Where(n => n.Id == id)
-                    .Get();
-
-                var user = response.Models.FirstOrDefault();
-                if (user is null) return Results.NotFound();
-
-                return Results.Ok(new UserResponse
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    RoleId = user.RoleId,
-                    TeamId = user.TeamId != null ? (long) user.TeamId : 0
-                });
+                var user = await userService.GetUserByIdAsync(id);
+                if (user == null) return Results.NotFound("User was not found.");
+                return Results.Ok(user);
             });
 
-            group.MapDelete("/{id:long}", async (long id, Client client) =>
+            group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
-                await client.From<User>()
-                    .Where(n => n.Id == id)
-                    .Delete();
-
+                await userService.DeleteUserAsync(id);
                 return Results.NoContent();
             });
         }
