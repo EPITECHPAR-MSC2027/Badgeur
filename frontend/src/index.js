@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import './style/theme.css'
@@ -13,6 +13,11 @@ import ParamTre from './pages/Parametre'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'main'
+    document.documentElement.setAttribute('data-theme', savedTheme)
+  }, [])
 
   const renderPage = () => {
     switch (currentPage) {
