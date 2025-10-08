@@ -33,7 +33,7 @@
 [data-theme='deep-blue'] {
     --color-primary: #63688C;
     --color-secondary: #272C4F;
-    --color-third: #676778;
+    --color-third: #272C4F;
     --color-background: #EAEFFF;
     --color-second-text: #DBDEFA;
 }
@@ -57,7 +57,7 @@
 [data-theme='desert'] {
     --color-primary: #C7AF94;
     --color-secondary: #676D40;
-    --color-third: #ACB083;
+    --color-third: #979a68;
     --color-background: #EADED0;
     --color-second-text: #95714F;
 }
