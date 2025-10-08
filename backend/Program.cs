@@ -1,5 +1,6 @@
-using badgeur_backend.Extensions;
 using badgeur_backend.Endpoints;
+using badgeur_backend.Extensions;
+using badgeur_backend.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -25,6 +26,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddScoped<UserService>();
 var app = builder.Build();
 
 // --- Middleware ---

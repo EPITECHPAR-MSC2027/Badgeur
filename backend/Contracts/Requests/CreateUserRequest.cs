@@ -12,6 +12,6 @@ namespace badgeur_backend.Contracts.Requests
 
         public long RoleId { get; set; }
 
-        public long TeamId { get; set; }
+        public long? TeamId { get; set; }
     }
 }
