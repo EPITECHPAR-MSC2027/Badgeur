@@ -7,7 +7,6 @@ function WeekHours() {
         borderRadius: '9px',
         padding: '16px 20px',
         boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-        border: '2px solid var(--color-secondary)'
     }
 
     const barBg = { height: 8, background: 'var(--color-background)', borderRadius: 999 }
@@ -33,5 +32,6 @@ function WeekHours() {
 }
 
 export default WeekHours
+
 
 
