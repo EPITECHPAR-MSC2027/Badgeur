@@ -15,9 +15,12 @@ packages/
 
 # User secrets and environment files (e.g., for Supabase keys)
 *.env
-*.secrets.json
+secrets.json
 appsettings.json
 appsettings.Development.json
+
+# Test http requests
+badgeur-backend.http
 
 # Logs and temp files
 *.log
