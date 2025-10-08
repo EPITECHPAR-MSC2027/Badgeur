@@ -3,6 +3,7 @@
 html, body {
     margin : 0;
     padding: 0;
+    background-color: var(--color-background);
 }
 
 h1 {
@@ -35,47 +36,4 @@ p {
     justify-content: flex-end;
 }
 
-.header button {
-    background: transparent;
-    border: none;
-    color: var(--color-third);
-    padding: 12px 18px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: "Alata", sans-serif;
-    font-weight: 600;
-}
-
-/*.header button:hover {
-    background-color: var(--color-secondary);
-} */
-
-/* Dropdown Actions */
-.header .dropdown {
-    position: relative;
-}
-
-.header .dropdown-toggle .caret {
-    margin-left: 6px;
-    font-size: 12px;
-}
-
-.header .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: var(--color-primary);
-    color: var(--color-third);
-    padding: 8px;
-    border-radius: 6px;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    z-index: 10;
-}
-
-.header .dropdown-menu.open {
-    display: flex;
-}
+/* Styles des boutons et dropdown déplacés en inline dans Upbar.js */

@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import './style/theme.css'
 import './style/Test.css'
-import Upbar from './component/upbar'
+import Upbar from './component/Upbar'
 import Home from './pages/Home'
 import Pointage from './pages/Pointage'
 import Planning from './pages/Planning'
 import Calendrier from './pages/Calendrier'
 import Profil from './pages/Profil'
-import ParamTre from './pages/Paramètre'
+import ParamTre from './pages/Parametre'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
@@ -26,7 +26,7 @@ function App() {
         return <Calendrier />
       case 'profil':
         return <Profil />
-      case 'parametre':
+      case 'parameter':
         return <ParamTre />
       default:
         return <Home />
