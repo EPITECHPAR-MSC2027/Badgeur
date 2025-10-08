@@ -39,5 +39,6 @@ app.UseHttpsRedirection();
 // --- Endpoints ---
 app.MapUserEndpoints();
 app.MapLoginEndpoints();
+app.MapRegistrationEndpoints();
 
 app.Run();
