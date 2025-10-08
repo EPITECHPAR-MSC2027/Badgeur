@@ -33,7 +33,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(); //TODO - Make sure it works
 }
 
 app.UseHttpsRedirection();
@@ -42,5 +42,6 @@ app.UseHttpsRedirection();
 app.MapUserEndpoints();
 app.MapLoginEndpoints();
 app.MapRegistrationEndpoints();
+app.MapBadgeLogEventEndpoints();
 
 app.Run();
