@@ -37,6 +37,16 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(user);
             });
 
+            group.MapPut("/{id:long}/role", async (long id, UpdateUserRoleRequest request, UserService userService) =>
+            {
+                var updatedUser = await userService.updateUserRoleAsync(id, request.NewRoleId);
+
+                if (updatedUser == null)
+                    return Results.NotFound("User not found.");
+
+                return Results.Ok(updatedUser);
+            });
+
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
                 await userService.DeleteUserAsync(id);
