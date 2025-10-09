@@ -1,6 +1,5 @@
 ﻿using badgeur_backend.Contracts.Requests;
 using badgeur_backend.Contracts.Responses;
-using badgeur_backend.Models;
 using Supabase;
 
 namespace badgeur_backend.Endpoints
@@ -31,5 +30,6 @@ namespace badgeur_backend.Endpoints
             }).WithDescription("Login with a username and password combination. Returns an access token, a refresh token, and the user's email.");
 
         }
+
     }
 }
