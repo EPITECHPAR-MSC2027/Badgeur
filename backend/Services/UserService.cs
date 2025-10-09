@@ -75,5 +75,18 @@ namespace badgeur_backend.Services
                 TeamId = user.TeamId ?? 0
             };
         }
+
+        public async Task<bool> IsUserManager(long id, RoleService roleService)
+        {
+            UserResponse user = await GetUserByIdAsync(id);
+            RoleResponse role = await roleService.GetRoleByIdAsync(user.RoleId);
+
+            if (role.RoleName == "Manager")
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

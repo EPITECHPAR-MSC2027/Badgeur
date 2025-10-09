@@ -1,4 +1,5 @@
 ﻿using badgeur_backend.Contracts.Requests;
+using badgeur_backend.Models;
 using badgeur_backend.Services;
 
 namespace badgeur_backend.Endpoints
@@ -37,10 +38,15 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(team);
             });
 
-            group.MapPut("/{id:long}/role", async (long id, UpdateTeamManagerRequest request, TeamService teamService) =>
+            group.MapPut("/{id:long}/manager", async (long id, UpdateTeamManagerRequest request, TeamService teamService, RoleService roleService, UserService userService) =>
             {
-                var updatedTeam = await teamService.updateTeamManagerAsync(id, request.NewManagerId);
+                if (!await userService.IsUserManager(request.NewManagerId, roleService))
+                {
+                    return Results.Problem("That employee is not a manager");
+                }
 
+                var updatedTeam = await teamService.updateTeamManagerAsync(id, request.NewManagerId);
+                
                 if (updatedTeam == null)
                     return Results.NotFound("Team not found.");
 

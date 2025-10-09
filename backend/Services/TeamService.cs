@@ -66,6 +66,7 @@ namespace badgeur_backend.Services
         {
             return new TeamResponse
             {
+                Id = team.Id,
                 TeamName = team.TeamName,
                 ManagerId = team.ManagerId
             };
