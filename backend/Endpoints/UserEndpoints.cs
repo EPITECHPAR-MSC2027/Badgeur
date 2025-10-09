@@ -1,6 +1,4 @@
 ﻿using badgeur_backend.Contracts.Requests;
-using badgeur_backend.Contracts.Responses;
-using badgeur_backend.Models;
 using badgeur_backend.Services;
 
 namespace badgeur_backend.Endpoints

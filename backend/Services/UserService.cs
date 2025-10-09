@@ -31,6 +31,7 @@ namespace badgeur_backend.Services
         public async Task<List<UserResponse>> GetAllUsersAsync()
         {
             var response = await _client.From<User>().Get();
+
             return response.Models.Select(u => new UserResponse
             {
                 Id = u.Id,
@@ -45,7 +46,9 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<User>().Where(n => n.Id == id).Get();
             var user = response.Models.FirstOrDefault();
+
             if (user == null) return null;
+
             return new UserResponse
             {
                 Id = user.Id,

@@ -26,7 +26,11 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+
+// --- Scoped Services ---
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<BadgeLogEventService>();
+
 var app = builder.Build();
 
 // --- Middleware ---
