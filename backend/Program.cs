@@ -30,6 +30,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 // --- Scoped Services ---
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BadgeLogEventService>();
+builder.Services.AddScoped<RoleService>();
 
 var app = builder.Build();
 
@@ -47,5 +48,6 @@ app.MapUserEndpoints();
 app.MapLoginEndpoints();
 app.MapRegistrationEndpoints();
 app.MapBadgeLogEventEndpoints();
+app.MapRoleEndpoints();
 
 app.Run();

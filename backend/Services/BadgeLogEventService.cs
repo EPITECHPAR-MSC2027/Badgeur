@@ -23,6 +23,7 @@ namespace badgeur_backend.Services
             };
 
             var response = await _client.From<BadgeLogEvent>().Insert(badgeLogEvent);
+
             return response.Models.First().Id;
         }
 
@@ -31,11 +32,7 @@ namespace badgeur_backend.Services
             var response = await _client.From<BadgeLogEvent>().Get();
 
 
-            return response.Models.Select(ble => new BadgeLogEventResponse
-            {
-                BadgedAt = ble.BadgedAt,
-                UserId = ble.UserId,
-            }).ToList();
+            return response.Models.Select(ble => createBadgeLogEventResponse(ble)).ToList();
 
         }
 
@@ -46,16 +43,21 @@ namespace badgeur_backend.Services
 
             if (badgeLogEvent == null) return null;
 
-            return new BadgeLogEventResponse
-            {
-                BadgedAt = badgeLogEvent.BadgedAt,
-                UserId = badgeLogEvent.UserId
-            };
+            return createBadgeLogEventResponse(badgeLogEvent);
         }
 
         public async Task DeleteBadgeLogEventAsync(long id)
         {
             await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Delete();
+        }
+
+        public BadgeLogEventResponse createBadgeLogEventResponse(BadgeLogEvent badgeLogEvent)
+        {
+            return new BadgeLogEventResponse
+            {
+                BadgedAt = badgeLogEvent.BadgedAt,
+                UserId = badgeLogEvent.UserId
+            };
         }
     }
 }

@@ -32,14 +32,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<User>().Get();
 
-            return response.Models.Select(u => new UserResponse
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                RoleId = u.RoleId,
-                TeamId = u.TeamId ?? 0
-            }).ToList();
+            return response.Models.Select(u => createUserResponse(u)).ToList();
         }
 
         public async Task<UserResponse?> GetUserByIdAsync(long id)
@@ -49,6 +42,30 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
+            return createUserResponse(user);
+        }
+
+        public async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
+        {
+            var request = await _client.From<User>().Where(n => n.Id == id).Get();
+            var user = request.Models.FirstOrDefault();
+
+            if (user == null) return null;
+
+            user.RoleId = newRoleId;
+
+            request = await _client.From<User>().Update(user);
+
+            return createUserResponse(user);
+        }
+
+        public async Task DeleteUserAsync(long id)
+        {
+            await _client.From<User>().Where(n => n.Id == id).Delete();
+        }
+
+        public UserResponse createUserResponse(User user)
+        {
             return new UserResponse
             {
                 Id = user.Id,
@@ -57,11 +74,6 @@ namespace badgeur_backend.Services
                 RoleId = user.RoleId,
                 TeamId = user.TeamId ?? 0
             };
-        }
-
-        public async Task DeleteUserAsync(long id)
-        {
-            await _client.From<User>().Where(n => n.Id == id).Delete();
         }
     }
 }
