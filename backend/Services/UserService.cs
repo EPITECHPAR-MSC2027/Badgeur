@@ -20,6 +20,8 @@ namespace badgeur_backend.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                Telephone = request.Telephone,
+                Email = request.Email,
                 RoleId = request.RoleId,
                 TeamId = request.TeamId
             };
@@ -71,6 +73,8 @@ namespace badgeur_backend.Services
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Email = user.Email,
+                Telephone = user.Telephone,
                 RoleId = user.RoleId,
                 TeamId = user.TeamId ?? 0
             };
