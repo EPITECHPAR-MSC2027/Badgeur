@@ -38,7 +38,7 @@ namespace badgeur_backend.Endpoints
                 };
 
                 // Each new user has to be saved to two different databases, one for the AUTHENTICATION (auth) and another for their ROLE (public.users).
-                // This may or may not be avoidable
+                // This may or may not be avoidable.
 
                 CreateUserRequest createUserRequest = new CreateUserRequest
                 {
@@ -52,7 +52,7 @@ namespace badgeur_backend.Endpoints
                     return Results.BadRequest("Registration failed. (Auth)");
 
                 return Results.Ok(response);
-            });
+            }).WithDescription("Register a new user. Returns an access token, a refresh token, and the new user's email.");
 
         }
     }

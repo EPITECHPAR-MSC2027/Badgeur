@@ -28,7 +28,7 @@ namespace badgeur_backend.Endpoints
                 };
 
                 return Results.Ok(response);
-            });
+            }).WithDescription("Login with a username and password combination. Returns an access token, a refresh token, and the user's email.");
 
         }
     }
