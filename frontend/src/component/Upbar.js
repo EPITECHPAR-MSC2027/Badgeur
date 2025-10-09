@@ -62,7 +62,7 @@ import icon from '../assets/icon.png'
                 <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
                 <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
                 <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
-                <button style={buttonStyle}>Déconnexion</button>
+                <button style={buttonStyle} onClick={() => onNavigate('login')}>Déconnexion</button>
             </div>
         </div>
     )
