@@ -18,7 +18,7 @@ namespace badgeur_backend.Endpoints
                     return Results.BadRequest("Failed to create a new team.");
 
                 return Results.Ok(id);
-            });
+            }).WithDescription("Create a new team. Upon success, returns the ID of the new team.");
 
             group.MapGet("/", async (TeamService teamService) =>
             {
@@ -27,7 +27,7 @@ namespace badgeur_backend.Endpoints
                 if (!teams.Any()) return Results.NotFound("No teams found.");
 
                 return Results.Ok(teams);
-            });
+            }).WithDescription("Retrieve all the teams.");
 
             group.MapGet("/{id:long}", async (long id, TeamService teamService) =>
             {
@@ -36,7 +36,7 @@ namespace badgeur_backend.Endpoints
                 if (team == null) return Results.NotFound("Team was not found.");
 
                 return Results.Ok(team);
-            });
+            }).WithDescription("Retrieve a team by ID.");
 
             group.MapPut("/{id:long}/manager", async (long id, UpdateTeamManagerRequest request, TeamService teamService, RoleService roleService, UserService userService) =>
             {
@@ -51,14 +51,14 @@ namespace badgeur_backend.Endpoints
                     return Results.NotFound("Team not found.");
 
                 return Results.Ok(updatedTeam);
-            });
+            }).WithDescription("Updates the manager of a team, but checks if the user has a role of manager. If the user has the role of a manager, it will make the change and return the team's ID, name, and new manager's ID.");
 
             group.MapDelete("/{id:long}", async (long id, TeamService teamService) =>
             {
                 await teamService.DeleteTeamAsync(id);
 
                 return Results.NoContent();
-            });
+            }).WithDescription("Deletes a team by ID.");
         }
     }
 }

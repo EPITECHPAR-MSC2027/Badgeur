@@ -16,7 +16,7 @@ namespace badgeur_backend.Endpoints
                 if (!roles.Any()) return Results.NotFound("No roles found.");
 
                 return Results.Ok(roles);
-            });
+            }).WithDescription("Retrieve all roles.");
 
             group.MapGet("/{id:long}", async (long id, RoleService roleService) =>
             {
@@ -25,7 +25,7 @@ namespace badgeur_backend.Endpoints
                 if (role == null) return Results.NotFound("Role was not found.");
 
                 return Results.Ok(role);
-            });
+            }).WithDescription("Retrieve a role by ID.");
         }
     }
 }
