@@ -10,6 +10,10 @@ namespace badgeur_backend.Contracts.Requests
 
         public required string LastName { get; set; }
 
+        public required string Email { get; set; }
+
+        public required string Telephone { get; set; }
+
         public long RoleId { get; set; }
 
         public long? TeamId { get; set; }

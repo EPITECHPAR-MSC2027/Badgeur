@@ -19,7 +19,7 @@ namespace badgeur_backend.Endpoints
                     Data = new Dictionary<string, object>
                     {
                         { "first_name", registrationRequest.FirstName },
-                        { "last_name", registrationRequest.LastName }
+                        { "last_name", registrationRequest.LastName },
                     }
                 };
 
@@ -43,7 +43,9 @@ namespace badgeur_backend.Endpoints
                 CreateUserRequest createUserRequest = new CreateUserRequest
                 {
                     FirstName = registrationRequest.FirstName,
-                    LastName = registrationRequest.LastName
+                    LastName = registrationRequest.LastName,
+                    Email = registrationRequest.Email,
+                    Telephone = registrationRequest.Telephone
                 };
                 
                 var id = await userService.CreateUserAsync(createUserRequest);

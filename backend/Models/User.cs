@@ -17,6 +17,12 @@ namespace badgeur_backend.Models;
     [Column("last_name")]
     public string LastName { get; set; } = default!;
 
+    [Column("email")]
+    public string Email { get; set; } = default!;
+
+    [Column("telephone")]
+    public string Telephone { get; set; } = default!;
+
     [Column("role_id")]
     public long RoleId { get; set; }
 
