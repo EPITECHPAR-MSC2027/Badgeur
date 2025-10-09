@@ -26,14 +26,18 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+
+// --- Scoped Services ---
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<BadgeLogEventService>();
+
 var app = builder.Build();
 
 // --- Middleware ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(); //TODO - Make sure it works
 }
 
 app.UseHttpsRedirection();
@@ -42,5 +46,6 @@ app.UseHttpsRedirection();
 app.MapUserEndpoints();
 app.MapLoginEndpoints();
 app.MapRegistrationEndpoints();
+app.MapBadgeLogEventEndpoints();
 
 app.Run();

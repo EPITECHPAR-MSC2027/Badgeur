@@ -1,6 +1,4 @@
 ﻿using badgeur_backend.Contracts.Requests;
-using badgeur_backend.Contracts.Responses;
-using badgeur_backend.Models;
 using badgeur_backend.Services;
 
 namespace badgeur_backend.Endpoints
@@ -24,20 +22,25 @@ namespace badgeur_backend.Endpoints
             group.MapGet("/", async (UserService userService) =>
             {
                 var users = await userService.GetAllUsersAsync();
+
                 if (!users.Any()) return Results.NotFound("No users found.");
+
                 return Results.Ok(users);
             });
 
             group.MapGet("/{id:long}", async (long id, UserService userService) =>
             {
                 var user = await userService.GetUserByIdAsync(id);
+
                 if (user == null) return Results.NotFound("User was not found.");
+
                 return Results.Ok(user);
             });
 
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
                 await userService.DeleteUserAsync(id);
+
                 return Results.NoContent();
             });
         }
