@@ -23,6 +23,7 @@ namespace badgeur_backend.Services
             };
 
             var response = await _client.From<BadgeLogEvent>().Insert(badgeLogEvent);
+
             return response.Models.First().Id;
         }
 

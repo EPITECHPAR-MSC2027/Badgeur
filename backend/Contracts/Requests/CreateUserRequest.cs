@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using badgeur_backend.Contracts.Responses;
+using System.Text.Json.Serialization;
 
 namespace badgeur_backend.Contracts.Requests
 {
