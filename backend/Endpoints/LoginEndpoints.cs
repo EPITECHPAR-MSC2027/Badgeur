@@ -1,5 +1,6 @@
 ﻿using badgeur_backend.Contracts.Requests;
 using badgeur_backend.Contracts.Responses;
+using badgeur_backend.Services;
 using Supabase;
 
 namespace badgeur_backend.Endpoints
@@ -10,7 +11,7 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/login");
 
-            group.MapPost("/", async (LoginRequest request, Client client) =>
+            group.MapPost("/", async (LoginRequest request, Client client, UserService userService) =>
             {
                 var session = await client.Auth.SignInWithPassword(request.Email, request.Password);
 
@@ -19,10 +20,17 @@ namespace badgeur_backend.Endpoints
                     return Results.Unauthorized();
                 }
 
+
+                UserResponse? user = await userService.GetUserByEmailAsync(session.User.Email);
+
                 var response = new LoginResponse
                 {
                     AccessToken = session.AccessToken,
                     RefreshToken = session.RefreshToken,
+                    UserId = user.Id,
+                    RoleId = user.RoleId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Email = session.User?.Email
                 };
 

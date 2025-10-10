@@ -47,6 +47,16 @@ namespace badgeur_backend.Services
             return createUserResponse(user);
         }
 
+        public async Task<UserResponse?> GetUserByEmailAsync(string email)
+        {
+            var response = await _client.From<User>().Where(n => n.Email == email).Get();
+            var user = response.Models.FirstOrDefault();
+
+            if (user == null) return null;
+
+            return createUserResponse(user);
+        }
+
         public async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
         {
             var request = await _client.From<User>().Where(n => n.Id == id).Get();
