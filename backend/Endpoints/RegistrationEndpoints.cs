@@ -30,13 +30,6 @@ namespace badgeur_backend.Endpoints
                     return Results.BadRequest("Registration failed. (Role)");
                 }
 
-                var response = new RegistrationResponse
-                {
-                    AccessToken = session.AccessToken,
-                    RefreshToken = session.RefreshToken,
-                    Email = session.User?.Email
-                };
-
                 // Each new user has to be saved to two different databases, one for the AUTHENTICATION (auth) and another for their ROLE (public.users).
                 // This may or may not be avoidable.
 
@@ -53,7 +46,19 @@ namespace badgeur_backend.Endpoints
                 if (id == null)
                     return Results.BadRequest("Registration failed. (Auth)");
 
-                return Results.Ok(response);
+                var userResponse = await userService.GetUserByIdAsync(id);
+
+                var registrationResponse = new RegistrationResponse
+                {
+                    AccessToken = session.AccessToken,
+                    RefreshToken = session.RefreshToken,
+                    UserId = userResponse.Id,
+                    RoleId = userResponse.RoleId,
+                    FirstName = userResponse.FirstName,
+                    LastName = userResponse.LastName
+                };
+
+                return Results.Ok(registrationResponse);
             }).WithDescription("Register a new user. Returns an access token, a refresh token, and the new user's email.");
 
         }
