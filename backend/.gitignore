@@ -1,0 +1,32 @@
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+
+# NuGet packages
+packages/
+*.nupkg
+
+# User secrets and environment files (e.g., for Supabase keys)
+*.env
+secrets.json
+appsettings.json
+appsettings.Development.json
+
+# Test http requests
+badgeur-backend.http
+
+# Logs and temp files
+*.log
+*.tmp
+*.cache
+
+# Other common ignores
+Thumbs.db
+.DS_Store
