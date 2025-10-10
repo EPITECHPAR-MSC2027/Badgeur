@@ -10,9 +10,11 @@ import Planning from './pages/Planning'
 import Calendrier from './pages/Calendrier'
 import Profil from './pages/Profil'
 import ParamTre from './pages/Parametre'
+import Login from './pages/Login'
+import GererEquipe from './pages/GererEquipe'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home')
+  const [currentPage, setCurrentPage] = useState('login')
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'main'
@@ -21,6 +23,8 @@ function App() {
 
   const renderPage = () => {
     switch (currentPage) {
+      case 'login':
+        return <Login onSubmit={() => setCurrentPage('home')} />
       case 'home':
         return <Home />
       case 'pointage':
@@ -33,6 +37,8 @@ function App() {
         return <Profil />
       case 'parameter':
         return <ParamTre />
+      case 'gererEquipe':
+        return <GererEquipe />
       default:
         return <Home />
     }
@@ -40,7 +46,9 @@ function App() {
 
   return (
     <div className="App">
-      <Upbar currentPage={currentPage} onNavigate={setCurrentPage} />
+      {currentPage !== 'login' && (
+        <Upbar currentPage={currentPage} onNavigate={setCurrentPage} />
+      )}
       {renderPage()}
     </div>
   )
