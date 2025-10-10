@@ -61,7 +61,14 @@ function Login({ onSubmit }) {
             })
             if (!res.ok) throw new Error('Identifiants invalides')
             const data = await res.json()
+            
+            // Stocker les informations utilisateur dans localStorage
             localStorage.setItem('accessToken', data.accessToken)
+            localStorage.setItem('firstName', data.firstName)
+            localStorage.setItem('lastName', data.lastName)
+            localStorage.setItem('roleId', data.roleId)
+            localStorage.setItem('email', data.email)
+            
             if (onSubmit) onSubmit(data)
         } catch (err) {
             alert(err.message || 'Erreur de connexion')

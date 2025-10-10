@@ -7,6 +7,11 @@ import DayPlanning from '../component/DayPlanning'
 import Notifications from '../component/Notifications'
 function Home() {
     const [now, setNow] = useState(new Date())
+    const [userData] = useState({
+        firstName: localStorage.getItem('firstName'),
+        lastName: localStorage.getItem('lastName'),
+        roleId: parseInt(localStorage.getItem('roleId'))
+    })
 
     useEffect(() => {
         const timer = setInterval(() => setNow(new Date()), 1000)
@@ -55,7 +60,8 @@ function Home() {
         <div className="App">
             <header className="App-header">
                 <h1>Tableaux de bord</h1>
-                <h2>Bienvenue sur votre espace employé</h2>
+                <h2>Bienvenue {userData.firstName} {userData.lastName}</h2>
+                <h3>Vous êtes {userData.roleId === 1 ? 'Manager' : 'Employé'}</h3>
             </header>
             <div className="time" style={timeBoxStyle}>
                 <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-primary)' }}>Heures et date actuelle</h1>

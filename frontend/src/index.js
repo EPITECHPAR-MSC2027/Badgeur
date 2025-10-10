@@ -11,6 +11,7 @@ import Calendrier from './pages/Calendrier'
 import Profil from './pages/Profil'
 import ParamTre from './pages/Parametre'
 import Login from './pages/Login'
+import GererEquipe from './pages/GererEquipe'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login')
@@ -36,6 +37,8 @@ function App() {
         return <Profil />
       case 'parameter':
         return <ParamTre />
+      case 'gererEquipe':
+        return <GererEquipe />
       default:
         return <Home />
     }
