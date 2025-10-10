@@ -36,13 +36,19 @@ builder.Services.AddScoped<TeamService>();
 var app = builder.Build();
 
 // --- Middleware ---
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); //TODO - Make sure it works
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+// --- Supabase Auth ---
+app.UseSupabaseAuth();
 
 // --- Endpoints ---
 app.MapUserEndpoints();
