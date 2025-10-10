@@ -4,6 +4,7 @@ import icon from '../assets/icon.png'
 
  function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
+    const roleId = parseInt(localStorage.getItem('roleId'))
     const isActive = (page) => currentPage === page ? { textDecoration: 'underline' } : {}
 
     const buttonStyle = {
@@ -49,6 +50,13 @@ import icon from '../assets/icon.png'
             <div style={{display: 'flex', alignItems: 'center', gap: 16, paddingRight: 16 }}>
                 <button onClick={() => onNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>Homepage</button>
 
+                {/* Afficher "Gérer équipe" uniquement pour les managers */}
+                {roleId === 1 && (
+                    <button onClick={() => onNavigate('gererEquipe')} style={{ ...buttonStyle, ...isActive('gererEquipe') }}>
+                        Gérer équipe
+                    </button>
+                )}
+
                 <div className="dropdown" style={dropdownStyle}>
                     <button className="dropdown-toggle" onClick={() => setIsActionsOpen(v => !v)} style={{ ...buttonStyle, ...isActive('actions') }}>
                         Actions <span className="caret" style={caretStyle}>▼</span>
@@ -62,7 +70,7 @@ import icon from '../assets/icon.png'
                 <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
                 <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
                 <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
-                <button style={buttonStyle}>Déconnexion</button>
+                <button style={buttonStyle} onClick={() => onNavigate('login')}>Déconnexion</button>
             </div>
         </div>
     )
