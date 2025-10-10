@@ -17,7 +17,7 @@ namespace badgeur_backend.Endpoints
                     return Results.BadRequest("Failed to create a new user.");
 
                 return Results.Ok(id);
-            });
+            }).WithDescription("Create a new user and returns the user ID.");
 
             group.MapGet("/", async (UserService userService) =>
             {
@@ -26,7 +26,7 @@ namespace badgeur_backend.Endpoints
                 if (!users.Any()) return Results.NotFound("No users found.");
 
                 return Results.Ok(users);
-            });
+            }).WithDescription("Retrieves all users from the database.");
 
             group.MapGet("/{id:long}", async (long id, UserService userService) =>
             {
@@ -35,14 +35,24 @@ namespace badgeur_backend.Endpoints
                 if (user == null) return Results.NotFound("User was not found.");
 
                 return Results.Ok(user);
-            });
+            }).WithDescription("Retrieve a user by their ID.");
+
+            group.MapPut("/{id:long}/role", async (long id, UpdateUserRoleRequest request, UserService userService) =>
+            {
+                var updatedUser = await userService.updateUserRoleAsync(id, request.NewRoleId);
+
+                if (updatedUser == null)
+                    return Results.NotFound("User not found.");
+
+                return Results.Ok(updatedUser);
+            }).WithDescription("Update a user's role by their ID.");
 
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
                 await userService.DeleteUserAsync(id);
 
                 return Results.NoContent();
-            });
+            }).WithDescription("Delete a user by their ID.");
         }
     }
 }

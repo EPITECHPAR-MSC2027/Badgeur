@@ -1,0 +1,14 @@
+name: .NET Docker Build
+on:
+  push:
+    branches: [ "prepod" ]
+  pull_request:
+    branches: [ "prepod" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    # Build Docker image
+    - name: Build Docker image
+      run: docker build -f ./backend/Dockerfile -t badgeur-backend:latest .

@@ -20,6 +20,8 @@ namespace badgeur_backend.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                Telephone = request.Telephone,
+                Email = request.Email,
                 RoleId = request.RoleId,
                 TeamId = request.TeamId
             };
@@ -32,14 +34,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<User>().Get();
 
-            return response.Models.Select(u => new UserResponse
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                RoleId = u.RoleId,
-                TeamId = u.TeamId ?? 0
-            }).ToList();
+            return response.Models.Select(u => createUserResponse(u)).ToList();
         }
 
         public async Task<UserResponse?> GetUserByIdAsync(long id)
@@ -49,19 +44,63 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
-            return new UserResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                RoleId = user.RoleId,
-                TeamId = user.TeamId ?? 0
-            };
+            return createUserResponse(user);
+        }
+
+        public async Task<UserResponse?> GetUserByEmailAsync(string email)
+        {
+            var response = await _client.From<User>().Where(n => n.Email == email).Get();
+            var user = response.Models.FirstOrDefault();
+
+            if (user == null) return null;
+
+            return createUserResponse(user);
+        }
+
+        public async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
+        {
+            var request = await _client.From<User>().Where(n => n.Id == id).Get();
+            var user = request.Models.FirstOrDefault();
+
+            if (user == null) return null;
+
+            user.RoleId = newRoleId;
+
+            request = await _client.From<User>().Update(user);
+
+            return createUserResponse(user);
         }
 
         public async Task DeleteUserAsync(long id)
         {
             await _client.From<User>().Where(n => n.Id == id).Delete();
+        }
+
+        public UserResponse createUserResponse(User user)
+        {
+            return new UserResponse
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Telephone = user.Telephone,
+                RoleId = user.RoleId,
+                TeamId = user.TeamId ?? 0
+            };
+        }
+
+        public async Task<bool> IsUserManager(long id, RoleService roleService)
+        {
+            UserResponse user = await GetUserByIdAsync(id);
+            RoleResponse role = await roleService.GetRoleByIdAsync(user.RoleId);
+
+            if (role.RoleName == "Manager")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
