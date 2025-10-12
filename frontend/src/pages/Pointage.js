@@ -27,10 +27,25 @@ function Pointage() {
 
     const loadBadgeHistory = async () => {
         try {
-            const response = await authService.get('/badge-log-events/')
+            const userId = localStorage.getItem('userId')
+            console.log('User ID:', userId)
+            
+            if (!userId) {
+                console.error('ID utilisateur non trouvé')
+                return
+            }
+            
+            console.log('Chargement de l\'historique pour l\'utilisateur:', userId)
+            const response = await authService.get(`/badgeLogEvent/user/${userId}`)
+            console.log('Réponse historique:', response.status)
+            
             if (response.ok) {
                 const data = await response.json()
-                setHistory(data.map(item => ({ time: new Date(item.timestamp) })))
+                console.log('Données reçues:', data)
+                setHistory(data.map(item => ({ time: new Date(item.badgedAt) })))
+            } else {
+                const errorText = await response.text()
+                console.error('Erreur lors du chargement de l\'historique:', response.status, errorText)
             }
         } catch (error) {
             console.error('Erreur lors du chargement de l\'historique:', error)
@@ -40,22 +55,38 @@ function Pointage() {
     const onBadge = async () => {
         setLoading(true)
         try {
+            const userId = localStorage.getItem('userId')
+            console.log('User ID pour badgeage:', userId)
+            
+            if (!userId) {
+                throw new Error('ID utilisateur non trouvé')
+            }
+            
             const now = new Date()
-            const response = await authService.post('/badge-log-events/', {
-                timestamp: now.toISOString()
-            })
+            const requestData = {
+                badgedAt: now.toISOString(),
+                userId: parseInt(userId)
+            }
+            console.log('Données de badgeage:', requestData)
+            
+            const response = await authService.post('/badgeLogEvent/', requestData)
+            console.log('Réponse badgeage:', response.status)
             
             if (response.ok) {
+                const result = await response.json()
+                console.log('Badgeage réussi, ID:', result)
                 setHistory((prev) => [{ time: now }, ...prev])
                 setShowToast(true)
                 if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
                 toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
             } else {
-                throw new Error('Erreur lors du badgeage')
+                const errorText = await response.text()
+                console.error('Erreur API:', response.status, errorText)
+                throw new Error(`Erreur lors du badgeage: ${response.status} - ${errorText}`)
             }
         } catch (error) {
             console.error('Erreur lors du badgeage:', error)
-            alert('Erreur lors du badgeage. Veuillez réessayer.')
+            alert(error.message || 'Erreur lors du badgeage. Veuillez réessayer.')
         } finally {
             setLoading(false)
         }

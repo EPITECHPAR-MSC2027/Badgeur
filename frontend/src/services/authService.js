@@ -29,6 +29,9 @@ class AuthService {
     // Effectue une requête HTTP avec authentification automatique
     async authenticatedFetch(url, options = {}) {
         const token = this.getAccessToken();
+        console.log('Token d\'authentification:', token ? 'Présent' : 'Absent');
+        console.log('URL de la requête:', url);
+        console.log('Options de la requête:', options);
         
         if (!token) {
             throw new Error('Aucun token d\'authentification trouvé');
@@ -40,13 +43,18 @@ class AuthService {
             ...options.headers
         };
 
+        console.log('Headers de la requête:', defaultHeaders);
+
         const response = await fetch(url, {
             ...options,
             headers: defaultHeaders
         });
 
+        console.log('Statut de la réponse:', response.status);
+
         // Si la réponse est 401 (Non autorisé), rediriger vers la page de connexion
         if (response.status === 401) {
+            console.log('Erreur 401 détectée, déconnexion de l\'utilisateur');
             this.logout();
             // Rediriger vers la page de connexion
             window.location.reload(); // Cela va déclencher le retour à la page login
