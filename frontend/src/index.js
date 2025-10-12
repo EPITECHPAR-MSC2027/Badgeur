@@ -12,6 +12,7 @@ import Profil from './pages/Profil'
 import ParamTre from './pages/Parametre'
 import Login from './pages/Login'
 import GererEquipe from './pages/GererEquipe'
+import authService from './services/authService'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login')
@@ -19,6 +20,11 @@ function App() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'main'
     document.documentElement.setAttribute('data-theme', savedTheme)
+    
+    // Vérifier si l'utilisateur est déjà connecté
+    if (authService.isAuthenticated()) {
+      setCurrentPage('home')
+    }
   }, [])
 
   const renderPage = () => {

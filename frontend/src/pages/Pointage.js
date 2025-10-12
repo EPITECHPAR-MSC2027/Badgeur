@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import authService from '../services/authService'
 
 function formatTime(date) {
     const pad = (n) => String(n).padStart(2, '0')
@@ -15,15 +16,49 @@ function formatDate(date) {
 function Pointage() {
     const [showToast, setShowToast] = useState(false)
     const [history, setHistory] = useState([]) // [{time: Date}]
+    const [loading, setLoading] = useState(false)
 
     const toastTimerRef = useRef(null)
 
-    const onBadge = () => {
-        const now = new Date()
-        setHistory((prev) => [{ time: now }, ...prev])
-        setShowToast(true)
-        if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-        toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
+    // Charger l'historique des badgeages au montage du composant
+    useEffect(() => {
+        loadBadgeHistory()
+    }, [])
+
+    const loadBadgeHistory = async () => {
+        try {
+            const response = await authService.get('/badge-log-events/')
+            if (response.ok) {
+                const data = await response.json()
+                setHistory(data.map(item => ({ time: new Date(item.timestamp) })))
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement de l\'historique:', error)
+        }
+    }
+
+    const onBadge = async () => {
+        setLoading(true)
+        try {
+            const now = new Date()
+            const response = await authService.post('/badge-log-events/', {
+                timestamp: now.toISOString()
+            })
+            
+            if (response.ok) {
+                setHistory((prev) => [{ time: now }, ...prev])
+                setShowToast(true)
+                if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+                toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
+            } else {
+                throw new Error('Erreur lors du badgeage')
+            }
+        } catch (error) {
+            console.error('Erreur lors du badgeage:', error)
+            alert('Erreur lors du badgeage. Veuillez réessayer.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => () => {
@@ -66,7 +101,9 @@ function Pointage() {
             <div style={cardStyle}>
                 <h2 style={{ marginTop: 0 }}>Badger</h2>
                 <p style={{ color: 'var(--color-second-text)', marginTop: -6 }}>Appuyez pour enregistrer un badgeage.</p>
-                <button style={buttonStyle} onClick={onBadge}>Badger</button>
+                <button style={buttonStyle} onClick={onBadge} disabled={loading}>
+                    {loading ? 'Badgeage en cours...' : 'Badger'}
+                </button>
             </div>
 
             <div style={{ ...cardStyle, marginTop: 20 }}>
