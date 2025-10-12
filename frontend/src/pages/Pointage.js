@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import authService from '../services/authService'
 
 function formatTime(date) {
     const pad = (n) => String(n).padStart(2, '0')
@@ -15,15 +16,80 @@ function formatDate(date) {
 function Pointage() {
     const [showToast, setShowToast] = useState(false)
     const [history, setHistory] = useState([]) // [{time: Date}]
+    const [loading, setLoading] = useState(false)
 
     const toastTimerRef = useRef(null)
 
-    const onBadge = () => {
-        const now = new Date()
-        setHistory((prev) => [{ time: now }, ...prev])
-        setShowToast(true)
-        if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-        toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
+    // Charger l'historique des badgeages au montage du composant
+    useEffect(() => {
+        loadBadgeHistory()
+    }, [])
+
+    const loadBadgeHistory = async () => {
+        try {
+            const userId = localStorage.getItem('userId')
+            console.log('User ID:', userId)
+            
+            if (!userId) {
+                console.error('ID utilisateur non trouvé')
+                return
+            }
+            
+            console.log('Chargement de l\'historique pour l\'utilisateur:', userId)
+            const response = await authService.get(`/badgeLogEvent/user/${userId}`)
+            console.log('Réponse historique:', response.status)
+            
+            if (response.ok) {
+                const data = await response.json()
+                console.log('Données reçues:', data)
+                setHistory(data.map(item => ({ time: new Date(item.badgedAt) })))
+            } else {
+                const errorText = await response.text()
+                console.error('Erreur lors du chargement de l\'historique:', response.status, errorText)
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement de l\'historique:', error)
+        }
+    }
+
+    const onBadge = async () => {
+        setLoading(true)
+        try {
+            const userId = localStorage.getItem('userId')
+            console.log('User ID pour badgeage:', userId)
+            
+            if (!userId) {
+                throw new Error('ID utilisateur non trouvé')
+            }
+            
+            const now = new Date()
+            const requestData = {
+                badgedAt: now.toISOString(),
+                userId: parseInt(userId)
+            }
+            console.log('Données de badgeage:', requestData)
+            
+            const response = await authService.post('/badgeLogEvent/', requestData)
+            console.log('Réponse badgeage:', response.status)
+            
+            if (response.ok) {
+                const result = await response.json()
+                console.log('Badgeage réussi, ID:', result)
+                setHistory((prev) => [{ time: now }, ...prev])
+                setShowToast(true)
+                if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+                toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
+            } else {
+                const errorText = await response.text()
+                console.error('Erreur API:', response.status, errorText)
+                throw new Error(`Erreur lors du badgeage: ${response.status} - ${errorText}`)
+            }
+        } catch (error) {
+            console.error('Erreur lors du badgeage:', error)
+            alert(error.message || 'Erreur lors du badgeage. Veuillez réessayer.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => () => {
@@ -66,7 +132,9 @@ function Pointage() {
             <div style={cardStyle}>
                 <h2 style={{ marginTop: 0 }}>Badger</h2>
                 <p style={{ color: 'var(--color-second-text)', marginTop: -6 }}>Appuyez pour enregistrer un badgeage.</p>
-                <button style={buttonStyle} onClick={onBadge}>Badger</button>
+                <button style={buttonStyle} onClick={onBadge} disabled={loading}>
+                    {loading ? 'Badgeage en cours...' : 'Badger'}
+                </button>
             </div>
 
             <div style={{ ...cardStyle, marginTop: 20 }}>
