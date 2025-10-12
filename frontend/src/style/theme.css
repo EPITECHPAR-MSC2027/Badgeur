@@ -27,7 +27,7 @@
     --color-secondary: #7F6269;
     --color-third: #BD8E89;
     --color-background: #EAEFFF;
-    --color-second-text: #B79C8C;
+    --color-second-text: #b29482;
 }
 
 [data-theme='deep-blue'] {
@@ -35,15 +35,15 @@
     --color-secondary: #272C4F;
     --color-third: #272C4F;
     --color-background: #EAEFFF;
-    --color-second-text: #DBDEFA;
+    --color-second-text: #acb2e5;
 }
 
 [data-theme='cyber'] {
     --color-primary: #DADADA;
     --color-secondary: #B54B4B;
-    --color-third: #737272;
+    --color-third: #838282;
     --color-background: #2B2B2B;
-    --color-second-text: #cd8484;
+    --color-second-text: #6390f8;
 }
 
 [data-theme='warm'] {
@@ -57,7 +57,7 @@
 [data-theme='desert'] {
     --color-primary: #C7AF94;
     --color-secondary: #676D40;
-    --color-third: #979a68;
+    --color-third: #859a68;
     --color-background: #EADED0;
     --color-second-text: #95714F;
 }
@@ -65,7 +65,7 @@
 [data-theme='starlight'] {
     --color-primary: #684E84;
     --color-secondary: #EAE5E7;
-    --color-third: #9B7F98;
+    --color-third: #996aa7;
     --color-background: #19173B;
-    --color-second-text: #C2A4B1;
+    --color-second-text: #dba2bb;
 }
