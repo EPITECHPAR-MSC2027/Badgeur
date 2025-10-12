@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import authService from '../services/authService'
+import '../style/pointage.css'
 
 function formatTime(date) {
     const pad = (n) => String(n).padStart(2, '0')
@@ -96,65 +97,104 @@ function Pointage() {
         if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     }, [])
 
-    const cardStyle = {
-        backgroundColor: 'var(--color-primary)',
-        borderRadius: 12,
-        padding: 20,
-        boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
-        marginTop: 16
-    }
-
-    const buttonStyle = {
-        backgroundColor: '#181818',
-        color: '#fff',
-        border: 'none',
-        borderRadius: 10,
-        padding: '14px 18px',
-        fontWeight: 700,
-        width: '100%',
-        cursor: 'pointer'
-    }
-
-    const toastStyle = {
-        position: 'fixed',
-        right: 24,
-        bottom: 24,
-        backgroundColor: '#1f8b4c',
-        color: 'white',
-        padding: '12px 16px',
-        borderRadius: 8,
-        boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
-    }
 
     return (
-        <div>
-            <h1>Pointage</h1>
-            <div style={cardStyle}>
-                <h2 style={{ marginTop: 0 }}>Badger</h2>
-                <p style={{ color: 'var(--color-second-text)', marginTop: -6 }}>Appuyez pour enregistrer un badgeage.</p>
-                <button style={buttonStyle} onClick={onBadge} disabled={loading}>
-                    {loading ? 'Badgeage en cours...' : 'Badger'}
-                </button>
-            </div>
-
-            <div style={{ ...cardStyle, marginTop: 20 }}>
-                <h2 style={{ marginTop: 0 }}>Historique des badgeages</h2>
-                {history.length === 0 ? (
-                    <p style={{ color: 'var(--color-second-text)' }}>Aucun badgeage pour l’instant.</p>
-                ) : (
-                    <div>
-                        {history.map((item, idx) => (
-                            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #eee' }}>
-                                <span>{formatDate(new Date(item.time))}</span>
-                                <span style={{ fontWeight: 700 }}>{formatTime(new Date(item.time))}</span>
-                            </div>
-                        ))}
+        <div className="pointage-container">
+            <main className="pointage-main">
+                <div className="pointage-header">
+                    <h1 className="pointage-title">Badgeage</h1>
+                    <p className="pointage-date">{formatDate(new Date())}</p>
+                    <div className="pointage-info-card">
+                        <p className="pointage-info-text">
+                            Pensez à badger à <span className="pointage-highlight">chaque moment clé</span> de votre journée :
+                            votre arrivée le matin, avant votre pause déjeuner, lors de votre retour de pause, et avant votre départ en fin de journée.
+                        </p>
                     </div>
-                )}
-            </div>
+                </div>
+
+                {/* Moments de la journée */}
+                <div className="pointage-moments">
+                    {[
+                        { label: 'Arrivée Matin', time: '08h00', icon: '☀️' },
+                        { label: 'Pause déj. Midi', time: '12h00', icon: '☕' },
+                        { label: 'Reprise Après-midi', time: '13h00', icon: '🔄' },
+                        { label: 'Départ Soir', time: '17h00', icon: '🌙' }
+                    ].map((moment, index) => (
+                        <div
+                            key={index}
+                            className="pointage-moment"
+                            style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                            <div className="pointage-moment-icon">
+                                {moment.icon}
+                            </div>
+                            <div className="pointage-moment-text">
+                                <p className="pointage-moment-label">
+                                    {moment.label}
+                                </p>
+                                <p className="pointage-moment-time">
+                                    {moment.time}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="pointage-badge-container">
+                    <button 
+                        className="pointage-badge-button"
+                        onClick={onBadge} 
+                        disabled={loading}
+                    >
+                        <div className="pointage-badge-icon">👆</div>
+                        <span className="pointage-badge-text">BADGER</span>
+                    </button>
+                </div>
+
+                <div className="pointage-history-card">
+                    <div className="pointage-history-header">
+                        <h2 className="pointage-history-title">Historique du jour</h2>
+                        <p className="pointage-history-description">
+                            {history.length === 0
+                                ? "Aucun badgeage effectué aujourd'hui"
+                                : `${history.length} badgeage${history.length > 1 ? "s" : ""} effectué${history.length > 1 ? "s" : ""}`}
+                        </p>
+                    </div>
+                    <div className="pointage-history-content">
+                        {history.length === 0 ? (
+                            <div className="pointage-empty-state">
+                                <div className="pointage-empty-icon">👆</div>
+                                <p>Effectuez votre premier badgeage</p>
+                            </div>
+                        ) : (
+                            <div>
+                                {[...history].reverse().map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="pointage-badge-item"
+                                    >
+                                        <div className="pointage-badge-info">
+                                            <div className="pointage-badge-indicator" />
+                                            <div>
+                                                <p className="pointage-badge-type">Badgeage</p>
+                                                <p className="pointage-badge-time">
+                                                    {formatDate(new Date(item.time))} à {formatTime(new Date(item.time))}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {index === 0 && (
+                                            <span className="pointage-last-badge">Dernier</span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </main>
 
             {showToast && (
-                <div style={toastStyle}>Vous avez badgé !</div>
+                <div className="pointage-toast">Vous avez badgé !</div>
             )}
         </div>
     )

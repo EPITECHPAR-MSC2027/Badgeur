@@ -9,9 +9,9 @@
 [data-theme='azure'] {
     --color-primary: #95B2C4;
     --color-secondary: #507695;
-    --color-third: #FFA3A3;
+    --color-third: #f0acac;
     --color-background: #F5F5F5;
-    --color-second-text: #EEEEEE;
+    --color-second-text: #d8a3c7;
 }
 
 [data-theme='pink-matcha'] {
