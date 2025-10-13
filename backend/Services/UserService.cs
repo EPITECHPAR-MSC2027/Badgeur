@@ -34,7 +34,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<User>().Get();
 
-            return response.Models.Select(u => createUserResponse(u)).ToList();
+            return response.Models.Select(u => CreateUserResponse(u)).ToList();
         }
 
         public async Task<UserResponse?> GetUserByIdAsync(long id)
@@ -44,7 +44,7 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
-            return createUserResponse(user);
+            return CreateUserResponse(user);
         }
 
         public async Task<UserResponse?> GetUserByEmailAsync(string email)
@@ -54,9 +54,10 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
-            return createUserResponse(user);
+            return CreateUserResponse(user);
         }
 
+        // TODO: This method needs to be scrapped as the inclusion of UpdateUserAsync renders it deprecated
         public async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
         {
             var request = await _client.From<User>().Where(n => n.Id == id).Get();
@@ -68,7 +69,26 @@ namespace badgeur_backend.Services
 
             request = await _client.From<User>().Update(user);
 
-            return createUserResponse(user);
+            return CreateUserResponse(user);
+        }
+
+        public async Task<UserResponse?> UpdateUserAsync(long id, UpdateUserRequest updateUserRequest)
+        {
+            var request = await _client.From<User>().Where(n => n.Id == id).Get();
+            var user = request.Models.FirstOrDefault();
+
+            if (user == null) return null;
+
+            // Update user retrieved from database with the new desired information
+            user.FirstName = updateUserRequest.FirstName;
+            user.LastName = updateUserRequest.LastName;
+            user.Telephone = updateUserRequest.Telephone;
+            user.RoleId = updateUserRequest.RoleId;
+            user.TeamId = updateUserRequest.TeamId;
+
+            request = await _client.From<User>().Update(user);
+
+            return CreateUserResponse(user);
         }
 
 
@@ -77,7 +97,7 @@ namespace badgeur_backend.Services
             await _client.From<User>().Where(n => n.Id == id).Delete();
         }
 
-        public UserResponse createUserResponse(User user)
+        public UserResponse CreateUserResponse(User user)
         {
             return new UserResponse
             {
