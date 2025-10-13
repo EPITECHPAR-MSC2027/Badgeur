@@ -84,16 +84,16 @@ function GererEquipe() {
                     const timeText = lastPunch ? lastPunch.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'
                     const dateText = lastPunch ? lastPunch.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Aucun pointage'
                     return (
-                        <div key={u.id} style={{ background: 'var(--color-primary)', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 14, display: 'flex', gap: 12, alignItems: 'center' }}>
-                            <img src={profilImg} alt="Profil" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+                        <div key={u.id} style={{ background: 'var(--color-primary)', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 14, display: 'flex', gap: 30, alignItems: 'center' }}>
+                            <img src={profilImg} alt="Profil" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover' }} />
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 700 }}>{u.firstName} {u.lastName}</div>
-                                <div style={{ fontSize: 12, color: 'var(--color-second-text)' }}>{u.email}</div>
-                                <div style={{ marginTop: 8, display: 'flex', gap: 8, fontSize: 12 }}>
-                                    <span style={{ color: 'var(--color-second-text)' }}>Dernier pointage:</span>
-                                    <span style={{ fontWeight: 600 }}>{timeText}</span>
+                                <div style={{ fontWeight: 700, fontSize: 20, fontFamily:'Spectral, serif'}}>{u.firstName} {u.lastName}</div>
+                                <div style={{ fontSize: 14, color: 'var(--color-second-text)', fontWeight: 600,marginTop: 7, fontFamily: 'Fustat, sans-serif'}}>{u.email}</div>
+                                <div style={{ marginTop: 8, display: 'flex', gap: 8, fontSize: 15,marginTop: 14 }}>
+                                    <span style={{ color: 'var(--color-second-text)', fontFamily: 'Fustat, sans-serif'}}>Dernier pointage:</span>
+                                    <span style={{ fontWeight: 600, fontFamily: 'Fustat, sans-serif' }}>{timeText}</span>
                                     <span style={{ color: 'var(--color-second-text)' }}>•</span>
-                                    <span>{dateText}</span>
+                                    <span style ={{fontFamily: 'Fustat, sans-serif'}}>{dateText}</span>
                                 </div>
                             </div>
                         </div>
