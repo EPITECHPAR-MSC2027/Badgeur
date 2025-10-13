@@ -1,7 +1,6 @@
 ﻿using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
 using Supabase;
-using Supabase.Gotrue;
 
 namespace badgeur_backend.Services
 {

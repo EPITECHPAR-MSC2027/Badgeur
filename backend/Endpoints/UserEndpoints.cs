@@ -37,15 +37,21 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(user);
             }).WithDescription("Retrieve a user by their ID.");
 
+            // TODO: Remove this function as it is practically replaced by UpdateUserAsync (related to line 51)
             group.MapPut("/{id:long}/role", async (long id, UpdateUserRoleRequest request, UserService userService) =>
             {
-                var updatedUser = await userService.updateUserRoleAsync(id, request.NewRoleId);
+                var updatedUser = await userService.UpdateUserRoleAsync(id, request.NewRoleId);
 
                 if (updatedUser == null)
                     return Results.NotFound("User not found.");
 
                 return Results.Ok(updatedUser);
             }).WithDescription("Update a user's role by their ID.");
+
+            group.MapPut("/{id:long}", async (long id, UpdateUserRequest updateUserRequest, UserService userService) =>
+            {
+                var updatedUser =
+            });
 
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
