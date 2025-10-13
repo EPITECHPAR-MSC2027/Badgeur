@@ -1,6 +1,4 @@
 ﻿using Supabase;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace badgeur_backend.Extensions
 {

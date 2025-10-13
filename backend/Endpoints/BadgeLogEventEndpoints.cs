@@ -37,6 +37,15 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(badgeLogEvent);
             }).WithDescription("Retrieve a badge log event by ID.");
 
+            group.MapGet("/user/{userId:long}", async (long userId, BadgeLogEventService badgeLogEventService) =>
+            {
+                var badgeLogEvents = await badgeLogEventService.GetBadgeLogEventsByUserIdAsync(userId);
+
+                if (!badgeLogEvents.Any()) return Results.NotFound("No badge log events found for this user.");
+
+                return Results.Ok(badgeLogEvents);
+            }).WithDescription("Retrieves all badge log events submitted by a user.");
+
             group.MapDelete("/{id:long}", async (long id, BadgeLogEventService badgeLogEventService) =>
             {
                 await badgeLogEventService.DeleteBadgeLogEventAsync(id);

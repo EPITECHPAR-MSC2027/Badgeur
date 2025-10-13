@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import '../index.css'
 import icon from '../assets/icon.png'
+import authService from '../services/authService'
 
  function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
@@ -40,6 +41,11 @@ import icon from '../assets/icon.png'
 
     const caretStyle = { marginLeft: 6, fontSize: 12 }
 
+    const handleLogout = () => {
+        authService.logout()
+        onNavigate('login')
+    }
+
     return (
         <div className="header">
             <div style={{display: 'flex', alignItems: 'center', paddingLeft: 25}}>
@@ -70,7 +76,7 @@ import icon from '../assets/icon.png'
                 <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
                 <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
                 <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
-                <button style={buttonStyle} onClick={() => onNavigate('login')}>Déconnexion</button>
+                <button style={buttonStyle} onClick={handleLogout}>Déconnexion</button>
             </div>
         </div>
     )
