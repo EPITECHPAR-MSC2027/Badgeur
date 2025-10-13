@@ -1,7 +1,6 @@
 ﻿using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
 using Supabase;
-using Supabase.Gotrue;
 
 namespace badgeur_backend.Services
 {
@@ -82,7 +81,7 @@ namespace badgeur_backend.Services
         }
 
         // Calculate and store User KPIs. Return the values upon success
-        public async Task<UserKPIResponse> CalculateAllUserKPIs(long userId)
+        public async Task<UserKPI> CalculateAllUserKPIs(long userId)
         {
             UserKPI userKPIs = new UserKPI
             {
@@ -106,7 +105,7 @@ namespace badgeur_backend.Services
             //
             //var response = await _client.From<UserKPI>().Insert(userKPIs);
 
-            var response = await _client.From<UserKPI>.Where(n => n.UserId == userId).Get();
+            var response = await _client.From<UserKPI>().Where(n => n.UserId == userId).Get();
             var userKPI = response.Models.FirstOrDefault();
 
             if (userKPI == null)

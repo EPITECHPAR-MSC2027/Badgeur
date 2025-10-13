@@ -8,7 +8,7 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/kpis");
 
-            group.MapGet("/{userId: long}", async (long userId, UserKPIService userKPIService) =>
+            group.MapGet("/{userId:long}", async (long userId, UserKPIService userKPIService) =>
             {
                 var userKPIs = userKPIService.CalculateAllUserKPIs(userId);
 
