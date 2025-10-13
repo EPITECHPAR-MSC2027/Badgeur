@@ -40,7 +40,7 @@ namespace badgeur_backend.Endpoints
                     Email = registrationRequest.Email,
                     Telephone = registrationRequest.Telephone
                 };
-                
+
                 var id = await userService.CreateUserAsync(createUserRequest);
 
                 if (id == null)

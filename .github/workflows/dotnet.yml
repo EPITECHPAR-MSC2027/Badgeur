@@ -1,9 +1,9 @@
 name: .NET Docker Build
 on:
   push:
-    branches: [ "prepod" ]
+    branches: [ "preprod" ]
   pull_request:
-    branches: [ "prepod" ]
+    branches: [ "preprod" ]
 jobs:
   build:
     runs-on: ubuntu-latest

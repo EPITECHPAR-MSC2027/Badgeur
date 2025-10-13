@@ -46,6 +46,13 @@ namespace badgeur_backend.Services
             return createBadgeLogEventResponse(badgeLogEvent);
         }
 
+        public async Task<List<BadgeLogEventResponse>> GetBadgeLogEventsByUserIdAsync(long userId)
+        {
+            var response = await _client.From<BadgeLogEvent>().Where(n => n.UserId == userId).Get();
+
+            return response.Models.Select(ble => createBadgeLogEventResponse(ble)).ToList();
+        }
+
         public async Task DeleteBadgeLogEventAsync(long id)
         {
             await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Delete();

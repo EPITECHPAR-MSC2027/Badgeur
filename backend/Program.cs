@@ -32,15 +32,18 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BadgeLogEventService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<UserKPIService>();
 
 var app = builder.Build();
 
 // --- Middleware ---
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); //TODO - Make sure it works
-    // Pas de redirection HTTPS en dev pour faciliter le proxy CRA
+    app.UseSwaggerUI();
 }
 
 // En production, on pourrait activer HTTPS redirection si nécessaire
@@ -49,6 +52,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// --- Supabase Auth ---
+app.UseSupabaseAuth();
+
 // --- Endpoints ---
 app.MapUserEndpoints();
 app.MapLoginEndpoints();
@@ -56,5 +62,6 @@ app.MapRegistrationEndpoints();
 app.MapBadgeLogEventEndpoints();
 app.MapRoleEndpoints();
 app.MapTeamEndpoints();
+app.MapUserKPIEndpoints();
 
 app.Run();
