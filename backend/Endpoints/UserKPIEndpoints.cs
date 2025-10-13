@@ -16,7 +16,7 @@ namespace badgeur_backend.Endpoints
 
                 return Results.Ok(userKPIs);
             }).WithDescription("Retrieve all KPIs for all users." +
-            "Always calcuates KPIS upon being called. If there is already a database entry, it will update it. Otherwise it will create it.");
+            "Always calculates KPIs upon being called. If there is already a database entry for a User, it will update it. Otherwise it will create it.");
         }
     }
 }
