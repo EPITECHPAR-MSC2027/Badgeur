@@ -1,5 +1,4 @@
 ﻿using Supabase.Postgrest.Attributes;
-using System.ComponentModel.DataAnnotations.Schema;
 using ColumnAttribute = Supabase.Postgrest.Attributes.ColumnAttribute;
 using TableAttribute = Supabase.Postgrest.Attributes.TableAttribute;
 
@@ -9,7 +8,7 @@ namespace badgeur_backend.Models
     public class UserKPI
     {
         [PrimaryKey("id", false)]
-        public required long Id { get; set; }
+        public long Id { get; set; }
 
         [Column("user_id")]
         public long UserId { get; set; }
@@ -24,7 +23,7 @@ namespace badgeur_backend.Models
         public DateTimeOffset Radt14 { get; set; }
 
         [Column("radt28")]
-        public DateTimeOffset Radt28 { get;set; }
+        public DateTimeOffset Radt28 { get; set; }
 
         [Column("raw14")]
         public string Raw14 { get; set; } = default!;

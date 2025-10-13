@@ -32,6 +32,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BadgeLogEventService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<UserKPIService>();
 
 var app = builder.Build();
 
@@ -57,5 +58,6 @@ app.MapRegistrationEndpoints();
 app.MapBadgeLogEventEndpoints();
 app.MapRoleEndpoints();
 app.MapTeamEndpoints();
+app.MapUserKPIEndpoints();
 
 app.Run();
