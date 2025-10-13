@@ -46,7 +46,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// En production, on pourrait activer HTTPS redirection si nécessaire
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // --- Supabase Auth ---
 app.UseSupabaseAuth();

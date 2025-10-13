@@ -12,5 +12,3 @@ jobs:
     # Build Docker image
     - name: Build Docker image
       run: docker build -f ./backend/Dockerfile -t badgeur-backend:latest .
-
-
