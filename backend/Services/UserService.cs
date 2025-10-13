@@ -91,6 +91,7 @@ namespace badgeur_backend.Services
             return CreateUserResponse(user);
         }
 
+
         public async Task DeleteUserAsync(long id)
         {
             await _client.From<User>().Where(n => n.Id == id).Delete();
