@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import loginIllustration from '../assets/login.png'
-import authService from '../services/authService'
 
 function Login({ onSubmit }) {
     const [email, setEmail] = useState('')

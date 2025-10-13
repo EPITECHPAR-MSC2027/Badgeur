@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import authService from '../services/authService'
 
 function Profil() {
     const [userData, setUserData] = useState({
