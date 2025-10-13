@@ -71,19 +71,6 @@ namespace badgeur_backend.Services
             return createUserResponse(user);
         }
 
-        public async Task<UserResponse?> updateUserTeamAsync(long id, long? newTeamId)
-        {
-            var request = await _client.From<User>().Where(n => n.Id == id).Get();
-            var user = request.Models.FirstOrDefault();
-
-            if (user == null) return null;
-
-            user.TeamId = newTeamId;
-
-            request = await _client.From<User>().Update(user);
-
-            return createUserResponse(user);
-        }
 
         public async Task DeleteUserAsync(long id)
         {
