@@ -47,6 +47,7 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(updatedUser);
             }).WithDescription("Update a user's role by their ID.");
 
+
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
                 await userService.DeleteUserAsync(id);
