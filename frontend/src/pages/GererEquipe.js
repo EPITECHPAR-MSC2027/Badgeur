@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import authService from '../services/authService'
+import statsService from '../services/statsService'
+import profilImg from '../assets/profil.png'
 
 function GererEquipe() {
     const [tab, setTab] = useState('manage') // 'manage' | 'dashboard'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [teamMembers, setTeamMembers] = useState([]) // [{id, firstName, lastName, email, roleId, teamId}]
+    const [lastPunchByUserId, setLastPunchByUserId] = useState({}) // { [userId]: Date | null }
 
     const loadData = async () => {
         setLoading(true)
@@ -24,6 +27,23 @@ function GererEquipe() {
             const myTeam = Array.isArray(teams) ? teams.find(t => t.managerId === currentUserId) : null
             const members = myTeam ? users.filter(u => (u.teamId || 0) === myTeam.id) : []
             setTeamMembers(members)
+
+            // Fetch last punch for each member
+            const entries = await Promise.all(members.map(async (u) => {
+                try {
+                    const events = await statsService.fetchUserBadgeEvents(u.id)
+                    if (!Array.isArray(events) || events.length === 0) return [u.id, null]
+                    const latest = events.reduce((acc, e) => {
+                        const t = new Date(e.badgedAt)
+                        return !acc || t > acc ? t : acc
+                    }, null)
+                    return [u.id, latest]
+                } catch (e) {
+                    console.warn('Erreur last punch pour user', u.id, e)
+                    return [u.id, null]
+                }
+            }))
+            setLastPunchByUserId(Object.fromEntries(entries))
         } catch (e) {
             console.error(e)
             setError(e.message || 'Erreur de chargement')
@@ -58,15 +78,27 @@ function GererEquipe() {
     const ManageView = () => (
         <div>
             <h3 style={{ marginTop: 0 }}>Mon équipe</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
-                {teamMembers.map(u => (
-                    <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', border: '1px solid #eee', borderRadius: 8 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontWeight: 700 }}>{u.firstName} {u.lastName}</span>
-                            <span style={{ fontSize: 12, color: 'var(--color-second-text)' }}>{u.email}</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+                {teamMembers.map(u => {
+                    const lastPunch = lastPunchByUserId[u.id]
+                    const timeText = lastPunch ? lastPunch.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'
+                    const dateText = lastPunch ? lastPunch.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Aucun pointage'
+                    return (
+                        <div key={u.id} style={{ background: 'var(--color-primary)', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 14, display: 'flex', gap: 12, alignItems: 'center' }}>
+                            <img src={profilImg} alt="Profil" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 700 }}>{u.firstName} {u.lastName}</div>
+                                <div style={{ fontSize: 12, color: 'var(--color-second-text)' }}>{u.email}</div>
+                                <div style={{ marginTop: 8, display: 'flex', gap: 8, fontSize: 12 }}>
+                                    <span style={{ color: 'var(--color-second-text)' }}>Dernier pointage:</span>
+                                    <span style={{ fontWeight: 600 }}>{timeText}</span>
+                                    <span style={{ color: 'var(--color-second-text)' }}>•</span>
+                                    <span>{dateText}</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    )
+                })}
                 {teamMembers.length === 0 && (
                     <div style={{ color: 'var(--color-second-text)' }}>Votre équipe est vide</div>
                 )}
