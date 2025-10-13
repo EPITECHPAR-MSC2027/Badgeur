@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "dgSpecHash": "NGfK6lYYXqo=",
+  "dgSpecHash": "Hei9DJNzpSM=",
   "success": true,
   "projectFilePath": "C:\\Users\\mrand\\source\\repos\\EPITECHPAR-MSC2027\\Badgeur\\backend\\badgeur-backend.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\mrand\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.20\\microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\8.0.20\\microsoft.dotnet.ilcompiler.8.0.20.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.extensions.apidescription.server\\8.0.0\\microsoft.extensions.apidescription.server.8.0.0.nupkg.sha512",
