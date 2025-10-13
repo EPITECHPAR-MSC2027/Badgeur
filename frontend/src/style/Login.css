@@ -1,5 +1,5 @@
 /* ---- Arrière-plan ---- */
-body {
+.login-background {
   height: 100vh;
   margin: 0;
   display: flex;
@@ -19,7 +19,7 @@ body {
 }
 
 /* ---- Carte de connexion (glassmorphism) ---- */
-.login-form {
+.login-container {
   width: 380px;
   padding: 40px 32px;
   border-radius: 20px;
@@ -33,26 +33,13 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.login-form:hover {
+.login-container:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
 }
 
-/* ---- Avatar / icône ---- */
-.login-form .avatar {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-}
-
 /* ---- Titre ---- */
-.login-form h2 {
+.login-title {
   margin-bottom: 24px;
   font-weight: 600;
   letter-spacing: 1px;
@@ -60,12 +47,12 @@ body {
 }
 
 /* ---- Champs ---- */
-.form-group {
+.login-form-group {
   text-align: left;
   margin-bottom: 18px;
 }
 
-.form-group label {
+.login-label {
   display: block;
   margin-bottom: 6px;
   color: #e0e0e0;
@@ -73,23 +60,15 @@ body {
 }
 
 /* ---- Champs avec icônes ---- */
-.input-with-icon {
+.login-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-with-icon .icon {
-  position: absolute;
-  left: 12px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.2rem;
-}
-
-.input-with-icon input,
-.password-input input {
+.login-input {
   width: 100%;
-  padding: 12px 40px 12px 40px;
+  padding: 12px 40px 12px 12px;
   border: none;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.15);
@@ -97,17 +76,23 @@ body {
   font-size: 1rem;
   outline: none;
   transition: all 0.3s ease;
+  padding-left: 40px !important; /* Pour laisser de la place à l'icône */
 }
 
-.input-with-icon input::placeholder,
-.password-input input::placeholder {
+.login-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.input-with-icon input:focus,
-.password-input input:focus {
+.login-input:focus {
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
 }
 
 /* ---- Mot de passe ---- */
@@ -121,23 +106,27 @@ body {
   align-items: center;
 }
 
-.password-toggle {
+.login-password-toggle {
   position: absolute;
-  top: 50%;
   right: 12px;
-  transform: translateY(-50%);
-  cursor: pointer;
+  background: transparent;
+  border: none;
   color: #fff;
+  cursor: pointer;
   font-size: 1.2rem;
-  transition: color 0.3s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.password-toggle:hover {
-  color: #dcdcdc;
+.login-password-toggle svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* ---- Options et liens ---- */
-.login-form .options {
+.login-container .options {
   display: flex;
   justify-content: space-between;
   margin-top: 12px;
@@ -145,18 +134,18 @@ body {
   color: #ccc;
 }
 
-.login-form .options a {
+.login-container .options a {
   color: #f5f5f5;
   text-decoration: none;
   transition: color 0.3s;
 }
 
-.login-form .options a:hover {
+.login-container .options a:hover {
   color: #ddd;
 }
 
 /* ---- Bouton ---- */
-button {
+.login-submit-button {
   width: 100%;
   padding: 14px;
   background: linear-gradient(135deg, #4a4a4a, #6e6e6e);
@@ -168,10 +157,29 @@ button {
   cursor: pointer;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  margin-top: 20px;
 }
 
-button:hover {
+.login-submit-button:hover {
   transform: translateY(-2px);
   background: linear-gradient(135deg, #707070, #8d8d8d);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Avatar ---- */
+.login-avatar {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+}
+
+.login-avatar svg {
+    width: 40px;
+    height: 40px;
+    color: white;
 }
