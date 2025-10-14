@@ -79,7 +79,7 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
-            // Update user retrieved from database with the new desired information
+            // Update the user retrieved from the database with the new desired information
             user.FirstName = updateUserRequest.FirstName;
             user.LastName = updateUserRequest.LastName;
             user.Telephone = updateUserRequest.Telephone;
