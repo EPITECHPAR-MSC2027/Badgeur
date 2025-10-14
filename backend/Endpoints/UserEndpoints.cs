@@ -63,6 +63,16 @@ namespace badgeur_backend.Endpoints
 
                 return Results.NoContent();
             }).WithDescription("Delete a user by their ID.");
+
+            group.MapGet("/{teamId:long}/team", async (long teamId, UserService userService) =>
+            {
+                var users = await userService.GetUsersByTeamIdAsync(teamId);
+
+                if (!users.Any()) return Results.NotFound("No users found for the specified team.");
+
+                return Results.Ok(users);
+            }).WithDescription("Retrieve users by their team ID.");
+
         }
     }
 }
