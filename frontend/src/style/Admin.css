@@ -149,3 +149,15 @@
     outline: none;
     border-color: var(--color-third);
 }
+
+.filter-group input[type="date"] {
+    padding: 8px;
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-group input[type="date"]:focus {
+    outline: none;
+    border-color: var(--color-third);
+}
