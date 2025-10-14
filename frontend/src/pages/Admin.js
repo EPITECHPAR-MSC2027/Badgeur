@@ -23,6 +23,15 @@ function Admin() {
 
     const [activeSection, setActiveSection] = useState('users'); // nouvelle état pour la navigation
 
+    const [filters, setFilters] = useState({
+        roleId: '',
+        teamId: '',
+    });
+    const [sortConfig, setSortConfig] = useState({
+        key: 'lastName',
+        direction: 'asc'
+    });
+
     // Charger les utilisateurs
     useEffect(() => {
         fetchUsers();
@@ -199,6 +208,25 @@ function Admin() {
         });
     };
 
+    const handleSort = (key) => {
+        setSortConfig(prevConfig => ({
+            key,
+            direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const filteredAndSortedUsers = users
+        .filter(user => {
+            return (filters.roleId === '' || user.roleId === Number(filters.roleId)) &&
+                   (filters.teamId === '' || user.teamId === Number(filters.teamId));
+        })
+        .sort((a, b) => {
+            if (sortConfig.direction === 'asc') {
+                return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
+            }
+            return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
+        });
+
     return (
         <div className="App">
             <header className="App-header">
@@ -283,23 +311,71 @@ function Admin() {
 
                         <div className="admin-table-container">
                             <h2>Liste des utilisateurs</h2>
-                            {users.length === 0 ? (
-                                <div>Aucun utilisateur</div>
+                            
+                            {/* Ajoutez cette section de filtres */}
+                            <div className="filters-container">
+                                <div className="filter-group">
+                                    <label>Filtrer par rôle :</label>
+                                    <select
+                                        value={filters.roleId}
+                                        onChange={(e) => setFilters({...filters, roleId: e.target.value})}
+                                    >
+                                        <option value="">Tous les rôles</option>
+                                        <option value="0">Utilisateur</option>
+                                        <option value="1">Manager</option>
+                                        <option value="2">Administrateur</option>
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>Filtrer par équipe :</label>
+                                    <select
+                                        value={filters.teamId}
+                                        onChange={(e) => setFilters({...filters, teamId: e.target.value})}
+                                    >
+                                        <option value="">Toutes les équipes</option>
+                                        {teams.map(team => (
+                                            <option key={team.id} value={team.id}>{team.teamName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="filter-group">
+                                    <label>Trier par :</label>
+                                    <select
+                                        value={`${sortConfig.key}-${sortConfig.direction}`}
+                                        onChange={(e) => {
+                                            const [key, direction] = e.target.value.split('-');
+                                            setSortConfig({ key, direction });
+                                        }}
+                                    >
+                                        <option value="lastName-asc">Nom (A-Z)</option>
+                                        <option value="lastName-desc">Nom (Z-A)</option>
+                                        <option value="firstName-asc">Prénom (A-Z)</option>
+                                        <option value="firstName-desc">Prénom (Z-A)</option>
+                                        <option value="email-asc">Email (A-Z)</option>
+                                        <option value="email-desc">Email (Z-A)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {filteredAndSortedUsers.length === 0 ? (
+                                <div>Aucun utilisateur correspondant aux filtres</div>
                             ) : (
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Prénom</th>
-                                            <th>Nom</th>
-                                            <th>Email</th>
-                                            <th>Téléphone</th>
+                                            <th onClick={() => handleSort('firstName')}>Prénom</th>
+                                            <th onClick={() => handleSort('lastName')}>Nom</th>
+                                            <th onClick={() => handleSort('email')}>Email</th>
+                                            <th onClick={() => handleSort('telephone')}>Téléphone</th>
                                             <th>Équipe</th>
-                                            <th>Rôle</th>
+                                            <th onClick={() => handleSort('roleId')}>Rôle</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {users.map(user => (
+                                        {filteredAndSortedUsers.map(user => (
                                             <tr key={user.id}>
                                                 <td>{user.firstName}</td>
                                                 <td>{user.lastName}</td>
@@ -368,22 +444,48 @@ function Admin() {
                                         <tr>
                                             <th>ID</th>
                                             <th>Nom</th>
-                                            <th>ManagerId</th>
+                                            <th>Manager</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {teams.map(team => (
-                                            <tr key={team.id}>
-                                                <td>{team.id}</td>
-                                                <td>{team.teamName}</td>
-                                                <td>{team.managerId}</td>
-                                                <td>
-                                                    <button onClick={() => { setEditingTeam(team); setTeamForm({ teamName: team.teamName || '', managerId: String(team.managerId ?? '') }); }}>Changer manager</button>
-                                                    <button onClick={() => handleDeleteTeam(team.id)}>Supprimer</button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {teams.map(team => {
+                                            // Trouve le manager correspondant dans la liste des utilisateurs
+                                            const manager = users.find(user => user.id === team.managerId);
+                                            
+                                            return (
+                                                <tr key={team.id}>
+                                                    <td>{team.id}</td>
+                                                    <td>{team.teamName}</td>
+                                                    <td>
+                                                        {manager 
+                                                            ? `${manager.firstName} ${manager.lastName}`
+                                                            : 'Aucun manager'
+                                                        }
+                                                    </td>
+                                                    <td className="action-buttons">
+                                                        <button 
+                                                            className="btn-edit"
+                                                            onClick={() => {
+                                                                setEditingTeam(team);
+                                                                setTeamForm({
+                                                                    teamName: team.teamName || '',
+                                                                    managerId: String(team.managerId ?? '')
+                                                                });
+                                                            }}
+                                                        >
+                                                            Changer manager
+                                                        </button>
+                                                        <button 
+                                                            className="btn-delete"
+                                                            onClick={() => handleDeleteTeam(team.id)}
+                                                        >
+                                                            Supprimer
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             )}
