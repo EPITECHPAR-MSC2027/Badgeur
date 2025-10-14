@@ -12,6 +12,7 @@ import Profil from './pages/Profil'
 import ParamTre from './pages/Parametre'
 import Login from './pages/Login'
 import GererEquipe from './pages/GererEquipe'
+import Analytics from './pages/Analytics'
 import authService from './services/authService'
 import Admin from './pages/Admin';
 
@@ -47,6 +48,8 @@ function App() {
         return <ParamTre />
       case 'gererEquipe':
         return <GererEquipe />
+      case 'analytics':
+        return <Analytics />
       case 'admin':
         // Vérifier que seuls les admins peuvent accéder à cette page
         return roleId === 2 ? <Admin /> : <Home />;

@@ -81,6 +81,7 @@ import authService from '../services/authService'
                 </div>
 
                 <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
+                <button onClick={() => onNavigate('analytics')} style={{ ...buttonStyle, ...isActive('analytics') }}>Analytics</button>
                 <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
                 <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
                 <button style={buttonStyle} onClick={handleLogout}>Déconnexion</button>
