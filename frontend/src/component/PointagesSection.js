@@ -39,7 +39,6 @@ function PointagesSection() {
 
     const fetchPointages = async () => {
         try {
-            // Backend has: GET /badgeLogEvent (all) and GET /badgeLogEvent/user/{userId}
             let response;
             if (filters.userId) {
                 response = await authService.get(`/badgeLogEvent/user/${filters.userId}`);
@@ -50,7 +49,6 @@ function PointagesSection() {
             if (!response.ok) throw new Error('Erreur lors du chargement des pointages');
             const data = await response.json();
 
-            // Client-side date filtering since backend does not expose range endpoint
             const start = new Date(filters.startDate);
             start.setHours(0, 0, 0, 0);
             const end = new Date(filters.endDate);
@@ -77,22 +75,15 @@ function PointagesSection() {
         }
     };
 
-    const buildBadgedAt = (dateStr, timeStr) => {
-        // Combine date (yyyy-mm-dd) and time (HH:MM) into ISO string local
-        const [year, month, day] = dateStr.split('-').map(Number);
-        const [hour, minute] = timeStr.split(':').map(Number);
-        const d = new Date();
-        d.setFullYear(year);
-        d.setMonth(month - 1);
-        d.setDate(day);
-        d.setHours(hour, minute, 0, 0);
-        return d.toISOString();
+    const buildBadgedAtLocalString = (dateStr, timeStr) => {
+        const normalizedTime = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+        return `${dateStr}T${normalizedTime}`;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const badgedAtIso = buildBadgedAt(form.date, form.time);
-        const payload = { BadgedAt: badgedAtIso, UserId: Number(form.userId) };
+        const badgedAtLocal = buildBadgedAtLocalString(form.date, form.time);
+        const payload = { BadgedAt: badgedAtLocal, UserId: Number(form.userId) };
         try {
             let response;
             if (editing) {
@@ -110,11 +101,13 @@ function PointagesSection() {
         }
     };
 
-    const startEdit = (p) => {
+    const startEditById = (id) => {
+        const p = pointages.find(evt => evt.id === id);
+        if (!p) return;
         const d = new Date(p.badgedAt);
         const date = d.toISOString().split('T')[0];
-        const time = d.toTimeString().slice(0,5);
-        setEditing({ id: p.id });
+        const time = d.toTimeString().slice(0, 5);
+        setEditing({ id });
         setForm({ date, time, userId: String(p.userId) });
     };
 
@@ -181,13 +174,13 @@ function PointagesSection() {
                     </tr>
                 </thead>
                 <tbody>
-                    {pointageRows.map((row, idx) => (
+                    {pointageRows.map((row) => (
                         <tr key={row.id}>
                             <td>{row.dateText}</td>
                             <td>{row.timeText}</td>
                             <td>{row.userText}</td>
                             <td className="action-buttons">
-                                <button className="btn-edit" onClick={() => startEdit(pointages[idx])}>Modifier</button>
+                                <button className="btn-edit" onClick={() => startEditById(row.id)}>Modifier</button>
                                 <button className="btn-delete" onClick={() => handleDeletePointage(row.id)}>Supprimer</button>
                             </td>
                         </tr>
