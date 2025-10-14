@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import '../style/Login.css';
+import primeBankLogo from '../assets/primebank.png';
+import icon from '../assets/icon.png';
+import person from '../assets/person-icon.svg';
+import emailIcon from '../assets/email.svg';
+import lockIcon from '../assets/lock.svg';
 
 function Login({ onSubmit }) {
     const [email, setEmail] = useState('');
@@ -34,55 +39,67 @@ function Login({ onSubmit }) {
 
     return (
         <div className="login-background">
-        <div className="login-page">
-            <div className="login-container">
-                <h1 className="login-title">Connexion</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="login-form-group">
-                        <label className="login-label">Email</label>
-                        <div className="login-input-wrapper">
-                            <input
-                                className="login-input"
-                                type="email"
-                                placeholder="nom@exemple.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+            <div className="app-header">
+                <div className="header-brand">
+                    <img src={icon} alt="Icon" className="header-icon" />
+                    <span className="header-title">Badgeur</span>
+                </div>
+            </div>
+            <div className="login-page">
+                <img 
+                    src={primeBankLogo} 
+                    alt="PrimeBank Logo" 
+                    className="login-logo" 
+                />
+                <div className="login-container">
+                    <img src={person} alt="Person Icon" className="login-person-icon"/>
+                    <h1 className="login-title">Veuillez vous connecter à votre compte</h1>
+                    <form onSubmit={handleSubmit}>
+                        <div className="login-form-group">
+                            <label className="login-label">Email</label>
+                            <div className="login-input-wrapper">
+                                <img src={emailIcon} alt="Email" className="login-input-icon" />
+                                <input
+                                    className="login-input"
+                                    type="email"
+                                    placeholder="nom@exemple.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="login-form-group">
-                        <label className="login-label">Mot de passe</label>
-                        <div className="login-input-wrapper">
-                            <input
-                                className="login-input"
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="Votre mot de passe"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="login-password-toggle"
-                                onClick={() => setShowPassword(v => !v)}
-                                aria-label="Afficher/masquer le mot de passe"
-                            >
-                                {showPassword ? '🙈' : '👁️'}
-                            </button>
+                        <div className="login-form-group">
+                            <label className="login-label">Mot de passe</label>
+                            <div className="login-input-wrapper">
+                                <img src={lockIcon} alt="Password" className="login-input-icon" />
+                                <input
+                                    className="login-input"
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Votre mot de passe"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="login-password-toggle"
+                                    onClick={() => setShowPassword(v => !v)}
+                                    aria-label="Afficher/masquer le mot de passe"
+                                >
+                                    {showPassword ? '🙈' : '👁️'}
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <button type="submit" className="login-submit-button">
-                        Se connecter
-                    </button>
-                </form>
+                        <button type="submit" className="login-submit-button">
+                            Se connecter
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-
-        </div>
-
     );
 }
 
