@@ -31,9 +31,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<BadgeLogEvent>().Get();
 
-
             return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
-
         }
 
         public async Task<BadgeLogEventResponse?> GetBadgeLogEventByIdAsync(long id)
