@@ -11,6 +11,6 @@
 ## ⚛️ Frontend (React)
 - Lancer l’interface
   ```bash
-  cd frontend
+  cd frontend && npm install chart.js
   npm start
 

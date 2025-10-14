@@ -12,6 +12,7 @@ function Analytics() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [analyticsData, setAnalyticsData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const months = [
         'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -26,76 +27,134 @@ function Analytics() {
 
     const fetchAnalyticsData = async () => {
         setLoading(true);
+        setError(null);
         try {
-            // Fetch user's KPI data and badge events for the selected period
-            const [kpiResponse, eventsResponse] = await Promise.all([
-                authService.get('/userKPI'),
-                authService.get('/badgeLogEvent')
-            ]);
-
-            if (kpiResponse.ok && eventsResponse.ok) {
-                const kpiData = await kpiResponse.json();
-                const events = await eventsResponse.json();
-                
-                // Filter events for selected month/year
-                const filteredEvents = events.filter(event => {
-                    const eventDate = new Date(event.badgedAt);
-                    return eventDate.getMonth() + 1 === selectedMonth && 
-                           eventDate.getFullYear() === selectedYear;
-                });
-
-                setAnalyticsData({
-                    kpi: kpiData,
-                    events: filteredEvents,
-                    month: selectedMonth,
-                    year: selectedYear
-                });
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                setError('Utilisateur non connecté');
+                setLoading(false);
+                return;
             }
-        } catch (error) {
-            console.error('Erreur lors du chargement des données:', error);
+
+            console.log('Fetching analytics for userId:', userId);
+
+            // Fetch user's KPI data and badge events for the selected period
+            const kpiResponse = await authService.get('/kpis/me');
+            const eventsResponse = await authService.get(`/badgeLogEvent/user/${userId}`);
+
+            let kpiData = null;
+            let events = [];
+
+            // Handle KPI response
+            if (kpiResponse.status === 404) {
+                console.log('No KPI data found');
+                kpiData = null;
+            } else if (kpiResponse.ok) {
+                kpiData = await kpiResponse.json();
+                console.log('KPI data:', kpiData);
+            } else {
+                console.error('Error fetching KPI:', kpiResponse.status);
+            }
+
+            // Handle events response
+            if (eventsResponse.status === 404) {
+                console.log('No events found');
+                events = [];
+            } else if (eventsResponse.ok) {
+                const allEvents = await eventsResponse.json();
+                events = Array.isArray(allEvents) ? allEvents : [];
+                console.log('All events:', events);
+            } else {
+                console.error('Error fetching events:', eventsResponse.status);
+            }
+
+            // Filter events for selected month/year
+            const filteredEvents = events.filter(event => {
+                const eventDate = new Date(event.badgedAt);
+                return eventDate.getMonth() + 1 === selectedMonth && 
+                       eventDate.getFullYear() === selectedYear;
+            });
+
+            console.log('Filtered events for', months[selectedMonth - 1], selectedYear, ':', filteredEvents);
+
+            setAnalyticsData({
+                kpi: kpiData,
+                events: filteredEvents,
+                month: selectedMonth,
+                year: selectedYear
+            });
+        } catch (err) {
+            console.error('Erreur lors du chargement des données:', err);
+            setError(err.message || 'Erreur lors du chargement des données');
+            setAnalyticsData({
+                kpi: null,
+                events: [],
+                month: selectedMonth,
+                year: selectedYear
+            });
         } finally {
             setLoading(false);
         }
     };
 
     const handleExport = () => {
-        // TODO: Implement export functionality
         console.log('Export analytics data');
     };
 
     const calculateKPIs = () => {
         if (!analyticsData) return {};
 
-        const { events } = analyticsData;
+        const { kpi, events } = analyticsData;
         
-        // Calculate daily hours for each day
-        const dailyHours = {};
-        events.forEach(event => {
-            const date = new Date(event.badgedAt).toDateString();
-            if (!dailyHours[date]) dailyHours[date] = [];
-            dailyHours[date].push(new Date(event.badgedAt));
-        });
+        let avgDailyHours = 0;
+        let avgWeeklyHours = 0;
+        let presenceRate = 0;
+        let absenceRate = 0;
 
-        // Calculate presence rate and hours
-        const workingDays = Object.keys(dailyHours).length;
-        const totalHours = Object.values(dailyHours).reduce((total, dayEvents) => {
-            if (dayEvents.length < 2) return total;
-            // Sort by time and calculate hours between first and last punch
-            const sorted = dayEvents.sort((a, b) => a - b);
-            const hours = (sorted[sorted.length - 1] - sorted[0]) / (1000 * 60 * 60);
-            return total + Math.max(0, hours);
-        }, 0);
+        if (kpi && kpi.raw14) {
+            try {
+                // Parse raw14 (format "HH:mm")
+                const timeParts = kpi.raw14.split(':');
+                if (timeParts.length === 2) {
+                    const hours = parseInt(timeParts[0], 10);
+                    const minutes = parseInt(timeParts[1], 10);
+                    avgDailyHours = hours + (minutes / 60);
+                    avgWeeklyHours = avgDailyHours * 5;
+                }
+            } catch (e) {
+                console.error('Error parsing raw14:', e);
+                avgDailyHours = 0;
+            }
+        }
 
-        const avgDailyHours = workingDays > 0 ? totalHours / workingDays : 0;
-        const avgWeeklyHours = avgDailyHours * 5; // Assuming 5-day work week
-        const presenceRate = workingDays > 0 ? (workingDays / 22) * 100 : 0; // Assuming 22 working days per month
+        // Calculate presence rate from events
+        const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
+        const totalDaysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+        presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
+        absenceRate = 100 - presenceRate;
+
+        // Parse times safely
+        const formatTime = (timeStr) => {
+            if (!timeStr) return 'N/A';
+            try {
+                const date = new Date(timeStr);
+                return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            } catch {
+                return timeStr;
+            }
+        };
 
         return {
-            teamSize: 1, // For individual analytics
+            teamSize: 1,
             avgDailyHours: avgDailyHours.toFixed(1),
             avgWeeklyHours: avgWeeklyHours.toFixed(1),
             presenceRate: presenceRate.toFixed(1),
-            absenceRate: (100 - presenceRate).toFixed(1)
+            absenceRate: absenceRate.toFixed(1),
+            raat14: kpi?.raat14 ? formatTime(kpi.raat14) : 'N/A',
+            radt14: kpi?.radt14 ? formatTime(kpi.radt14) : 'N/A',
+            raw14: kpi?.raw14 || 'N/A',
+            raw28: kpi?.raw28 || 'N/A'
         };
     };
 
@@ -140,6 +199,14 @@ function Analytics() {
 
             {loading ? (
                 <div className="loading">Chargement des données...</div>
+            ) : error ? (
+                <div className="error-message">
+                    <h3>⚠️ Erreur</h3>
+                    <p>{error}</p>
+                    <button onClick={fetchAnalyticsData} className="retry-btn">
+                        🔄 Réessayer
+                    </button>
+                </div>
             ) : (
                 <>
                     <div className="kpi-grid">
@@ -164,36 +231,40 @@ function Analytics() {
                             description={`${kpis.absenceRate}% d'absence`}
                         />
                         <KPICard 
-                            title="Comparaison équipe" 
-                            value="92%"
-                            description="Équipe : 88%"
-                            comparison="positive"
+                            title="Heure d'arrivée" 
+                            value={kpis.raat14}
+                            description="Moyenne 14 jours"
                         />
                         <KPICard 
-                            title="Objectif contractuel" 
-                            value="37h"
-                            description="Contrat : 35h"
-                            comparison="positive"
+                            title="Heure de départ" 
+                            value={kpis.radt14}
+                            description="Moyenne 14 jours"
                         />
                     </div>
 
-                    <div className="charts-section">
-                        <div className="chart-container">
-                            <h3>Taux de présence mensuel</h3>
-                            <PresenceChart data={analyticsData?.events} />
+                    {analyticsData?.events && analyticsData.events.length > 0 ? (
+                        <div className="charts-section">
+                            <div className="chart-container">
+                                <h3>Taux de présence mensuel</h3>
+                                <PresenceChart data={analyticsData.events} />
+                            </div>
+                            <div className="chart-container">
+                                <h3>Heures hebdomadaires</h3>
+                                <WeeklyHoursChart data={analyticsData.events} />
+                            </div>
                         </div>
-                        <div className="chart-container">
-                            <h3>Heures hebdomadaires</h3>
-                            <WeeklyHoursChart data={analyticsData?.events} />
+                    ) : (
+                        <div className="no-data-message">
+                            <p>Aucune donnée disponible pour cette période</p>
                         </div>
-                    </div>
+                    )}
 
                     <div className="calendar-section">
                         <h3>Calendrier de présence</h3>
                         <HeatmapCalendar 
                             month={selectedMonth} 
                             year={selectedYear} 
-                            data={analyticsData?.events} 
+                            data={analyticsData?.events || []} 
                         />
                     </div>
                 </>

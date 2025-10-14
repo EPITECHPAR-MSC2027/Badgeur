@@ -136,6 +136,47 @@
     font-size: 16px;
 }
 
+.error-message {
+    text-align: center;
+    padding: 40px;
+    background: var(--color-primary);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.error-message h3 {
+    color: #e74c3c;
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.error-message p {
+    color: var(--color-second-text);
+    margin: 0 0 20px 0;
+    font-size: 16px;
+}
+
+.retry-btn {
+    background: var(--color-third);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: var(--color-secondary);
+    transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
     .charts-section {
         grid-template-columns: 1fr;
