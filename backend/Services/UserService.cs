@@ -128,7 +128,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<User>().Where(n => n.TeamId == teamId).Get();
 
-            return response.Models.Select(u => createUserResponse(u)).ToList();
+            return response.Models.Select(u => CreateUserResponse(u)).ToList();
         }
 
             
