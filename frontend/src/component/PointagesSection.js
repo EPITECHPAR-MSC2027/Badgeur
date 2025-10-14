@@ -110,11 +110,13 @@ function PointagesSection() {
         }
     };
 
-    const startEdit = (p) => {
+    const startEditById = (id) => {
+        const p = pointages.find(evt => evt.id === id);
+        if (!p) return;
         const d = new Date(p.badgedAt);
         const date = d.toISOString().split('T')[0];
-        const time = d.toTimeString().slice(0,5);
-        setEditing({ id: p.id });
+        const time = d.toTimeString().slice(0, 5);
+        setEditing({ id });
         setForm({ date, time, userId: String(p.userId) });
     };
 
@@ -181,13 +183,13 @@ function PointagesSection() {
                     </tr>
                 </thead>
                 <tbody>
-                    {pointageRows.map((row, idx) => (
+                    {pointageRows.map((row) => (
                         <tr key={row.id}>
                             <td>{row.dateText}</td>
                             <td>{row.timeText}</td>
                             <td>{row.userText}</td>
                             <td className="action-buttons">
-                                <button className="btn-edit" onClick={() => startEdit(pointages[idx])}>Modifier</button>
+                                <button className="btn-edit" onClick={() => startEditById(row.id)}>Modifier</button>
                                 <button className="btn-delete" onClick={() => handleDeletePointage(row.id)}>Supprimer</button>
                             </td>
                         </tr>

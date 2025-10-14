@@ -78,6 +78,7 @@ namespace badgeur_backend.Services
         {
             return new BadgeLogEventResponse
             {
+                Id = badgeLogEvent.Id,
                 BadgedAt = badgeLogEvent.BadgedAt,
                 UserId = badgeLogEvent.UserId
             };

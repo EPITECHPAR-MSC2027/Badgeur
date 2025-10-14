@@ -126,6 +126,26 @@ function Admin() {
         }
     };
 
+    const handleEditPointage = async (pointageId, updatedData) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/badgeLogEvent/${pointageId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+            
+            if (!response.ok) throw new Error('Erreur lors de la modification');
+            await fetchPointages();
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur lors de la modification du pointage');
+        }
+    };
+
+    // Passez la fonction handleEditPointage au composant PointagesSection
     return (
         <div className="App">
             <header className="App-header">
@@ -157,7 +177,10 @@ function Admin() {
                  ) : activeSection === 'teams' ? (
                      <TeamsSection />
                  ) : (
-                     <PointagesSection />
+                     <PointagesSection 
+                         onEditPointage={handleEditPointage}
+                         onDeletePointage={handleDeletePointage}
+                     />
                  )}
             </div>
         </div>
