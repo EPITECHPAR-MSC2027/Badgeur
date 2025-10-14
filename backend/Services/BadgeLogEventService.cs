@@ -18,7 +18,7 @@ namespace badgeur_backend.Services
         {
             var badgeLogEvent = new BadgeLogEvent
             {
-                BadgedAt = request.BadgedAt,
+                BadgedAt = DateTime.SpecifyKind(request.BadgedAt, DateTimeKind.Utc),
                 UserId = request.UserId
             };
 
