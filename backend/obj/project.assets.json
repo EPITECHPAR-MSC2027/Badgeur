@@ -21,7 +21,7 @@
           "Microsoft.AspNetCore.App"
         ]
       },
-      "Microsoft.DotNet.ILCompiler/8.0.20": {
+      "Microsoft.DotNet.ILCompiler/8.0.15": {
         "type": "package",
         "build": {
           "build/Microsoft.DotNet.ILCompiler.props": {}
@@ -181,7 +181,7 @@
           }
         }
       },
-      "Microsoft.NET.ILLink.Tasks/8.0.20": {
+      "Microsoft.NET.ILLink.Tasks/8.0.15": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.ILLink.Tasks.props": {}
@@ -509,10 +509,10 @@
         "microsoft.aspnetcore.authentication.jwtbearer.nuspec"
       ]
     },
-    "Microsoft.DotNet.ILCompiler/8.0.20": {
-      "sha512": "BnTvC6mpQ4rKzKzRpHb1M2SxsNGn6FiSa7xaJenuwXjmDqCAZWZg5noPnBtCqPTXYu8ng3FSIeVq9OY87bgLzw==",
+    "Microsoft.DotNet.ILCompiler/8.0.15": {
+      "sha512": "wMf2N7fJ846aKd73R5gqvtbyqu89/LywlWCtMyXUqKYc9DR3s9kUgNrLIsT9KeRwyinGFJDtRbiib0M4YBX6ZA==",
       "type": "package",
-      "path": "microsoft.dotnet.ilcompiler/8.0.20",
+      "path": "microsoft.dotnet.ilcompiler/8.0.15",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -531,7 +531,7 @@
         "build/NativeAOT.natvis",
         "build/WindowsAPIs.txt",
         "build/findvcvarsall.bat",
-        "microsoft.dotnet.ilcompiler.8.0.20.nupkg.sha512",
+        "microsoft.dotnet.ilcompiler.8.0.15.nupkg.sha512",
         "microsoft.dotnet.ilcompiler.nuspec",
         "runtime.json",
         "tools/netstandard/ILCompiler.Build.Tasks.deps.json",
@@ -862,10 +862,10 @@
         "microsoft.io.recyclablememorystream.nuspec"
       ]
     },
-    "Microsoft.NET.ILLink.Tasks/8.0.20": {
-      "sha512": "Rhcto2AjGvTO62+/VTmBpumBOmqIGp7nYEbTbmEXkCq4yPGxV8whju3/HsIA/bKyo2+DggaYk5+/8sxb1AbPTw==",
+    "Microsoft.NET.ILLink.Tasks/8.0.15": {
+      "sha512": "s4eXlcRGyHeCgFUGQnhq0e/SCHBPp0jOHgMqZg3fQ2OCHJSm1aOUhI6RFWuVIcEb9ig2WgI2kWukk8wu72EbUQ==",
       "type": "package",
-      "path": "microsoft.net.illink.tasks/8.0.20",
+      "path": "microsoft.net.illink.tasks/8.0.15",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -879,7 +879,7 @@
         "build/Microsoft.NET.ILLink.Analyzers.props",
         "build/Microsoft.NET.ILLink.Tasks.props",
         "build/Microsoft.NET.ILLink.targets",
-        "microsoft.net.illink.tasks.8.0.20.nupkg.sha512",
+        "microsoft.net.illink.tasks.8.0.15.nupkg.sha512",
         "microsoft.net.illink.tasks.nuspec",
         "tools/net472/ILLink.Tasks.dll",
         "tools/net472/ILLink.Tasks.dll.config",
@@ -1338,8 +1338,8 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.20",
-      "Microsoft.DotNet.ILCompiler >= 8.0.20",
-      "Microsoft.NET.ILLink.Tasks >= 8.0.20",
+      "Microsoft.DotNet.ILCompiler >= 8.0.15",
+      "Microsoft.NET.ILLink.Tasks >= 8.0.15",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.22.1",
       "Supabase >= 1.1.1",
       "Swashbuckle.AspNetCore >= 9.0.6"
@@ -1347,6 +1347,7 @@
   },
   "packageFolders": {
     "/Users/k7/.nuget/packages/": {}
+
   },
   "project": {
     "version": "1.0.0",
@@ -1359,6 +1360,7 @@
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/k7/.nuget/NuGet/NuGet.Config"
+
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -1394,13 +1396,13 @@
           "Microsoft.DotNet.ILCompiler": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[8.0.20, )",
+            "version": "[8.0.15, )",
             "autoReferenced": true
           },
           "Microsoft.NET.ILLink.Tasks": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[8.0.20, )",
+            "version": "[8.0.15, )",
             "autoReferenced": true
           },
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
@@ -1442,6 +1444,7 @@
           }
         },
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.414/PortableRuntimeIdentifierGraph.json"
+
       }
     }
   }

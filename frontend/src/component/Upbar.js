@@ -63,6 +63,13 @@ import authService from '../services/authService'
                     </button>
                 )}
 
+                {/* Afficher "Admin" uniquement pour les administrateurs */}
+                {roleId === 2 && (
+                    <button onClick={() => onNavigate('admin')} style={{ ...buttonStyle, ...isActive('admin') }}>
+                        Admin
+                    </button>
+                )}
+
                 <div className="dropdown" style={dropdownStyle}>
                     <button className="dropdown-toggle" onClick={() => setIsActionsOpen(v => !v)} style={{ ...buttonStyle, ...isActive('actions') }}>
                         Actions <span className="caret" style={caretStyle}>▼</span>

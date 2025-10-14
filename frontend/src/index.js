@@ -13,9 +13,11 @@ import ParamTre from './pages/Parametre'
 import Login from './pages/Login'
 import GererEquipe from './pages/GererEquipe'
 import authService from './services/authService'
+import Admin from './pages/Admin';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login')
+  const roleId = parseInt(localStorage.getItem('roleId'));
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'main'
@@ -45,6 +47,9 @@ function App() {
         return <ParamTre />
       case 'gererEquipe':
         return <GererEquipe />
+      case 'admin':
+        // Vérifier que seuls les admins peuvent accéder à cette page
+        return roleId === 2 ? <Admin /> : <Home />;
       default:
         return <Home />
     }
