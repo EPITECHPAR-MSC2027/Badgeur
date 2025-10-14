@@ -79,7 +79,7 @@ namespace badgeur_backend.Services
 
             if (user == null) return null;
 
-            // Update user retrieved from database with the new desired information
+            // Update the user retrieved from the database with the new desired information
             user.FirstName = updateUserRequest.FirstName;
             user.LastName = updateUserRequest.LastName;
             user.Telephone = updateUserRequest.Telephone;
@@ -123,5 +123,14 @@ namespace badgeur_backend.Services
 
             return false;
         }
+        
+        public async Task<List<UserResponse>> GetUsersByTeamIdAsync(long teamId)
+        {
+            var response = await _client.From<User>().Where(n => n.TeamId == teamId).Get();
+
+            return response.Models.Select(u => CreateUserResponse(u)).ToList();
+        }
+
+            
     }
 }

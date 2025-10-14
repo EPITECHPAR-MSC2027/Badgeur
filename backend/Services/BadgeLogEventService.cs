@@ -32,7 +32,7 @@ namespace badgeur_backend.Services
             var response = await _client.From<BadgeLogEvent>().Get();
 
 
-            return response.Models.Select(ble => createBadgeLogEventResponse(ble)).ToList();
+            return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
 
         }
 
@@ -43,14 +43,14 @@ namespace badgeur_backend.Services
 
             if (badgeLogEvent == null) return null;
 
-            return createBadgeLogEventResponse(badgeLogEvent);
+            return CreateBadgeLogEventResponse(badgeLogEvent);
         }
 
         public async Task<List<BadgeLogEventResponse>> GetBadgeLogEventsByUserIdAsync(long userId)
         {
             var response = await _client.From<BadgeLogEvent>().Where(n => n.UserId == userId).Get();
 
-            return response.Models.Select(ble => createBadgeLogEventResponse(ble)).ToList();
+            return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
         }
 
         public async Task DeleteBadgeLogEventAsync(long id)
@@ -58,7 +58,23 @@ namespace badgeur_backend.Services
             await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Delete();
         }
 
-        public BadgeLogEventResponse createBadgeLogEventResponse(BadgeLogEvent badgeLogEvent)
+        public async Task<BadgeLogEventResponse> UpdateBadgeLogEventAsync(long id, UpdateBadgeLogEventRequest updateBadgeLogEventRequest)
+        {
+            var request = await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Get();
+            var ble = request.Models.FirstOrDefault();
+
+            if (ble == null) return null;
+
+            // Update the badge log event retrieved from the database with the new desired information
+            ble.BadgedAt = updateBadgeLogEventRequest.BadgedAt;
+            ble.UserId = updateBadgeLogEventRequest.UserId;
+
+            request = await _client.From<BadgeLogEvent>().Update(ble);
+
+            return CreateBadgeLogEventResponse(ble);
+        }
+
+        public BadgeLogEventResponse CreateBadgeLogEventResponse(BadgeLogEvent badgeLogEvent)
         {
             return new BadgeLogEventResponse
             {

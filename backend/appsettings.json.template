@@ -7,7 +7,12 @@
   },
   "AllowedHosts": "*",
   "Supabase": {
-    "Url": "https://yoururl.supabase.co",
-    "Key": "yourkeyhere"
+    "Url": "https://yoururlhere.supabase.co",
+    "Key": "yourKeyHere"
+  },
+  "Authentication": {
+    "ValidIssuer": "https://yoururlhere.supabase.co",
+    "ValidAudience": "authenticated",
+    "JwtSecret": "yourJwtSecretHere"
   }
 }
