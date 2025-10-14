@@ -46,6 +46,17 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(badgeLogEvents);
             }).WithDescription("Retrieves all badge log events submitted by a user.");
 
+            group.MapPut("/{id:long}", async (long id, UpdateBadgeLogEventRequest request, BadgeLogEventService badgeLogEventService) =>
+            {
+                var updatedBadgeLogEvent = await badgeLogEventService.UpdateBadgeLogEventAsync(id, request);
+
+                if (updatedBadgeLogEvent == null)
+                    return Results.NotFound("Badge log event not found");
+
+                return Results.Ok(updatedBadgeLogEvent);
+
+            });
+
             group.MapDelete("/{id:long}", async (long id, BadgeLogEventService badgeLogEventService) =>
             {
                 await badgeLogEventService.DeleteBadgeLogEventAsync(id);
