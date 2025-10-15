@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../index.css'
 import icon from '../assets/icon.png'
 import authService from '../services/authService'
 
- function Upbar({ currentPage, onNavigate }) {
+function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
+    const navigate = useNavigate()
     const roleId = parseInt(localStorage.getItem('roleId'))
     const isActive = (page) => currentPage === page ? { textDecoration: 'underline' } : {}
 
@@ -41,54 +43,110 @@ import authService from '../services/authService'
 
     const caretStyle = { marginLeft: 6, fontSize: 12 }
 
+    const routeFor = (pageKey) => {
+        switch (pageKey) {
+            case 'home':
+                return '/home'
+            case 'gererEquipe':
+                return '/gerer-equipe'
+            case 'admin':
+                return '/admin'
+            case 'pointage':
+                return '/pointage'
+            case 'planning':
+                return '/planning'
+            case 'calendrier':
+                return '/calendrier'
+            case 'profil':
+                return '/profil'
+            case 'parameter':
+                return '/parametre'
+            case 'login':
+                return '/login'
+            default:
+                return '/'
+        }
+    }
+
+    const handleNavigate = (pageKey) => {
+        if (typeof onNavigate === 'function') {
+            onNavigate(pageKey)
+        } else {
+            navigate(routeFor(pageKey))
+        }
+    }
+
     const handleLogout = () => {
         authService.logout()
-        onNavigate('login')
+        handleNavigate('login')
     }
 
     return (
-        <div className="header">
-            <div style={{display: 'flex', alignItems: 'center', paddingLeft: 25}}>
-                <img src={icon} alt="Logo" style={{height: 55, width: 'auto'}}/>
-                <h1 style={{color:'var(--color-secondary)', fontWeight:'700', letterSpacing:'3px', paddingLeft:'10px'}}>BADGEUR</h1>
+        <div className="header" style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', padding: '10px 20px'}}>
+            {/* Logo + Titre */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={icon} alt="Logo" style={{ height: 55, width: 'auto' }} />
+                <h1 style={{ color: 'var(--color-secondary)', fontWeight: '700', letterSpacing: '3px', marginLeft: 10 }}>
+                    BADGEUR
+                </h1>
             </div>
 
-            <div style={{display: 'flex', alignItems: 'center', gap: 16, paddingRight: 16 }}>
-                <button onClick={() => onNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>Homepage</button>
+            {/* Navigation */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <button onClick={() => handleNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>
+                    Homepage
+                </button>
 
-                {/* Afficher "Gérer équipe" uniquement pour les managers */}
                 {roleId === 1 && (
-                    <button onClick={() => onNavigate('gererEquipe')} style={{ ...buttonStyle, ...isActive('gererEquipe') }}>
+                    <button onClick={() => handleNavigate('gererEquipe')} style={{ ...buttonStyle, ...isActive('gererEquipe') }}>
                         Gérer équipe
                     </button>
                 )}
 
-                {/* Afficher "Admin" uniquement pour les administrateurs */}
                 {roleId === 2 && (
-                    <button onClick={() => onNavigate('admin')} style={{ ...buttonStyle, ...isActive('admin') }}>
+                    <button onClick={() => handleNavigate('admin')} style={{ ...buttonStyle, ...isActive('admin') }}>
                         Admin
                     </button>
                 )}
 
+                {/* Dropdown Actions */}
                 <div className="dropdown" style={dropdownStyle}>
-                    <button className="dropdown-toggle" onClick={() => setIsActionsOpen(v => !v)} style={{ ...buttonStyle, ...isActive('actions') }}>
+                    <button
+                        className="dropdown-toggle"
+                        onClick={() => setIsActionsOpen(v => !v)}
+                        style={{ ...buttonStyle, ...isActive('actions') }}
+                    >
                         Actions <span className="caret" style={caretStyle}>▼</span>
                     </button>
+
                     <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
-                        <button style={buttonStyle} onClick={() => { onNavigate('pointage'); setIsActionsOpen(false) }}>Pointage</button>
-                        <button style={buttonStyle} onClick={() => { onNavigate('planning'); setIsActionsOpen(false) }}>Planning</button>
+                        <button style={buttonStyle} onClick={() => { handleNavigate('pointage'); setIsActionsOpen(false) }}>
+                            Pointage
+                        </button>
+                        <button style={buttonStyle} onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}>
+                            Planning
+                        </button>
                     </div>
                 </div>
 
-                <button onClick={() => onNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>Calendrier</button>
-                <button onClick={() => onNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>Profil</button>
-                <button onClick={() => onNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>Paramètres</button>
-                <button style={buttonStyle} onClick={handleLogout}>Déconnexion</button>
+                <button onClick={() => handleNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>
+                    Calendrier
+                </button>
+
+                <button onClick={() => handleNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>
+                    Profil
+                </button>
+
+                <button onClick={() => handleNavigate('parameter')} style={{ ...buttonStyle, ...isActive('parameter') }}>
+                    Paramètres
+                </button>
+
+                <button style={buttonStyle} onClick={handleLogout}>
+                    Déconnexion
+                </button>
             </div>
         </div>
     )
 }
 
 export default Upbar
-
-
