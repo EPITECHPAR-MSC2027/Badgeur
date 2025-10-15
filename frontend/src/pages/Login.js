@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';   // ✅ AJOUT IMPORTANT
 import '../style/Login.css';
 import primeBankLogo from '../assets/primebank.png';
 import icon from '../assets/icon.png';
@@ -11,6 +12,8 @@ function Login({ onSubmit }) {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
+    const navigate = useNavigate();   // ✅ HOOK NAVIGATION
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -21,8 +24,8 @@ function Login({ onSubmit }) {
             });
             if (!res.ok) throw new Error('Identifiants invalides');
             const data = await res.json();
-            
-            // Stocker les informations utilisateur dans localStorage
+
+            // ✅ Stocker les informations utilisateur dans localStorage
             localStorage.setItem('accessToken', data.accessToken);
             localStorage.setItem('refreshToken', data.refreshToken || '');
             localStorage.setItem('firstName', data.firstName);
@@ -30,8 +33,13 @@ function Login({ onSubmit }) {
             localStorage.setItem('roleId', data.roleId);
             localStorage.setItem('email', data.email);
             localStorage.setItem('userId', data.userId);
-            
+
+            // ✅ Appeler le callback si nécessaire
             if (onSubmit) onSubmit(data);
+
+            // ✅ Redirection vers /home
+            navigate('/home');
+
         } catch (err) {
             alert(err.message || 'Erreur de connexion');
         }
@@ -104,5 +112,3 @@ function Login({ onSubmit }) {
 }
 
 export default Login;
-
-
