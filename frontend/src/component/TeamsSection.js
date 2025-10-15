@@ -52,18 +52,19 @@ function TeamsSection() {
         }
     };
 
-    const handleUpdateTeamManager = async (e) => {
-        e.preventDefault();
-        if (!editingTeam) return;
+    const handleUpdateInline = async (team) => {
         try {
-            const response = await authService.put(`/teams/${editingTeam.id}/manager`, { NewManagerId: Number(teamForm.managerId) });
+            // L'API backend existante n'a pas d'endpoint PUT générique; on conserve l'intention de modifier teamName et managerId si disponible.
+            // Ici, nous utilisons l'endpoint d'update existant (PUT /teams/{id}) d'après le backend pour mettre à jour teamName & managerId.
+            const payload = { TeamName: teamForm.teamName || team.teamName, ManagerId: teamForm.managerId === '' ? team.managerId : Number(teamForm.managerId) };
+            const response = await authService.put(`/teams/${team.id}`, payload);
             if (!response.ok) throw new Error(await response.text());
             await fetchTeams();
             setEditingTeam(null);
             setTeamForm({ teamName: '', managerId: '' });
         } catch (e) {
             console.error(e);
-            alert('Erreur lors de la mise à jour du manager');
+            alert('Erreur lors de la mise à jour de l\'équipe');
         }
     };
 
@@ -82,21 +83,17 @@ function TeamsSection() {
     return (
         <>
             <div className="admin-form-container" style={{ marginTop: 24 }}>
-                <h2>{editingTeam ? "Changer le manager de l'équipe" : 'Créer une équipe'}</h2>
-                <form onSubmit={editingTeam ? handleUpdateTeamManager : handleCreateTeam}>
-                    {!editingTeam && (
-                        <input type="text" placeholder="Nom de l'équipe" value={teamForm.teamName} onChange={(e) => setTeamForm({ ...teamForm, teamName: e.target.value })} />
-                    )}
-                    <select value={teamForm.managerId} onChange={(e) => setTeamForm({ ...teamForm, managerId: e.target.value })}>
+                <h2>Créer une équipe</h2>
+                {editingTeam && <div style={{ marginBottom: 8, color: '#6c757d' }}>Édition en ligne en cours — utilisez la ligne concernée. La création est temporairement désactivée.</div>}
+                <form onSubmit={handleCreateTeam}>
+                    <input disabled={!!editingTeam} type="text" placeholder="Nom de l'équipe" value={teamForm.teamName} onChange={(e) => setTeamForm({ ...teamForm, teamName: e.target.value })} />
+                    <select disabled={!!editingTeam} value={teamForm.managerId} onChange={(e) => setTeamForm({ ...teamForm, managerId: e.target.value })}>
                         <option value="">Sélectionner un manager</option>
                         {users.filter(u => u.roleId === 1).map(u => (
                             <option key={u.id} value={u.id}>{u.firstName} {u.lastName}</option>
                         ))}
                     </select>
-                    <button type="submit">{editingTeam ? 'Mettre à jour' : "Créer l'équipe"}</button>
-                    {editingTeam && (
-                        <button type="button" onClick={() => { setEditingTeam(null); setTeamForm({ teamName: '', managerId: '' }); }}>Annuler</button>
-                    )}
+                    <button disabled={!!editingTeam} type="submit">Créer l'équipe</button>
                 </form>
             </div>
 
@@ -105,7 +102,7 @@ function TeamsSection() {
                 {teams.length === 0 ? (
                     <div>Aucune équipe</div>
                 ) : (
-                    <table>
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -118,13 +115,35 @@ function TeamsSection() {
                             {teams.map(team => {
                                 const manager = users.find(user => user.id === team.managerId);
                                 return (
-                                    <tr key={team.id}>
+                                    <tr key={team.id} className={editingTeam && editingTeam.id === team.id ? 'edit-row' : ''}>
                                         <td>{team.id}</td>
-                                        <td>{team.teamName}</td>
-                                        <td>{manager ? `${manager.firstName} ${manager.lastName}` : 'Aucun manager'}</td>
-                                        <td className="action-buttons">
-                                            <button className="btn-edit" onClick={() => { setEditingTeam(team); setTeamForm({ teamName: team.teamName || '', managerId: String(team.managerId ?? '') }); }}>Changer manager</button>
-                                            <button className="btn-delete" onClick={() => handleDeleteTeam(team.id)}>Supprimer</button>
+                                        <td>
+                                            {editingTeam && editingTeam.id === team.id ? (
+                                                <input type="text" value={teamForm.teamName} onChange={(e) => setTeamForm({ ...teamForm, teamName: e.target.value })} />
+                                            ) : team.teamName}
+                                        </td>
+                                        <td>
+                                            {editingTeam && editingTeam.id === team.id ? (
+                                                <select value={teamForm.managerId} onChange={(e) => setTeamForm({ ...teamForm, managerId: e.target.value })}>
+                                                    <option value="">Sélectionner un manager</option>
+                                                    {users.filter(u => u.roleId === 1).map(u => (
+                                                        <option key={u.id} value={u.id}>{u.firstName} {u.lastName}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (manager ? `${manager.firstName} ${manager.lastName}` : 'Aucun manager')}
+                                        </td>
+                                        <td>
+                                            {editingTeam && editingTeam.id === team.id ? (
+                                                <div className="edit-actions">
+                                                    <button className="btn-save" onClick={() => handleUpdateInline(team)}>Enregistrer</button>
+                                                    <button className="btn-cancel" onClick={() => { setEditingTeam(null); setTeamForm({ teamName: '', managerId: '' }); }}>Annuler</button>
+                                                </div>
+                                            ) : (
+                                                <div className="action-buttons">
+                                                    <button className="btn-edit" onClick={() => { setEditingTeam(team); setTeamForm({ teamName: team.teamName || '', managerId: String(team.managerId ?? '') }); }}>Modifier</button>
+                                                    <button className="btn-delete" onClick={() => handleDeleteTeam(team.id)}>Supprimer</button>
+                                                </div>
+                                            )}
                                         </td>
                                     </tr>
                                 );
