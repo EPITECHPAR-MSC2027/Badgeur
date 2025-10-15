@@ -1,4 +1,5 @@
 ﻿using badgeur_backend.Services;
+using badgeur_backend.Models;
 using Supabase;
 
 namespace badgeur_backend.Endpoints
@@ -21,7 +22,7 @@ namespace badgeur_backend.Endpoints
 
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
-                var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email);
+                var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
                 
                 if (connectedUser == null)
                 {
@@ -32,7 +33,24 @@ namespace badgeur_backend.Endpoints
 
                 if (userKPIs == null) return Results.NotFound("Failed to calcuate KPIs. Contact an administrator.");
 
-                return Results.Ok(userKPIs);
+                // Enrichir avec les KPIs sur 7 jours, calculés à la volée
+                var response = new UserKPIResponse
+                {
+                    Id = userKPIs.Id,
+                    UserId = userKPIs.UserId,
+                    Raat14 = userKPIs.Raat14,
+                    Raat28 = userKPIs.Raat28,
+                    Radt14 = userKPIs.Radt14,
+                    Radt28 = userKPIs.Radt28,
+                    Raw14 = userKPIs.Raw14,
+                    Raw28 = userKPIs.Raw28,
+                    // Valeurs 7 jours (avec gestion des cas insuffisants)
+                    Raat7 = await userKPIService.CalculateRollingAverageArrivalTime(connectedUser.Id, UserKPIService.Period.ONE_WEEK),
+                    Radt7 = await userKPIService.CalculateRollingAverageDepartureTime(connectedUser.Id, UserKPIService.Period.ONE_WEEK),
+                    Raw7 = await userKPIService.CalculateRollingAverageWorkingHours(connectedUser.Id, UserKPIService.Period.ONE_WEEK)
+                };
+
+                return Results.Ok(response);
             }).WithDescription("Retrieve KPIs for the authenticated user." +
             "Always calculates KPIs upon being called. If there is already a database entry for a User, it will update it. Otherwise it will create it.");
 
@@ -48,7 +66,7 @@ namespace badgeur_backend.Endpoints
 
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
-                var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email);
+                var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
                 
                 if (connectedUser == null)
                 {
@@ -60,14 +78,29 @@ namespace badgeur_backend.Endpoints
                 // TODO: Ajouter la logique pour les managers/admins
                 if (connectedUser.Id != userId)
                 {
-                    return Results.Forbid("Vous ne pouvez accéder qu'à vos propres KPIs.");
+                    return Results.Forbid();
                 }
 
                 var userKPIs = await userKPIService.CalculateAllUserKPIs(userId);
 
                 if (userKPIs == null) return Results.NotFound("Failed to calcuate KPIs. Contact an administrator.");
 
-                return Results.Ok(userKPIs);
+                var response = new UserKPIResponse
+                {
+                    Id = userKPIs.Id,
+                    UserId = userKPIs.UserId,
+                    Raat14 = userKPIs.Raat14,
+                    Raat28 = userKPIs.Raat28,
+                    Radt14 = userKPIs.Radt14,
+                    Radt28 = userKPIs.Radt28,
+                    Raw14 = userKPIs.Raw14,
+                    Raw28 = userKPIs.Raw28,
+                    Raat7 = await userKPIService.CalculateRollingAverageArrivalTime(userId, UserKPIService.Period.ONE_WEEK),
+                    Radt7 = await userKPIService.CalculateRollingAverageDepartureTime(userId, UserKPIService.Period.ONE_WEEK),
+                    Raw7 = await userKPIService.CalculateRollingAverageWorkingHours(userId, UserKPIService.Period.ONE_WEEK)
+                };
+
+                return Results.Ok(response);
             }).WithDescription("Retrieve KPIs for a specific user. Users can only access their own KPIs." +
             "Always calculates KPIs upon being called. If there is already a database entry for a User, it will update it. Otherwise it will create it.");
         }

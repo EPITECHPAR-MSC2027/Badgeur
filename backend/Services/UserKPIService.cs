@@ -12,6 +12,7 @@ namespace badgeur_backend.Services
         // Allows us to calculate the two different variants of each KPI
         public enum Period
         {
+            ONE_WEEK = 7,
             TWO_WEEKS = 14,
             FOUR_WEEKS = 28
         };

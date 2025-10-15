@@ -112,10 +112,11 @@ function Analytics() {
         let presenceRate = 0;
         let absenceRate = 0;
 
-        if (kpi && kpi.raw14) {
+        if (kpi && (kpi.raw7 || kpi.raw14)) {
             try {
-                // Parse raw14 (format "HH:mm")
-                const timeParts = kpi.raw14.split(':');
+                // Parse raw7 if available, else raw14 (format "HH:mm")
+                const sourceRaw = kpi.raw7 || kpi.raw14;
+                const timeParts = sourceRaw.split(':');
                 if (timeParts.length === 2) {
                     const hours = parseInt(timeParts[0], 10);
                     const minutes = parseInt(timeParts[1], 10);
@@ -123,7 +124,7 @@ function Analytics() {
                     avgWeeklyHours = avgDailyHours * 5;
                 }
             } catch (e) {
-                console.error('Error parsing raw14:', e);
+                console.error('Error parsing RAW value:', e);
                 avgDailyHours = 0;
             }
         }
@@ -151,8 +152,13 @@ function Analytics() {
             avgWeeklyHours: avgWeeklyHours.toFixed(1),
             presenceRate: presenceRate.toFixed(1),
             absenceRate: absenceRate.toFixed(1),
+            raat7: kpi?.raat7 ? formatTime(kpi.raat7) : 'N/A',
             raat14: kpi?.raat14 ? formatTime(kpi.raat14) : 'N/A',
+            raat28: kpi?.raat28 ? formatTime(kpi.raat28) : 'N/A',
+            radt7: kpi?.radt7 ? formatTime(kpi.radt7) : 'N/A',
             radt14: kpi?.radt14 ? formatTime(kpi.radt14) : 'N/A',
+            radt28: kpi?.radt28 ? formatTime(kpi.radt28) : 'N/A',
+            raw7: kpi?.raw7 || 'N/A',
             raw14: kpi?.raw14 || 'N/A',
             raw28: kpi?.raw28 || 'N/A'
         };
@@ -216,6 +222,11 @@ function Analytics() {
                             description="Effectif total"
                         />
                         <KPICard 
+                            title="Heures/jour (7j)" 
+                            value={kpis.raw7 ? `${kpis.raw7}h` : 'N/A'}
+                            description="Moyenne 7 jours"
+                        />
+                        <KPICard 
                             title="Heures/jour" 
                             value={`${kpis.avgDailyHours}h`}
                             description="Moyenne quotidienne"
@@ -231,14 +242,44 @@ function Analytics() {
                             description={`${kpis.absenceRate}% d'absence`}
                         />
                         <KPICard 
+                            title="Heure d'arrivée (7j)" 
+                            value={kpis.raat7}
+                            description="Moyenne 7 jours"
+                        />
+                        <KPICard 
                             title="Heure d'arrivée" 
                             value={kpis.raat14}
                             description="Moyenne 14 jours"
                         />
                         <KPICard 
+                            title="Heure d'arrivée (28j)" 
+                            value={kpis.raat28}
+                            description="Moyenne 28 jours"
+                        />
+                        <KPICard 
+                            title="Heure de départ (7j)" 
+                            value={kpis.radt7}
+                            description="Moyenne 7 jours"
+                        />
+                        <KPICard 
                             title="Heure de départ" 
                             value={kpis.radt14}
                             description="Moyenne 14 jours"
+                        />
+                        <KPICard 
+                            title="Heure de départ (28j)" 
+                            value={kpis.radt28}
+                            description="Moyenne 28 jours"
+                        />
+                        <KPICard 
+                            title="Heures/jour (14j)" 
+                            value={kpis.raw14 ? `${kpis.raw14}h` : 'N/A'}
+                            description="Moyenne 14 jours"
+                        />
+                        <KPICard 
+                            title="Heures/jour (28j)" 
+                            value={kpis.raw28 ? `${kpis.raw28}h` : 'N/A'}
+                            description="Moyenne 28 jours"
                         />
                     </div>
 

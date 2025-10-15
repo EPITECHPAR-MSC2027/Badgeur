@@ -4,6 +4,8 @@ import authService from '../services/authService';
 import UsersSection from '../component/UsersSection';
 import TeamsSection from '../component/TeamsSection';
 import PointagesSection from '../component/PointagesSection';
+import SeedDataPanel from '../component/SeedDataPanel';
+
 
 function Admin() {
     const [users, setUsers] = useState([]);
@@ -150,6 +152,7 @@ function Admin() {
         <div className="App">
             <header className="App-header">
                 <h1>Administration</h1>
+                <SeedDataPanel />
                 <div className="admin-nav">
                     <button 
                         className={`nav-button ${activeSection === 'users' ? 'active' : ''}`}
