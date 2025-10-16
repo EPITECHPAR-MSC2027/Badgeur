@@ -1,6 +1,6 @@
 namespace badgeur_backend.Contracts.Requests
 {
-    public class CreateTypeDemandeRequest
+    public class CreateDemandTypeRequest
     {
         public string Nom { get; set; } = string.Empty;
     }

@@ -33,7 +33,7 @@ builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
-builder.Services.AddScoped<TypeDemandeService>();
+builder.Services.AddScoped<DemandTypeService>();
 
 var app = builder.Build();
 
