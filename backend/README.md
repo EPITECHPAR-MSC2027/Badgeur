@@ -44,11 +44,11 @@
 
 - Build the Docker image
 ```bash
-   docker build -t badgeur-backend -f Dockerfile .
+   docker build -t badgeur-backend .
    ```
 - Spin up the image
 ```bash
-   docker run -d -p 8080:8080 --name backend badgeur-backend
+   docker run -d -p 37123:8080 --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
    ```
 
 
