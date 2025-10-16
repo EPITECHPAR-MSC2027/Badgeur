@@ -29,6 +29,39 @@ function Planning() {
     const [submitting, setSubmitting] = React.useState(false)
     const [feedback, setFeedback] = React.useState(null)
     const [submittedDays, setSubmittedDays] = React.useState({}) // key YYYY-MM-DD -> { typeId, statut }
+    // Per-period coloring map: YYYY-MM-DD -> { '0'?: {typeId, statut}, '1'?: {typeId, statut} }
+    const [submittedSlots, setSubmittedSlots] = React.useState({})
+    const [refreshToggle, setRefreshToggle] = React.useState(false)
+
+    // Fetch from DB for coloring
+    React.useEffect(() => {
+        const userIdStr = localStorage.getItem('userId')
+        const userId = userIdStr ? Number(userIdStr) : null
+        if (!userId) return
+        let cancelled = false
+        async function load() {
+            try {
+                const records = await planningService.listByUser(userId)
+                if (cancelled) return
+                const perSlot = {}
+                for (const r of records) {
+                    // r.Date likely ISO; normalize to local YMD
+                    const d = new Date(r.date ?? r.Date)
+                    const ymd = toYMD(d)
+                    const period = String(r.period ?? r.Period)
+                    const statut = Number(r.statut ?? r.Statut ?? 0)
+                    const typeId = Number(r.typeDemandeId ?? r.TypeDemandeId)
+                    if (!perSlot[ymd]) perSlot[ymd] = {}
+                    perSlot[ymd][period] = { typeId, statut }
+                }
+                setSubmittedSlots(perSlot)
+            } catch (_) {
+                // ignore
+            }
+        }
+        load()
+        return () => { cancelled = true }
+    }, [currentYear, currentMonthIndex, refreshToggle])
 
     function normalizeDateOnly(d) {
         const n = new Date(d)
@@ -103,6 +136,28 @@ function Planning() {
         return acc
     }
 
+    // Generate inclusive half-day slots between start/date/half and end/date/half
+    function getSelectedHalfSlots() {
+        if (!rangeStart || !rangeEnd) return []
+        const start = normalizeDateOnly(rangeStart)
+        const end = normalizeDateOnly(rangeEnd)
+        let d = new Date(Math.min(start.getTime(), end.getTime()))
+        const endDate = new Date(Math.max(start.getTime(), end.getTime()))
+        let half = Number(startHalf)
+        const endHalfNum = Number(endHalf)
+        const slots = []
+        while (true) {
+            if (!isWeekend(d)) slots.push({ date: toYMD(d), period: String(half) })
+            if (toYMD(d) === toYMD(endDate) && half === endHalfNum) break
+            half = (half + 1) % 2
+            if (half === 0) {
+                d = new Date(d)
+                d.setDate(d.getDate() + 1)
+            }
+        }
+        return slots
+    }
+
     async function handleSubmit(e) {
         e.preventDefault()
         setFeedback(null)
@@ -124,31 +179,16 @@ function Planning() {
             return
         }
 
-        // Expand range into daily periods based on startHalf/endHalf
-        const sDate = new Date(dates[0])
-        const eDate = new Date(dates[dates.length - 1])
-        const singleDay = dates.length === 1
-        const payloads = []
-        if (singleDay) {
-            if (startHalf === endHalf) {
-                payloads.push({ UserId: userId, Date: `${dates[0]}T00:00:00`, Period: startHalf, Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-            } else {
-                payloads.push({ UserId: userId, Date: `${dates[0]}T00:00:00`, Period: '0', Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-                payloads.push({ UserId: userId, Date: `${dates[0]}T00:00:00`, Period: '1', Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-            }
-        } else {
-            // first day: startHalf only
-            payloads.push({ UserId: userId, Date: `${toYMD(sDate)}T00:00:00`, Period: startHalf, Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-            // middle days: both halves
-            if (dates.length > 2) {
-                for (let i = 1; i < dates.length - 1; i++) {
-                    payloads.push({ UserId: userId, Date: `${dates[i]}T00:00:00`, Period: '0', Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-                    payloads.push({ UserId: userId, Date: `${dates[i]}T00:00:00`, Period: '1', Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-                }
-            }
-            // last day: endHalf only
-            payloads.push({ UserId: userId, Date: `${toYMD(eDate)}T00:00:00`, Period: endHalf, Statut: '0', TypeDemandeId: Number(selectedTypeId) })
-        }
+        // Expand inclusive half-day slots between start and end
+        const slots = getSelectedHalfSlots()
+        const payloads = slots.map(s => ({
+            UserId: userId,
+            // set at noon to avoid UTC shift to previous day in DB
+            Date: `${s.date}T12:00:00`,
+            Period: s.period,
+            Statut: '0',
+            TypeDemandeId: Number(selectedTypeId)
+        }))
 
         setSubmitting(true)
         try {
@@ -160,12 +200,8 @@ function Planning() {
                 setSelectedTypeId(null)
                 setRangeStart(null)
                 setRangeEnd(null)
-                // mark calendar days with statut 0 (pending) and selected type
-                setSubmittedDays(prev => {
-                    const next = { ...prev }
-                    dates.forEach(d => { next[d] = { typeId: Number(selectedTypeId), statut: 0 } })
-                    return next
-                })
+                // refresh from DB to color according to records
+                setRefreshToggle(t => !t)
             } else {
                 setFeedback({ type: 'error', message: `${rejected.length}/${results.length} demandes ont échoué.` })
             }
@@ -216,11 +252,13 @@ function Planning() {
                                     normalizeDateOnly(c).getTime() === (rangeStart && normalizeDateOnly(rangeStart).getTime()) ||
                                     normalizeDateOnly(c).getTime() === (rangeEnd && normalizeDateOnly(rangeEnd).getTime())
                                 )
-                                // status coloring
+                                // per-period colors
                                 const dayKey = toYMD(c)
-                                const status = submittedDays[dayKey]
-                                const color = status ? fixedTypes.find(t => t.id === status.typeId)?.color : undefined
-                                const bg = status ? (status.statut === 0 ? `${color}22` : color) : (isSelected ? '#ede9fe' : '#ffffff')
+                                const slot0 = submittedSlots[dayKey]?.['0']
+                                const slot1 = submittedSlots[dayKey]?.['1']
+                                const color0 = slot0 ? fixedTypes.find(t => t.id === slot0.typeId)?.color : undefined
+                                const color1 = slot1 ? fixedTypes.find(t => t.id === slot1.typeId)?.color : undefined
+                                const bgDefault = isSelected ? '#ede9fe' : '#ffffff'
                                 const border = isEdge ? '2px solid #7c3aed' : '1px solid #e5e7eb'
                                 return (
                                     <button
@@ -233,12 +271,21 @@ function Planning() {
                                             height: 34,
                                             borderRadius: 6,
                                             border,
-                                            background: bg,
+                                            background: bgDefault,
+                                            position: 'relative',
                                             color: weekend ? '#9ca3af' : undefined,
-                                            cursor: weekend ? 'not-allowed' : 'pointer'
+                                            cursor: weekend ? 'not-allowed' : 'pointer',
+                                            overflow: 'hidden'
                                         }}
                                     >
-                                        {c.getDate()}
+                                        {/* top half (matin) */}
+                                        {(slot0 || slot1) && (
+                                            <>
+                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}22` : color0) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}22` : color1) : 'transparent' }} />
+                                            </>
+                                        )}
+                                        <span style={{ position: 'relative' }}>{c.getDate()}</span>
                                     </button>
                                 )
                             })}
