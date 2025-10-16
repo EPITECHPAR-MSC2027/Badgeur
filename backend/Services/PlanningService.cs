@@ -22,23 +22,26 @@ namespace badgeur_backend.Services
                 Date = request.Date,
                 Period = request.Period,
                 Statut = request.Statut,
-                TypeDemandeId = request.TypeDemandeId,
-                CreatedAt = System.DateTime.UtcNow
+                DemandTypeId = request.TypeDemandeId,
+                CreatedAt = DateTime.UtcNow
             };
 
             var response = await _client.From<Planning>().Insert(planning);
+
             return response.Models.First().Id;
         }
 
         public async Task<List<PlanningResponse>> GetAllPlanningsAsync()
         {
             var response = await _client.From<Planning>().Get();
+
             return response.Models.Select(CreatePlanningResponse).ToList();
         }
 
         public async Task<List<PlanningResponse>> GetPlanningsByUserAsync(long userId)
         {
             var response = await _client.From<Planning>().Where(p => p.UserId == userId).Get();
+
             return response.Models.Select(CreatePlanningResponse).ToList();
         }
 
@@ -46,6 +49,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<Planning>().Where(p => p.Id == id).Get();
             var planning = response.Models.FirstOrDefault();
+
             if (planning == null) return null;
             return CreatePlanningResponse(planning);
         }
@@ -54,12 +58,13 @@ namespace badgeur_backend.Services
         {
             var query = await _client.From<Planning>().Where(p => p.Id == id).Get();
             var planning = query.Models.FirstOrDefault();
+
             if (planning == null) return null;
 
             planning.Date = request.Date;
             planning.Period = request.Period;
             planning.Statut = request.Statut;
-            planning.TypeDemandeId = request.TypeDemandeId;
+            planning.DemandTypeId = request.TypeDemandeId;
 
             await _client.From<Planning>().Update(planning);
             return CreatePlanningResponse(planning);
@@ -80,7 +85,7 @@ namespace badgeur_backend.Services
                 Period = planning.Period,
                 Statut = planning.Statut,
                 CreatedAt = planning.CreatedAt,
-                TypeDemandeId = planning.TypeDemandeId
+                DemandTypeId = planning.DemandTypeId
             };
         }
     }
