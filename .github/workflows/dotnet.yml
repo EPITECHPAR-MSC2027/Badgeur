@@ -1,14 +1,15 @@
-name: .NET Docker Build
+name: .NET Backend - Docker Build
+
 on:
   push:
     branches: [ "preprod" ]
-  pull_request:
-    branches: [ "preprod" ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    # Build Docker image
-    - name: Build Docker image
-      run: docker build -f ./backend/Dockerfile -t badgeur-backend:latest .
+    - uses: actions/checkout@v3
+    
+    - name: Build the Docker image
+      working-directory: ./backend
+      run: docker build -t badgeur-backend -f Dockerfile .

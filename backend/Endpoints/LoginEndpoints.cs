@@ -20,7 +20,6 @@ namespace badgeur_backend.Endpoints
                     return Results.Unauthorized();
                 }
 
-
                 UserResponse? user = await userService.GetUserByEmailAsync(session.User.Email);
 
                 var response = new LoginResponse

@@ -27,13 +27,14 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
-
 // --- Scoped Services ---
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BadgeLogEventService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<UserKPIService>();
+builder.Services.AddScoped<PlanningService>();
+builder.Services.AddScoped<TypeDemandeService>();
 
 var app = builder.Build();
 
@@ -64,5 +65,7 @@ app.MapBadgeLogEventEndpoints();
 app.MapRoleEndpoints();
 app.MapTeamEndpoints();
 app.MapUserKPIEndpoints();
+app.MapPlanningEndpoints();
+app.MapTypeDemandeEndpoints();
 
 app.Run();
