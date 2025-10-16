@@ -58,6 +58,8 @@ function Planning() {
                     const typeId = Number(r.typeDemandeId ?? r.TypeDemandeId)
                     if (!perSlot[ymd]) perSlot[ymd] = {}
                     perSlot[ymd][period] = { typeId, statut }
+                    // Debug: log the data
+                    console.log(`Planning data: ${ymd} period ${period}`, { typeId, statut, r })
                 }
                 setSubmittedSlots(perSlot)
             } catch (_) {
