@@ -8,7 +8,7 @@ function Planning() {
     const [currentYear, setCurrentYear] = React.useState(today.getFullYear())
     const [currentMonthIndex, setCurrentMonthIndex] = React.useState(today.getMonth()) // 0..11
     const [anchorDate, setAnchorDate] = React.useState(null) // Date object
-    const [hoverDate, setHoverDate] = React.useState(null) // Date while dragging
+    const [, setHoverDate] = React.useState(null) // Date while dragging
     const [rangeStart, setRangeStart] = React.useState(null) // Date object
     const [rangeEnd, setRangeEnd] = React.useState(null) // Date object
 
@@ -28,8 +28,7 @@ function Planning() {
 
     const [submitting, setSubmitting] = React.useState(false)
     const [feedback, setFeedback] = React.useState(null)
-    const [submittedDays, setSubmittedDays] = React.useState({}) // key YYYY-MM-DD -> { typeId, statut }
-    // Per-period coloring map: YYYY-MM-DD -> { '0'?: {typeId, statut}, '1'?: {typeId, statut} }
+    const [, setSubmittedDays] = React.useState({}) // key YYYY-MM-DD -> { typeId, statut }
     const [submittedSlots, setSubmittedSlots] = React.useState({})
     const [refreshToggle, setRefreshToggle] = React.useState(false)
 
@@ -54,8 +53,10 @@ function Planning() {
                     const d = new Date(r.date ?? r.Date)
                     const ymd = toYMD(d)
                     const period = String(r.period ?? r.Period)
+                    // Backend returns Statut as string, convert to number
                     const statut = Number(r.statut ?? r.Statut ?? 0)
-                    const typeId = Number(r.typeDemandeId ?? r.TypeDemandeId)
+                    // Backend uses DemandTypeId, not TypeDemandeId
+                    const typeId = Number(r.demandTypeId ?? r.DemandTypeId ?? r.typeDemandeId ?? r.TypeDemandeId)
                     if (!perSlot[ymd]) perSlot[ymd] = {}
                     perSlot[ymd][period] = { typeId, statut }
                     // Debug: log the data
@@ -68,7 +69,7 @@ function Planning() {
         }
         load()
         return () => { cancelled = true }
-    }, [currentYear, currentMonthIndex, refreshToggle])
+    }, [currentYear, currentMonthIndex, refreshToggle, toYMD])
 
     function normalizeDateOnly(d) {
         const n = new Date(d)
@@ -304,8 +305,8 @@ function Planning() {
                                         {/* top half (matin) */}
                                         {(slot0 || slot1) && (
                                             <>
-                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}22` : color0) : 'transparent' }} />
-                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}22` : color1) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
                                             </>
                                         )}
                                         <span style={{ position: 'relative' }}>{c.getDate()}</span>

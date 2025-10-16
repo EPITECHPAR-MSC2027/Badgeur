@@ -1,6 +1,6 @@
 import authService from './authService'
 
-export default {
+const teamService = {
     async listTeams() {
         const res = await authService.get('/teams')
         if (!res.ok) return []
@@ -40,5 +40,7 @@ export default {
         return members
     }
 }
+
+export default teamService
 
 

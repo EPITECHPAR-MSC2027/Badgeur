@@ -1,5 +1,4 @@
 import React from 'react'
-import authService from '../services/authService'
 import planningService from '../services/planningService'
 import teamService from '../services/teamService'
 
@@ -73,12 +72,18 @@ function Calendrier() {
         return () => { cancelled = true }
     }, [])
 
-    // Load plannings for members when month or members change
+    // Load plannings for members - single fetch on mount and month change
     React.useEffect(() => {
         let cancelled = false
+        
         async function loadPlans() {
-            if (members.length === 0) { setPlansByUserDate({}); return }
+            if (members.length === 0) { 
+                setPlansByUserDate({})
+                setLoading(false)
+                return 
+            }
             setLoading(true)
+            
             try {
                 const entries = await Promise.all(members.map(async (m) => {
                     try {
@@ -89,26 +94,31 @@ function Calendrier() {
                             if (d.getFullYear() !== currentYear || d.getMonth() !== currentMonthIndex) continue
                             const ymd = toYMD(d)
                             const period = String(r.period ?? r.Period)
+                            // Backend returns Statut as string, convert to number
                             const statut = Number(r.statut ?? r.Statut ?? 0)
-                            const typeId = Number(r.typeDemandeId ?? r.TypeDemandeId)
+                            // Backend uses DemandTypeId, not TypeDemandeId
+                            const typeId = Number(r.demandTypeId ?? r.DemandTypeId ?? r.typeDemandeId ?? r.TypeDemandeId)
                             if (!perDate[ymd]) perDate[ymd] = {}
                             perDate[ymd][period] = { typeId, statut }
-                            // Debug: log the data
-                            console.log(`User ${m.id} (${m.firstName} ${m.lastName}): ${ymd} period ${period}`, { typeId, statut, r })
                         }
                         return [m.id, perDate]
-                    } catch (_) {
+                    } catch (e) {
+                        console.warn(`Failed to load planning for user ${m.id}:`, e)
                         return [m.id, {}]
                     }
                 }))
-                if (!cancelled) setPlansByUserDate(Object.fromEntries(entries))
-            } finally {
+                if (!cancelled) {
+                    setPlansByUserDate(Object.fromEntries(entries))
+                    setLoading(false)
+                }
+            } catch (e) {
+                console.error('Planning load error:', e)
                 if (!cancelled) setLoading(false)
             }
         }
         loadPlans()
         return () => { cancelled = true }
-    }, [members, currentYear, currentMonthIndex])
+    }, [members, currentYear, currentMonthIndex, toYMD])
 
     const containerStyle = { padding: 16 }
     const selectStyle = {
@@ -162,11 +172,11 @@ function Calendrier() {
                         )}
                     </div>
                     {/* Legend */}
-                    <div style={{ marginTop: 18 }}>
+                    <div style={{ marginTop: 30 }}>
                         <div style={{ fontWeight: 700, marginBottom: 8 }}>Légende</div>
-                        <div style={{ display: 'grid', gap: 6 }}>
+                        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
-                                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
                                     <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
                                     <span>{t.label}</span>
                                 </div>
@@ -201,8 +211,8 @@ function Calendrier() {
                                             <div key={idx} style={{ height: 34, borderRadius: 6, border: '1px solid #e5e7eb', position: 'relative', background: '#ffffff', overflow: 'hidden' }}>
                                                 {(slot0 || slot1) && (
                                                     <>
-                                                        <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}22` : color0) : 'transparent' }} />
-                                                        <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}22` : color1) : 'transparent' }} />
+                                                        <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
+                                                        <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
                                                     </>
                                                 )}
                                             </div>
@@ -217,10 +227,6 @@ function Calendrier() {
                     </div>
                 </div>
             </div>
-
-            {loading && (
-                <div style={{ marginTop: 10, color: '#6b7280' }}>Chargement…</div>
-            )}
         </div>
     )
 }
