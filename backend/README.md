@@ -48,7 +48,7 @@
    ```
 - Spin up the image
 ```bash
-   docker run -d -p 37123:8080 --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
+   docker run -d -p 5158:5158 --network badgeur-network --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
    ```
 
 
