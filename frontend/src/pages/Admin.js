@@ -11,7 +11,7 @@ function Admin() {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
 
-    const [activeSection, setActiveSection] = useState('users'); // nouvelle état pour la navigation
+    const [activeSection, setActiveSection] = useState('users'); 
 
     const [filters, setFilters] = useState({
         roleId: '',

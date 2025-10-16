@@ -130,7 +130,7 @@ function Upbar({ currentPage, onNavigate }) {
                 </div>
 
                 <button onClick={() => handleNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>
-                    Calendrier
+                    Equipe
                 </button>
 
                 <button onClick={() => handleNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>
