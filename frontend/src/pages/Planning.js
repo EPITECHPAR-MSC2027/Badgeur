@@ -33,6 +33,11 @@ function Planning() {
     const [submittedSlots, setSubmittedSlots] = React.useState({})
     const [refreshToggle, setRefreshToggle] = React.useState(false)
 
+    const appStyle = {
+        padding : 16,
+        alignItems: 'start',
+        marginTop: 16
+    } 
     // Fetch from DB for coloring
     React.useEffect(() => {
         const userIdStr = localStorage.getItem('userId')
@@ -67,6 +72,22 @@ function Planning() {
         const n = new Date(d)
         n.setHours(0, 0, 0, 0)
         return n
+    }
+
+    // Two-column layout helpers
+    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%' }
+    const leftColStyle = { flex: '1 1 0' }
+    const rightColStyle = { width: 500, display: 'grid', gap: 16 }
+    const selectStyle = {
+        fontFamily: 'Alata, sans-serif',
+        fontWeight: 600,
+        padding: '8px 10px',
+        borderRadius: 10,
+        border: '1px solid #d1d5db',
+        background: '#f3f4f6',
+        color: '#111827',
+        outline: 'none',
+        cursor: 'pointer'
     }
 
     function toYMD(d) {
@@ -211,23 +232,23 @@ function Planning() {
     }
 
     return (
-        <div className="App" style={{ padding: 16 }}>
+        <div className="App" style={appStyle}>
             <header className="App-header" style={{ marginBottom: 16 }}>
                 <h1>Demande de planning</h1>
             </header>
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16, alignItems: 'start' }}>
-                {/* Calendar with controls on the right */}
-                <section onMouseUp={onGridMouseUp}>
+            <form onSubmit={handleSubmit} style={formRowStyle}>
+                {/* Left column: Calendar */}
+                <section style={leftColStyle} onMouseUp={onGridMouseUp}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                         <div />
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <select value={currentMonthIndex} onChange={(e) => setCurrentMonthIndex(Number(e.target.value))}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center'}}>
+                            <select value={currentMonthIndex} onChange={(e) => setCurrentMonthIndex(Number(e.target.value))} style={selectStyle}>
                                 {Array.from({ length: 12 }).map((_, i) => (
                                     <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('fr-FR', { month: 'long' })}</option>
                                 ))}
                             </select>
-                            <select value={currentYear} onChange={(e) => setCurrentYear(Number(e.target.value))}>
+                            <select value={currentYear} onChange={(e) => setCurrentYear(Number(e.target.value))} style={selectStyle}>
                                 {Array.from({ length: 5 }).map((_, i) => {
                                     const y = today.getFullYear() - 1 + i
                                     return <option key={y} value={y}>{y}</option>
@@ -237,7 +258,7 @@ function Planning() {
                     </div>
 
                     <div style={{ minWidth: 260 }}>
-                        <div style={{ fontWeight: 700, marginBottom: 8, textTransform: 'capitalize', textAlign: 'right' }}>
+                        <div style={{ fontWeight: 700, marginBottom: 8, textTransform: 'capitalize', textAlign: 'right', fontFamily: 'Alata, sans-serif' }}>
                             {new Date(monthGrid.year, monthGrid.monthIndex).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
@@ -268,7 +289,7 @@ function Planning() {
                                         onMouseDown={() => !weekend && onDayMouseDown(c)}
                                         onMouseEnter={() => !weekend && onDayMouseEnter(c)}
                                         style={{
-                                            height: 34,
+                                            height: 65,
                                             borderRadius: 6,
                                             border,
                                             background: bgDefault,
@@ -293,55 +314,59 @@ function Planning() {
                     </div>
                 </section>
 
-                {/* Selection summary and half-days */}
-                <section style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+                {/* Right column: Controls */}
+                <div style={rightColStyle}>
+                    {/* Selection summary and half-days */}
+                    <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
                     <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                         <div>
-                            <div style={{ color: '#6b7280', fontSize: 12 }}>du</div>
+                            <div style={{ color: '#6b7280', fontSize: 14,fontFamily:'Spectral, serif' }}>du</div>
                             <div style={{ fontWeight: 700 }}>{rangeStart ? toYMD(rangeStart) : '—'}</div>
                             <label style={{ display: 'block', marginTop: 8 }}>
-                                <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6 }}>Matin</span>
+                                <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                             </label>
                             <label>
-                                <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} /> <span style={{ marginLeft: 6 }}>Après midi</span>
+                                <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                             </label>
                         </div>
                         <div>
-                            <div style={{ color: '#6b7280', fontSize: 12 }}>au</div>
+                            <div style={{ color: '#6b7280', fontSize: 14, fontFamily:'Spectral, serif' }}>au</div>
                             <div style={{ fontWeight: 700 }}>{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
                             <label style={{ display: 'block', marginTop: 8 }}>
-                                <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6 }}>Matin</span>
+                                <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                             </label>
                             <label>
-                                <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} /> <span style={{ marginLeft: 6 }}>Après midi</span>
+                                <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                             </label>
                         </div>
                     </div>
-                </section>
-
-                {/* Fixed type options + legend */}
-                <section style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                        {fixedTypes.map(t => (
-                            <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #e5e7eb', padding: '8px 10px', borderRadius: 8, cursor: 'pointer' }}>
-                                <input type="radio" name="typeId" value={t.id} checked={selectedTypeId === t.id} onChange={() => setSelectedTypeId(t.id)} />
-                                <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
-                                <span>{t.label}</span>
-                            </label>
-                        ))}
                     </div>
-                </section>
 
-                {feedback && (
-                    <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }}>
-                        {feedback.message}
+                    {/* Fixed type options + legend */}
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <p style = {{fontFamily:'Spectral, serif', color: '#6b7280', margin: '0'}}>Type de demande</p>
+                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                            {fixedTypes.map(t => (
+                                <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif' }}>
+                                    <input type="radio" name="typeId" value={t.id} checked={selectedTypeId === t.id} onChange={() => setSelectedTypeId(t.id)} />
+                                    <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
+                                    <span>{t.label}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
-                )}
 
-                <div>
-                    <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>
-                        {submitting ? 'Envoi...' : 'Valider la demande'}
-                    </button>
+                    {feedback && (
+                        <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }}>
+                            {feedback.message}
+                        </div>
+                    )}
+
+                    <div>
+                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                            {submitting ? 'Envoi...' : 'Valider la demande'}
+                        </button>
+                    </div>
                 </div>
             </form>
 

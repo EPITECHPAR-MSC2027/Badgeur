@@ -12,7 +12,7 @@ function Login({ onSubmit }) {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const navigate = useNavigate();   // ✅ HOOK NAVIGATION
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
