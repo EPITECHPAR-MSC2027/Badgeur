@@ -1,0 +1,233 @@
+/* ---- En-tête de l'application ---- */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-icon {
+    height: 30px;
+    width: auto;
+}
+
+.header-title {
+    font-family: 'Alata', sans-serif;
+    font-size: 24px;
+    color: #333;
+}
+
+/* ---- Arrière-plan ---- */
+.login-background {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ---- Carte de connexion (glassmorphism) ---- */
+.login-container {
+  width: 380px;
+  padding: 40px 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, 
+    rgba(46, 46, 46, 0.9),
+    rgba(59, 59, 59, 0.9),
+    rgba(74, 74, 74, 0.9),
+    rgba(92, 92, 92, 0.9),
+    rgba(122, 122, 122, 0.9),
+    rgba(92, 92, 92, 0.9),
+    rgba(74, 74, 74, 0.9),
+    rgba(59, 59, 59, 0.9),
+    rgba(46, 46, 46, 0.9)
+  );
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease-in-out infinite;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 100px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+  padding-top: 20px;
+  height : 350px;
+}
+
+/* ---- Animation du fond ---- */
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---- Titre ---- */
+.login-title {
+  margin-bottom: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #f2f2f2;
+  font-size: 16px;
+}
+
+/* ---- Champs ---- */
+.login-form-group {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+/* ---- Champs avec icônes ---- */
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  padding-left: 40px !important; /* Pour laisser de la place à l'icône */
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.login-input:focus {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
+}
+
+/* ---- Mot de passe ---- */
+.password-group {
+  position: relative;
+}
+
+.password-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Options et liens ---- */
+.login-container .options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.login-container .options a {
+  color: #f5f5f5;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.login-container .options a:hover {
+  color: #ddd;
+}
+
+/* ---- Bouton ---- */
+.login-submit-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #4a4a4a, #6e6e6e);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.login-submit-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #707070, #8d8d8d);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ---- Logo de connexion ---- */
+.login-logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 24px;
+}
+
+/* ---- Page de connexion ---- */
+.login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.login-person-icon {
+    width: 80px;
+    height: 80px;
+}
+
+.login-input-icon {
+    width: 20px;
+    height: 20px;
+}

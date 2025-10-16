@@ -61,7 +61,6 @@ function Home() {
             <header className="App-header">
                 <h1>Tableaux de bord</h1>
                 <h2>Bienvenue {userData.firstName} {userData.lastName}</h2>
-                <h3>Vous êtes {userData.roleId === 1 ? 'Manager' : 'Employé'}</h3>
             </header>
             <div className="time" style={timeBoxStyle}>
                 <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-primary)' }}>Heures et date actuelle</h1>

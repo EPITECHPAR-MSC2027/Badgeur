@@ -57,12 +57,27 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(updatedUser);
             }).WithDescription("Update the user's information");
 
+            group.MapGet("/{id:long}/clocks", async (long id, UpdateUserRequest request, BadgeLogEventService badgeLogEventService) =>
+            {
+                // Return the 7 last arrivals and 7 last departures of a user
+            }).WithDescription("Get a summary of the arrivals and departures of an employee.");
+
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
                 await userService.DeleteUserAsync(id);
 
                 return Results.NoContent();
             }).WithDescription("Delete a user by their ID.");
+
+            group.MapGet("/{teamId:long}/team", async (long teamId, UserService userService) =>
+            {
+                var users = await userService.GetUsersByTeamIdAsync(teamId);
+
+                if (!users.Any()) return Results.NotFound("No users found for the specified team.");
+
+                return Results.Ok(users);
+            }).WithDescription("Retrieve users by their team ID.");
+
         }
     }
 }
