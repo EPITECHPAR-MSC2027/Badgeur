@@ -6,6 +6,13 @@
 
         public long UserId { get; set; }
 
+        // 7-day rolling averages (computed on-the-fly, not persisted)
+        public DateTimeOffset Raat7 { get; set; }
+
+        public DateTimeOffset Radt7 { get; set; }
+
+        public string Raw7 { get; set; } = default!;
+
         public DateTimeOffset Raat14 { get; set; }
 
         public DateTimeOffset Raat28 { get; set; }

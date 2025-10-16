@@ -7,6 +7,7 @@ import PointagesSection from '../component/PointagesSection';
 import PlanningsSection from '../component/PlanningsSection';
 import TypeDemandesSection from '../component/TypeDemandesSection';
 
+
 function Admin() {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
@@ -151,6 +152,7 @@ function Admin() {
         <div className="App">
             <header className="App-header">
                 <h1>Administration</h1>
+                <SeedDataPanel />
                 <div className="admin-nav">
                     <button 
                         className={`nav-button ${activeSection === 'users' ? 'active' : ''}`}

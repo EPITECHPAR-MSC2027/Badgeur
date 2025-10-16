@@ -52,13 +52,23 @@ class AuthService {
 
         console.log('Statut de la réponse:', response.status);
 
-        // Si la réponse est 401 (Non autorisé), rediriger vers la page de connexion
+        // Si la réponse est 401 (Non autorisé), vérifier si c'est une erreur de session ou de permissions
         if (response.status === 401) {
-            console.log('Erreur 401 détectée, déconnexion de l\'utilisateur');
-            this.logout();
-            // Rediriger vers la page de connexion
-            window.location.reload(); // Cela va déclencher le retour à la page login
-            throw new Error('Session expirée. Veuillez vous reconnecter.');
+            console.log('Erreur 401 détectée');
+            
+            // Vérifier si le token existe encore
+            const token = this.getAccessToken();
+            if (!token) {
+                console.log('Token manquant, déconnexion de l\'utilisateur');
+                this.logout();
+                window.location.reload();
+                throw new Error('Session expirée. Veuillez vous reconnecter.');
+            }
+            
+            // Si le token existe mais on a une 401, c'est probablement un problème de permissions
+            // On ne déconnecte pas automatiquement, on laisse l'erreur remonter
+            console.log('Erreur 401 avec token valide - problème de permissions');
+            throw new Error('Accès non autorisé à cette ressource.');
         }
 
         return response;
