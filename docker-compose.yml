@@ -1,18 +1,32 @@
-version: "3.8"
+version: '3.8'
+
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-
+    container_name: backend
     ports:
-      - "5159:8000"
-
+      - "5158:5158"
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-      ASPNETCORE_URLS: "http://+:8000"
-    #   ASPNETCORE_URLS: "http://localhost:8000"
-    #   Supabase:Url: "https://ykjqrlnddoaerlyildab.supabase.co"
-    #  Supabase:AnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlranFybG5kZG9hZXJseWlsZGFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MTg3NTYsImV4cCI6MjA3NTM5NDc1Nn0.6a5L7YHE-g7jbc9hbg4PKgF_DH1fLqdV7QWYLDT7Wkc"
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - badgeur-network
 
-    restart: always
+  reverse-proxy:
+    build:
+      context: ./reverse-proxy
+      dockerfile: Dockerfile
+    container_name: reverse-proxy
+    ports:
+      - "5159:5159"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - badgeur-network
+    depends_on:
+      - backend
+
+networks:
+  badgeur-network:
+    driver: bridge
