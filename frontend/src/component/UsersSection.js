@@ -5,7 +5,17 @@ function UsersSection() {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
+    // Formulaire de création
     const [userForm, setUserForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        telephone: '',
+        roleId: '',
+        teamId: ''
+    });
+    // Formulaire d'édition en ligne (séparé pour ne pas préremplir le formulaire de création)
+    const [editForm, setEditForm] = useState({
         firstName: '',
         lastName: '',
         email: '',
@@ -72,22 +82,21 @@ function UsersSection() {
         }
     };
 
-    const handleUpdate = async (e) => {
-        e.preventDefault();
+    const handleUpdate = async () => {
         if (!editingUser) return;
         try {
             const payload = {
-                FirstName: userForm.firstName,
-                LastName: userForm.lastName,
-                Telephone: userForm.telephone,
-                RoleId: userForm.roleId === '' ? 0 : Number(userForm.roleId),
-                TeamId: userForm.teamId === '' ? null : Number(userForm.teamId)
+                FirstName: editForm.firstName,
+                LastName: editForm.lastName,
+                Telephone: editForm.telephone,
+                RoleId: editForm.roleId === '' ? 0 : Number(editForm.roleId),
+                TeamId: editForm.teamId === '' ? null : Number(editForm.teamId)
             };
             const response = await authService.put(`/users/${editingUser.id}`, payload);
             if (!response.ok) throw new Error(await response.text());
             await fetchUsers();
             setEditingUser(null);
-            setUserForm({ firstName: '', lastName: '', email: '', telephone: '', roleId: '', teamId: '' });
+            setEditForm({ firstName: '', lastName: '', email: '', telephone: '', roleId: '', teamId: '' });
         } catch (e) {
             console.error(e);
             alert("Erreur lors de la mise à jour de l'utilisateur");
@@ -108,7 +117,7 @@ function UsersSection() {
 
     const startEdit = (user) => {
         setEditingUser(user);
-        setUserForm({
+        setEditForm({
             firstName: user.firstName || '',
             lastName: user.lastName || '',
             email: user.email || '',
@@ -135,28 +144,26 @@ function UsersSection() {
     return (
         <>
             <div className="admin-form-container">
-                <h2>{editingUser ? 'Modifier un utilisateur' : 'Créer un utilisateur'}</h2>
-                <form onSubmit={editingUser ? handleUpdate : handleCreate}>
-                    <input type="text" placeholder="Prénom" value={userForm.firstName} onChange={(e) => setUserForm({ ...userForm, firstName: e.target.value })} />
-                    <input type="text" placeholder="Nom" value={userForm.lastName} onChange={(e) => setUserForm({ ...userForm, lastName: e.target.value })} />
-                    <input type="email" placeholder="Email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} />
-                    <input type="text" placeholder="Téléphone" value={userForm.telephone} onChange={(e) => setUserForm({ ...userForm, telephone: e.target.value })} />
-                    <select value={userForm.roleId} onChange={(e) => setUserForm({ ...userForm, roleId: e.target.value })}>
+                <h2>Créer un utilisateur</h2>
+                {editingUser && <div style={{ marginBottom: 8, color: '#6c757d' }}>Édition en ligne en cours — utilisez la ligne concernée. La création est temporairement désactivée.</div>}
+                <form onSubmit={handleCreate}>
+                    <input disabled={!!editingUser} type="text" placeholder="Prénom" value={userForm.firstName} onChange={(e) => setUserForm({ ...userForm, firstName: e.target.value })} />
+                    <input disabled={!!editingUser} type="text" placeholder="Nom" value={userForm.lastName} onChange={(e) => setUserForm({ ...userForm, lastName: e.target.value })} />
+                    <input disabled={!!editingUser} type="email" placeholder="Email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} />
+                    <input disabled={!!editingUser} type="text" placeholder="Téléphone" value={userForm.telephone} onChange={(e) => setUserForm({ ...userForm, telephone: e.target.value })} />
+                    <select disabled={!!editingUser} value={userForm.roleId} onChange={(e) => setUserForm({ ...userForm, roleId: e.target.value })}>
                         <option value="">Sélectionner un rôle</option>
                         <option value="0">Utilisateur</option>
                         <option value="1">Manager</option>
                         <option value="2">Administrateur</option>
                     </select>
-                    <select value={userForm.teamId} onChange={(e) => setUserForm({ ...userForm, teamId: e.target.value })}>
+                    <select disabled={!!editingUser} value={userForm.teamId} onChange={(e) => setUserForm({ ...userForm, teamId: e.target.value })}>
                         <option value="">Aucune équipe</option>
                         {teams.map(t => (
                             <option key={t.id} value={t.id}>{t.teamName}</option>
                         ))}
                     </select>
-                    <button type="submit">{editingUser ? 'Modifier' : 'Créer'} l'utilisateur</button>
-                    {editingUser && (
-                        <button type="button" onClick={() => { setEditingUser(null); setUserForm({ firstName: '', lastName: '', email: '', telephone: '', roleId: '', teamId: '' }); }}>Annuler</button>
-                    )}
+                    <button disabled={!!editingUser} type="submit">Créer l'utilisateur</button>
                 </form>
             </div>
 
@@ -196,7 +203,7 @@ function UsersSection() {
                 {filteredAndSortedUsers.length === 0 ? (
                     <div>Aucun utilisateur correspondant aux filtres</div>
                 ) : (
-                    <table>
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th onClick={() => handleSort('firstName')}>Prénom</th>
@@ -210,16 +217,58 @@ function UsersSection() {
                         </thead>
                         <tbody>
                             {filteredAndSortedUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{user.firstName}</td>
-                                    <td>{user.lastName}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.telephone}</td>
-                                    <td>{user.teamId ?? ''}</td>
-                                    <td>{user.roleId === 0 ? 'Utilisateur' : user.roleId === 1 ? 'Manager' : user.roleId === 2 ? 'Administrateur' : ''}</td>
-                                    <td className="action-buttons">
+                                <tr key={user.id} className={editingUser && editingUser.id === user.id ? 'edit-row' : ''}>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <input type="text" value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} />
+                                        ) : user.firstName}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <input type="text" value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} />
+                                        ) : user.lastName}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
+                                        ) : user.email}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <input type="text" value={editForm.telephone} onChange={(e) => setEditForm({ ...editForm, telephone: e.target.value })} />
+                                        ) : user.telephone}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <select value={editForm.teamId} onChange={(e) => setEditForm({ ...editForm, teamId: e.target.value })}>
+                                                <option value="">Aucune équipe</option>
+                                                {teams.map(t => (
+                                                    <option key={t.id} value={t.id}>{t.teamName}</option>
+                                                ))}
+                                            </select>
+                                        ) : (user.teamId ?? '')}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <select value={editForm.roleId} onChange={(e) => setEditForm({ ...editForm, roleId: e.target.value })}>
+                                                <option value="0">Utilisateur</option>
+                                                <option value="1">Manager</option>
+                                                <option value="2">Administrateur</option>
+                                            </select>
+                                        ) : (user.roleId === 0 ? 'Utilisateur' : user.roleId === 1 ? 'Manager' : user.roleId === 2 ? 'Administrateur' : '')}
+                                    </td>
+                                    <td>
+                                        {editingUser && editingUser.id === user.id ? (
+                                            <div className="edit-actions">
+                                                <button className="btn-save" onClick={handleUpdate}>Enregistrer</button>
+                                                <button className="btn-cancel" onClick={() => { setEditingUser(null); setEditForm({ firstName: '', lastName: '', email: '', telephone: '', roleId: '', teamId: '' }); }}>Annuler</button>
+                                            </div>
+                                        ) : (
+                                            <div className="action-buttons">
                                         <button className="btn-edit" onClick={() => startEdit(user)}>Modifier</button>
                                         <button className="btn-delete" onClick={() => handleDelete(user.id)}>Supprimer</button>
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

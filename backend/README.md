@@ -39,3 +39,16 @@
   ```
 
 - Access the API at `https://localhost:5159` (or the configured port)
+
+## Running the project with Docker
+
+- Build the Docker image
+```bash
+   docker build -t badgeur-backend .
+   ```
+- Spin up the image
+```bash
+   docker run -d -p 5158:5158 --network badgeur-network --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
+   ```
+
+

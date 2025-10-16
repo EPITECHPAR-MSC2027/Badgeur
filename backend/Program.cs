@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSupabase(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddAuthorization();
 
@@ -32,6 +33,8 @@ builder.Services.AddScoped<BadgeLogEventService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<UserKPIService>();
+builder.Services.AddScoped<PlanningService>();
+builder.Services.AddScoped<DemandTypeService>();
 
 var app = builder.Build();
 
@@ -62,5 +65,7 @@ app.MapBadgeLogEventEndpoints();
 app.MapRoleEndpoints();
 app.MapTeamEndpoints();
 app.MapUserKPIEndpoints();
+app.MapPlanningEndpoints();
+app.MapTypeDemandeEndpoints();
 
 app.Run();

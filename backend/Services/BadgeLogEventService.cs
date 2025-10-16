@@ -18,7 +18,7 @@ namespace badgeur_backend.Services
         {
             var badgeLogEvent = new BadgeLogEvent
             {
-                BadgedAt = request.BadgedAt,
+                BadgedAt = DateTime.SpecifyKind(request.BadgedAt, DateTimeKind.Utc),
                 UserId = request.UserId
             };
 
@@ -31,9 +31,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<BadgeLogEvent>().Get();
 
-
             return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
-
         }
 
         public async Task<BadgeLogEventResponse?> GetBadgeLogEventByIdAsync(long id)

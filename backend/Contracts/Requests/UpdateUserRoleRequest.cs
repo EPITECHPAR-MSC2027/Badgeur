@@ -3,9 +3,9 @@
 namespace badgeur_backend.Contracts.Requests
 {
 
-    [JsonSerializable(typeof(UpdateTeamManagerRequest))]
-    public class UpdateTeamManagerRequest
+    [JsonSerializable(typeof(UpdateUserRoleRequest))]
+    public class UpdateUserRoleRequest
     {
-        public required long NewManagerId { get; set; }
+        public required long NewRoleId { get; set; }
     }
 }

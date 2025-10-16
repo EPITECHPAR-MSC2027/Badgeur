@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "5158:5158"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - badgeur-network
+
+  reverse-proxy:
+    build:
+      context: ./reverse-proxy
+      dockerfile: Dockerfile
+    container_name: reverse-proxy
+    ports:
+      - "5159:5159"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - badgeur-network
+    depends_on:
+      - backend
+
+networks:
+  badgeur-network:
+    driver: bridge

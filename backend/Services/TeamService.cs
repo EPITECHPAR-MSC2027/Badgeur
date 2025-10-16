@@ -30,7 +30,7 @@ namespace badgeur_backend.Services
         {
             var response = await _client.From<Team>().Get();
 
-            return response.Models.Select(t => createTeamResponse(t)).ToList();
+            return response.Models.Select(t => CreateTeamResponse(t)).ToList();
         }
 
         public async Task<TeamResponse?> GetTeamByIdAsync(long id)
@@ -40,21 +40,22 @@ namespace badgeur_backend.Services
 
             if (team == null) return null;
 
-            return createTeamResponse(team);
+            return CreateTeamResponse(team);
         }
 
-        public async Task<TeamResponse?> updateTeamManagerAsync(long id, long newManagerId)
+        public async Task<TeamResponse?> UpdateTeamAsync(long id, UpdateTeamRequest updateTeamRequest)
         {
             var request = await _client.From<Team>().Where(n => n.Id == id).Get();
             var team = request.Models.FirstOrDefault();
 
             if (team == null) return null;
 
-            team.ManagerId = newManagerId;
+            team.TeamName = updateTeamRequest.TeamName;
+            team.ManagerId = updateTeamRequest.ManagerId;
 
             request = await _client.From<Team>().Update(team);
 
-            return createTeamResponse(team);
+            return CreateTeamResponse(team);
         }
 
         public async Task DeleteTeamAsync(long id)
@@ -62,7 +63,7 @@ namespace badgeur_backend.Services
             await _client.From<Team>().Where(n => n.Id == id).Delete();
         }
 
-        public TeamResponse createTeamResponse(Team team)
+        public TeamResponse CreateTeamResponse(Team team)
         {
             return new TeamResponse
             {

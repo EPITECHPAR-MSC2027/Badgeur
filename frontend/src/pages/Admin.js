@@ -4,14 +4,15 @@ import authService from '../services/authService';
 import UsersSection from '../component/UsersSection';
 import TeamsSection from '../component/TeamsSection';
 import PointagesSection from '../component/PointagesSection';
-import SeedDataPanel from '../component/SeedDataPanel';
+import PlanningsSection from '../component/PlanningsSection';
+import TypeDemandesSection from '../component/TypeDemandesSection';
 
 
 function Admin() {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
 
-    const [activeSection, setActiveSection] = useState('users'); // nouvelle état pour la navigation
+    const [activeSection, setActiveSection] = useState('users'); 
 
     const [filters, setFilters] = useState({
         roleId: '',
@@ -147,7 +148,6 @@ function Admin() {
         }
     };
 
-    // Passez la fonction handleEditPointage au composant PointagesSection
     return (
         <div className="App">
             <header className="App-header">
@@ -172,6 +172,18 @@ function Admin() {
                     >
                         Pointages
                     </button>
+                    <button 
+                        className={`nav-button ${activeSection === 'plannings' ? 'active' : ''}`}
+                        onClick={() => setActiveSection('plannings')}
+                    >
+                        Plannings
+                    </button>
+                    <button 
+                        className={`nav-button ${activeSection === 'typeDemandes' ? 'active' : ''}`}
+                        onClick={() => setActiveSection('typeDemandes')}
+                    >
+                        Types de demande
+                    </button>
                 </div>
             </header>
             <div className="admin-page">
@@ -179,11 +191,15 @@ function Admin() {
                      <UsersSection />
                  ) : activeSection === 'teams' ? (
                      <TeamsSection />
-                 ) : (
+                 ) : activeSection === 'pointages' ? (
                      <PointagesSection 
                          onEditPointage={handleEditPointage}
                          onDeletePointage={handleDeletePointage}
                      />
+                 ) : activeSection === 'plannings' ? (
+                     <PlanningsSection />
+                 ) : (
+                     <TypeDemandesSection />
                  )}
             </div>
         </div>

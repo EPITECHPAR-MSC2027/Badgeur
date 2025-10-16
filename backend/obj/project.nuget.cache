@@ -42,12 +42,5 @@
     "C:\\Users\\belli\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\8.0.15\\runtime.win-x64.microsoft.dotnet.ilcompiler.8.0.15.nupkg.sha512",
     "C:\\Users\\belli\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.15\\microsoft.netcore.app.host.win-x64.8.0.15.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\belli\\Badgeur\\backend\\obj\\project.nuget.cache : Invalid property identifier character: ]. Path 'version', line 3, position 2."
-    }
-  ]
+  "logs": []
 }

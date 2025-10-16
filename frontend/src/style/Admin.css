@@ -90,7 +90,7 @@
 
 .action-buttons {
     display: flex;
-    gap: 20px !important;
+    gap: 24px !important;
 }
 
 .btn-edit {
@@ -160,4 +160,40 @@
 .filter-group input[type="date"]:focus {
     outline: none;
     border-color: var(--color-third);
+}
+
+/* Inline edit styles for admin tables */
+.edit-row {
+    background: #fffaf2;
+}
+
+.edit-row input,
+.edit-row select {
+    padding: 8px 12px;
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 24px;
+}
+
+.btn-save {
+    background: #198754;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
 }

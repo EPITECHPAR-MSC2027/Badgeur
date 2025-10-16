@@ -53,6 +53,13 @@ function Pointage() {
         }
     }
 
+    const addHoursToLocalTime = (hoursToAdd) => {
+        const originalDate = new Date();
+
+        originalDate.setHours(originalDate.getHours() + hoursToAdd);
+        return originalDate.toISOString();
+    };
+
     const onBadge = async () => {
         setLoading(true)
         try {
@@ -62,10 +69,10 @@ function Pointage() {
             if (!userId) {
                 throw new Error('ID utilisateur non trouvé')
             }
-            
+
             const now = new Date()
             const requestData = {
-                badgedAt: now.toISOString(),
+                badgedAt: addHoursToLocalTime(2),
                 userId: parseInt(userId)
             }
             console.log('Données de badgeage:', requestData)
