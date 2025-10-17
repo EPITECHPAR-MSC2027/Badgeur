@@ -1,4 +1,4 @@
-// Service d'authentification pour gérer les tokens JWT
+
 class AuthService {
     constructor() {
         this.baseURL = ''; // URL de base de l'API (vide car on utilise des routes relatives)
