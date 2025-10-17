@@ -31,7 +31,7 @@
 ```
 2. **Run the Docker container:**
 ```bash
-	docker run -d -p 5159:5159 --network badgeur-network --name reverse-proxy -e ASPNETCORE_ENVIRONMENT=Development reverse-proxy
+	docker run -d -p 5159:8080 --name reverse-proxy -e ASPNETCORE_ENVIRONMENT=Development reverse-proxy
 ```
 
 The reverse proxy will be accessible at `http://localhost:5159`.
