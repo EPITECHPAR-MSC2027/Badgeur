@@ -35,6 +35,7 @@ builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
 builder.Services.AddScoped<DemandTypeService>();
+builder.Services.AddScoped<ClocksService>();
 
 var app = builder.Build();
 
@@ -67,5 +68,6 @@ app.MapTeamEndpoints();
 app.MapUserKPIEndpoints();
 app.MapPlanningEndpoints();
 app.MapTypeDemandeEndpoints();
+app.MapClocksEndpoints();
 
 app.Run();
