@@ -12,7 +12,6 @@ namespace badgeur_backend.Services
         // Allows us to calculate the two different variants of each KPI
         public enum Period
         {
-            ONE_WEEK = 7,
             TWO_WEEKS = 14,
             FOUR_WEEKS = 28
         };
@@ -95,22 +94,27 @@ namespace badgeur_backend.Services
                 Raw28 = await CalculateRollingAverageWorkingHours(userId, Period.FOUR_WEEKS)
             };
 
-            var response = await _client.From<UserKPI>().Where(n => n.UserId == userId).Get();
-            var existingUserKPI = response.Models.FirstOrDefault();
+            //var response = await _client.From<User>().Where(n => n.Id == id).Get();
+            //var user = response.Models.FirstOrDefault();
 
-            if (existingUserKPI == null)
+            //if (user == null) return null;
+
+            // Step 1: Check if there is a database entry for the user's KPIs
+            // Step 2: If yes -> Update entry and return the response
+            //         If no  -> Create an entry and return the response
+            //
+            //var response = await _client.From<UserKPI>().Insert(userKPIs);
+
+            var response = await _client.From<UserKPI>().Where(n => n.UserId == userId).Get();
+            var userKPI = response.Models.FirstOrDefault();
+
+            if (userKPI == null)
             {
-                // Insert new KPI record
                 response = await _client.From<UserKPI>().Insert(userKPIs);
-                return response.Models.FirstOrDefault();
+                userKPI = response.Models.FirstOrDefault();
             }
-            else
-            {
-                // Update existing KPI record
-                userKPIs.Id = existingUserKPI.Id;
-                response = await _client.From<UserKPI>().Where(n => n.Id == existingUserKPI.Id).Update(userKPIs);
-                return response.Models.FirstOrDefault();
-            }
+
+            return userKPI;
         }
 
 

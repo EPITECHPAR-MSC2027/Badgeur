@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '../style/Analytics.css';
 import '../style/Chart.css';
-import authService from '../services/authService';
+import analyticsService from '../services/analyticsService';
 import KPICard from '../component/KPICard';
 import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
 import HeatmapCalendar from '../component/HeatmapCalendar';
+import ManagerAnalyticsPanel from '../component/ManagerAnalyticsPanel';
 
 function Analytics() {
+    const roleId = parseInt(localStorage.getItem('roleId') || '0', 10);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [analyticsData, setAnalyticsData] = useState(null);
@@ -39,35 +41,11 @@ function Analytics() {
 
             console.log('Fetching analytics for userId:', userId);
 
-            // Fetch user's KPI data and badge events for the selected period
-            const kpiResponse = await authService.get('/kpis/me');
-            const eventsResponse = await authService.get(`/badgeLogEvent/user/${userId}`);
-
-            let kpiData = null;
-            let events = [];
-
-            // Handle KPI response
-            if (kpiResponse.status === 404) {
-                console.log('No KPI data found');
-                kpiData = null;
-            } else if (kpiResponse.ok) {
-                kpiData = await kpiResponse.json();
-                console.log('KPI data:', kpiData);
-            } else {
-                console.error('Error fetching KPI:', kpiResponse.status);
-            }
-
-            // Handle events response
-            if (eventsResponse.status === 404) {
-                console.log('No events found');
-                events = [];
-            } else if (eventsResponse.ok) {
-                const allEvents = await eventsResponse.json();
-                events = Array.isArray(allEvents) ? allEvents : [];
-                console.log('All events:', events);
-            } else {
-                console.error('Error fetching events:', eventsResponse.status);
-            }
+            // Récupération via le service analytics
+            const kpiData = await analyticsService.getMyKPIs();
+            let events = await analyticsService.getUserBadgeEvents(Number(userId));
+            console.log('KPI data:', kpiData);
+            console.log('All events:', events);
 
             // Filter events for selected month/year
             const filteredEvents = events.filter(event => {
@@ -215,6 +193,9 @@ function Analytics() {
                 </div>
             ) : (
                 <>
+                    {roleId === 1 && (
+                        <ManagerAnalyticsPanel month={selectedMonth} year={selectedYear} />
+                    )}
                     <div className="kpi-grid">
                         <KPICard 
                             title="Équipe" 

@@ -61,6 +61,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/profil'
             case 'parameter':
                 return '/parametre'
+            case 'analytics':
+                return '/analytics'
+            case 'analyticsMe':
+                return '/analytics/me'
             case 'login':
                 return '/login'
             default:
@@ -131,6 +135,10 @@ function Upbar({ currentPage, onNavigate }) {
 
                 <button onClick={() => handleNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>
                     Equipe
+                </button>
+
+                <button onClick={() => handleNavigate('analytics')} style={{ ...buttonStyle, ...isActive('analytics') }}>
+                    Analytics
                 </button>
 
                 <button onClick={() => handleNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>

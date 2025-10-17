@@ -10,6 +10,8 @@ import ParamTre from './pages/Parametre';
 import Login from './pages/Login';
 import GererEquipe from './pages/GererEquipe';
 import Admin from './pages/Admin';
+import Analytics from './pages/Analytics';
+import AnalyticsEmployee from './pages/AnalyticsEmployee';
 import authService from './services/authService';
 
 function App() {
@@ -47,6 +49,22 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
+        <Route
+          path="/analytics"
+          element={
+            <RequireAuth>
+              <Analytics />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/analytics/me"
+          element={
+            <RequireAuth>
+              <AnalyticsEmployee />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/home"
           element={
