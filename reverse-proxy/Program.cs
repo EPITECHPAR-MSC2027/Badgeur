@@ -33,11 +33,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
+
 // --- Endpoints ---
 app.MapReverseProxy();
-
-// And use it in the middleware pipeline
-app.UseCors("AllowFrontend");
 
 app.Run();
 
