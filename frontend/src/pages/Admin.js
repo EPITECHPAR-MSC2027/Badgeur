@@ -6,6 +6,8 @@ import TeamsSection from '../component/TeamsSection';
 import PointagesSection from '../component/PointagesSection';
 import PlanningsSection from '../component/PlanningsSection';
 import TypeDemandesSection from '../component/TypeDemandesSection';
+import SeedDataPanel from '../component/SeedDataPanel';
+// Use authService with baseURL handled centrally
 
 
 function Admin() {
@@ -93,14 +95,25 @@ function Admin() {
 
     const fetchPointages = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/badgeLogEvent/range?startDate=${pointageFilters.startDate}&endDate=${pointageFilters.endDate}${pointageFilters.userId ? `&userId=${pointageFilters.userId}` : ''}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                }
-            });
-            if (!response.ok) throw new Error('Erreur lors du chargement des pointages');
-            const data = await response.json();
-            setPointages(data);
+            // Backend does not expose /badgeLogEvent/range; fetch user events if userId set or all then filter
+            let events = [];
+            if (pointageFilters.userId) {
+                const res = await authService.get(`/badgeLogEvent/user/${pointageFilters.userId}`);
+                if (!res.ok && res.status !== 404) throw new Error('Erreur lors du chargement des pointages');
+                events = res.status === 404 ? [] : await res.json();
+            } else {
+                const res = await authService.get('/badgeLogEvent');
+                if (!res.ok && res.status !== 404) throw new Error('Erreur lors du chargement des pointages');
+                events = res.status === 404 ? [] : await res.json();
+            }
+            const start = new Date(pointageFilters.startDate);
+            const end = new Date(pointageFilters.endDate);
+            end.setHours(23,59,59,999);
+            const filtered = Array.isArray(events) ? events.filter(e => {
+                const d = new Date(e.badgedAt);
+                return d >= start && d <= end;
+            }) : [];
+            setPointages(filtered);
         } catch (error) {
             console.error('Erreur:', error);
         }
@@ -115,12 +128,7 @@ function Admin() {
     const handleDeletePointage = async (pointageId) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer ce pointage ?')) {
             try {
-                const response = await fetch(`http://localhost:3000/api/badgeLogEvent/${pointageId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                    }
-                });
+                const response = await authService.delete(`/badgeLogEvent/${pointageId}`);
                 if (!response.ok) throw new Error('Erreur lors de la suppression');
                 await fetchPointages();
             } catch (error) {
@@ -131,14 +139,7 @@ function Admin() {
 
     const handleEditPointage = async (pointageId, updatedData) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/badgeLogEvent/${pointageId}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedData)
-            });
+            const response = await authService.put(`/badgeLogEvent/${pointageId}`, updatedData);
             
             if (!response.ok) throw new Error('Erreur lors de la modification');
             await fetchPointages();

@@ -4,12 +4,12 @@ services:
       context: ./reverse-proxy
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
-      - ASPNETCORE_URLS=http://+:8080
+      - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
-      # Override the backend address to point to the Docker service
-      - ReverseProxy__Clusters__badgeur-api__Destinations__badgeur-api/destination1__Address=http://badgeur-backend:8080/
+      - >-
+        ReverseProxy__Clusters__badgeur-api__Destinations__badgeur-api/destination1__Address=http://badgeur-backend:8080/
     depends_on:
       - badgeur-backend
     networks:
@@ -20,12 +20,25 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     expose:
-      - "8080"
+      - '8080'
     environment:
-      - ASPNETCORE_URLS=http://+:8080
+      - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - badgeur-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - 'REACT_APP_API_URL=http://localhost:8080'
+    depends_on:
+      - reverse-proxy
+    networks:
+      - badgeur-network 
 
 networks:
   badgeur-network:
