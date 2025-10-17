@@ -1,4 +1,4 @@
-# Use .NET 8 SDK (includes everything we need)
+# Use .NET 8 SDK
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
 # Set working directory

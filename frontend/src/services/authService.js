@@ -1,7 +1,9 @@
-// Service d'authentification pour gérer les tokens JWT
+
+import API_URL from '../config/api'
+
 class AuthService {
     constructor() {
-        this.baseURL = ''; // URL de base de l'API (vide car on utilise des routes relatives)
+        this.baseURL = API_URL; // Préfixe toutes les requêtes avec API_URL (ex: http://localhost:8080)
     }
 
     // Récupère le token d'accès depuis le localStorage
@@ -30,7 +32,8 @@ class AuthService {
     async authenticatedFetch(url, options = {}) {
         const token = this.getAccessToken();
         console.log('Token d\'authentification:', token ? 'Présent' : 'Absent');
-        console.log('URL de la requête:', url);
+        const absoluteUrl = url.startsWith('http') ? url : `${this.baseURL}${url}`;
+        console.log('URL de la requête:', absoluteUrl);
         console.log('Options de la requête:', options);
         
         if (!token) {
@@ -45,7 +48,7 @@ class AuthService {
 
         console.log('Headers de la requête:', defaultHeaders);
 
-        const response = await fetch(url, {
+        const response = await fetch(absoluteUrl, {
             ...options,
             headers: defaultHeaders
         });

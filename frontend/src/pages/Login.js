@@ -6,6 +6,7 @@ import icon from '../assets/icon.png';
 import person from '../assets/person-icon.svg';
 import emailIcon from '../assets/email.svg';
 import lockIcon from '../assets/lock.svg';
+import API_URL from '../config/api';
 
 function Login({ onSubmit }) {
     const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ function Login({ onSubmit }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('/login/', {
+            const res = await fetch(`${API_URL}/login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
