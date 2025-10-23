@@ -26,16 +26,17 @@ namespace badgeur_backend.Endpoints
                 if (!clocks.Any()) return Results.NotFound("No clock entities found");
 
                 return Results.Ok(clocks);
-            }).WithDescription("Get all clocks entities");
+            }).WithDescription("Get all clocks entities.");
 
             group.MapGet("/{id:long}", async (long id, ClocksService clocksService) =>
             {
                 var clocks = await clocksService.GetClocksByIdAsync(id);
 
-                if (clocks == null) return Results.NotFound("Clock entity found");
+                if (clocks == null) return Results.NotFound("No clock entity found");
 
                 return Results.Ok(clocks);
-            });
+            }).WithDescription("Get clocks entity by ID.");
+
         }
     }
 }

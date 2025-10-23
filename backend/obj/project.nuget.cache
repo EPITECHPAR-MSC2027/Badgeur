@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "69fgCql/EnE=",
+  "dgSpecHash": "q3ew06JBZdQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\mrand\\source\\repos\\Badgeur\\backend\\badgeur-backend.csproj",
+  "projectFilePath": "C:\\Users\\mrand\\Source\\Repos\\Badgeur\\backend\\badgeur-backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.20\\microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",
     "C:\\Users\\mrand\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\8.0.20\\microsoft.dotnet.ilcompiler.8.0.20.nupkg.sha512",

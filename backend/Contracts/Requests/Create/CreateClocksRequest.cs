@@ -1,5 +1,8 @@
-﻿namespace badgeur_backend.Contracts.Requests.Create
+﻿using System.Text.Json.Serialization;
+
+namespace badgeur_backend.Contracts.Requests.Create
 {
+    [JsonSerializable(typeof(CreateClocksRequest))]
     public class CreateClocksRequest
     {
         public long UserId { get; set; }

@@ -73,6 +73,38 @@ namespace badgeur_backend.Services
             return CreateBadgeLogEventResponse(ble);
         }
 
+        public async Task<UserSummaryResponse> GetUserSummaryAsync(long id)
+        {
+            DateTime cutoffDate = DateTime.UtcNow.Date.AddDays(-7);
+
+            List<BadgeLogEventResponse> listOfBadgeLogEvents = await GetBadgeLogEventsByUserIdAsync(id);
+
+            List<DateTimeOffset> arrivalTimes = listOfBadgeLogEvents
+                .Where(e => e.BadgedAt.Date >= cutoffDate)
+                .GroupBy(e => e.BadgedAt.Date)
+                .Select(g.Min(e => e.BadgedAt))
+                .OrderBy(d => d)
+                .Select(d => new DateTimeOffset(d, TimeSpan.Zero))
+                .ToList();
+
+            List<DateTimeOffset> departureTimes = listOfBadgeLogEvents
+                .Where(e => e.BadgedAt.Date >= cutoffDate)
+                .GroupBy(e => e.BadgedAt.Date)
+                .Select(g.Max(e => e.BadgedAt))
+                .OrderBy(d => d)
+                .Select(d => new DateTimeOffset(d, TimeSpan.Zero))
+                .ToList();
+
+            return new UserSummaryResponse
+            {
+                UserId = id,
+                Days = arrivalTimes
+                    .Zip(departureTimes, (arrival, departure) =>
+                        new UserDayInterval { Arrival = arrival, Departure = departure })
+                    .ToList()
+            };
+        }
+
         public BadgeLogEventResponse CreateBadgeLogEventResponse(BadgeLogEvent badgeLogEvent)
         {
             return new BadgeLogEventResponse
