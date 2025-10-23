@@ -15,4 +15,4 @@ jobs:
     
     - name: Launch the docker-compose
       working-directory: ./
-      run: docker-compose -f docker-compose.prod.yml up --build
+      run: docker compose -f docker-compose.prod.yml up --build
