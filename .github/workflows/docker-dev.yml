@@ -16,3 +16,6 @@ jobs:
     - name: Launch the docker-compose
       working-directory: ./
       run: docker compose -f docker-compose.dev.yml up --build
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.dev.yml" down
