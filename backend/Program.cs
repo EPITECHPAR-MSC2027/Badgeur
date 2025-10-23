@@ -6,11 +6,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (File.Exists(".env"))
+{
+    DotNetEnv.Env.Load();
+}
+
+// Add environment variables to configuration
+builder.Configuration.AddEnvironmentVariables();
+
 // --- Service configuration ---
 builder.Services.AddSupabase(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddAuthorization();
 
