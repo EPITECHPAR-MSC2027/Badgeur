@@ -23,6 +23,12 @@ services:
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
+      - Supabase__Url=${SUPABASE_URL}
+      - Supabase__Key=${SUPABASE_KEY}
+      - Authentication__ValidIssuer=${SUPABASE_URL} 
+      - Authentication__ValidAudience=authenticated
+      - Authentication__JwtSecret=${JWT_SECRET}
+
     networks:
       - badgeur-network
 

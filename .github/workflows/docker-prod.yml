@@ -8,7 +8,7 @@ on:
 
 jobs:
   docker:
-    timeout-minutes: 10
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -16,9 +16,15 @@ jobs:
     - name: Build the docker-compose
       working-directory: ./
       run: docker compose -f docker-compose.prod.yml build
+
     - name: Run the docker-compose
       working-directory: ./
       run: docker compose -f docker-compose.prod.yml up
+      env: 
+            SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+            SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     - name: Stop containers
       if: always()
-      run: docker-compose -f "docker-compose.prod.yml" down
+      run: docker compose -f "docker-compose.prod.yml" down
