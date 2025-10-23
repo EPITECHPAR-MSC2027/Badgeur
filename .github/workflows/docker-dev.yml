@@ -8,8 +8,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # If your secrets are in a GitHub Environment named "preprod", uncomment:
-    # environment: preprod
+
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -24,7 +23,7 @@ jobs:
           test -n "$SUPABASE_KEY" || (echo "SUPABASE_KEY missing" && exit 1)
           test -n "$JWT_SECRET"   || (echo "JWT_SECRET missing" && exit 1)
 
-      - name: Compose config (fail fast if vars missing)
+      - name: Compose config
         run: docker compose -f docker-compose.dev.yml config
 
       - name: Build images
