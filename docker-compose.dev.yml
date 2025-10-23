@@ -20,6 +20,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - '8080'
+    env_file:
+      - ./backend/.env
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
