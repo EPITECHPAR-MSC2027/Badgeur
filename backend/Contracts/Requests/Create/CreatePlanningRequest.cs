@@ -1,5 +1,8 @@
-namespace badgeur_backend.Contracts.Requests
+using System.Text.Json.Serialization;
+
+namespace badgeur_backend.Contracts.Requests.Create
 {
+    [JsonSerializable(typeof(CreatePlanningRequest))]
     public class CreatePlanningRequest
     {
         public long UserId { get; set; }
