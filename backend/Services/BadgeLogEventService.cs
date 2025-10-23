@@ -82,7 +82,7 @@ namespace badgeur_backend.Services
             List<DateTimeOffset> arrivalTimes = listOfBadgeLogEvents
                 .Where(e => e.BadgedAt.Date >= cutoffDate)
                 .GroupBy(e => e.BadgedAt.Date)
-                .Select(g.Min(e => e.BadgedAt))
+                .Select(g => g.Min(e => e.BadgedAt))
                 .OrderBy(d => d)
                 .Select(d => new DateTimeOffset(d, TimeSpan.Zero))
                 .ToList();
@@ -90,7 +90,7 @@ namespace badgeur_backend.Services
             List<DateTimeOffset> departureTimes = listOfBadgeLogEvents
                 .Where(e => e.BadgedAt.Date >= cutoffDate)
                 .GroupBy(e => e.BadgedAt.Date)
-                .Select(g.Max(e => e.BadgedAt))
+                .Select(g => g.Max(e => e.BadgedAt))
                 .OrderBy(d => d)
                 .Select(d => new DateTimeOffset(d, TimeSpan.Zero))
                 .ToList();
