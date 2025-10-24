@@ -7,7 +7,7 @@ import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
 import HeatmapCalendar from '../component/HeatmapCalendar';
 
-function Analytics() {
+function UserAnalytics() {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [analyticsData, setAnalyticsData] = useState(null);
@@ -40,22 +40,43 @@ function Analytics() {
             console.log('Fetching analytics for userId:', userId);
 
             // Fetch user's KPI data and badge events for the selected period
-            const kpiResponse = await authService.get('/kpis/me');
-            const eventsResponse = await authService.get(`/badgeLogEvent/user/${userId}`);
-
+            let kpiResponse;
             let kpiData = null;
-            let events = [];
-
-            // Handle KPI response
-            if (kpiResponse.status === 404) {
-                console.log('No KPI data found');
-                kpiData = null;
-            } else if (kpiResponse.ok) {
-                kpiData = await kpiResponse.json();
-                console.log('KPI data:', kpiData);
-            } else {
-                console.error('Error fetching KPI:', kpiResponse.status);
+            
+            try {
+                // Essayer d'abord l'endpoint /kpis/me
+                kpiResponse = await authService.get('/kpis/me');
+                if (kpiResponse.status === 404) {
+                    console.log('No KPI data found');
+                    kpiData = null;
+                } else if (kpiResponse.ok) {
+                    kpiData = await kpiResponse.json();
+                    console.log('KPI data:', kpiData);
+                } else {
+                    console.error('Error fetching KPI:', kpiResponse.status);
+                }
+            } catch (error) {
+                console.log('Endpoint /kpis/me non accessible, tentative avec /kpis/{userId}');
+                try {
+                    // Fallback vers l'endpoint avec userId
+                    kpiResponse = await authService.get(`/kpis/${userId}`);
+                    if (kpiResponse.status === 404) {
+                        console.log('No KPI data found');
+                        kpiData = null;
+                    } else if (kpiResponse.ok) {
+                        kpiData = await kpiResponse.json();
+                        console.log('KPI data:', kpiData);
+                    } else {
+                        console.error('Error fetching KPI:', kpiResponse.status);
+                    }
+                } catch (fallbackError) {
+                    console.error('Both KPI endpoints failed:', fallbackError);
+                    kpiData = null;
+                }
             }
+
+            const eventsResponse = await authService.get(`/badgeLogEvent/user/${userId}`);
+            let events = [];
 
             // Handle events response
             if (eventsResponse.status === 404) {
@@ -100,6 +121,7 @@ function Analytics() {
 
     const handleExport = () => {
         console.log('Export analytics data');
+        // TODO: Implémenter l'export des données
     };
 
     const calculateKPIs = () => {
@@ -110,7 +132,6 @@ function Analytics() {
         // Use backend calculated values if available
         if (kpi) {
             return {
-                teamSize: 1,
                 hoursPerDay: kpi.hoursPerDay || '00:00',
                 hoursPerWeek: kpi.hoursPerWeek || '00:00',
                 workingDays: kpi.workingDays || 0,
@@ -126,7 +147,6 @@ function Analytics() {
         const presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
 
         return {
-            teamSize: 1,
             hoursPerDay: '00:00',
             hoursPerWeek: '00:00',
             workingDays: workingDays,
@@ -142,8 +162,8 @@ function Analytics() {
         <div className="analytics-page">
             <div className="analytics-header">
                 <div>
-                    <h1>Dashboard Analytics</h1>
-                    <p>Analyse et statistiques de présence</p>
+                    <h1>Mes Analytics</h1>
+                    <p>Analyse de mes données personnelles</p>
                 </div>
                 <button className="export-btn" onClick={handleExport}>
                     📊 Exporter
@@ -241,4 +261,4 @@ function Analytics() {
     );
 }
 
-export default Analytics;
+export default UserAnalytics;

@@ -10,6 +10,7 @@ import ParamTre from './pages/Parametre';
 import Login from './pages/Login';
 import GererEquipe from './pages/GererEquipe';
 import Admin from './pages/Admin';
+import UserAnalytics from './pages/UserAnalytics';
 import authService from './services/authService';
 
 function App() {
@@ -109,6 +110,14 @@ function App() {
             <RequireAdmin>
               <Admin />
             </RequireAdmin>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <RequireAuth>
+              <UserAnalytics />
+            </RequireAuth>
           }
         />
 

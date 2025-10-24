@@ -96,7 +96,7 @@
 
 .charts-section {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 30px;
     margin-bottom: 30px;
 }
@@ -177,6 +177,99 @@
     transform: translateY(-2px);
 }
 
+.team-members-section {
+    background: var(--color-primary);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.team-members-section h3 {
+    margin: 0 0 20px 0;
+    color: var(--color-secondary);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.team-members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.member-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.member-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.member-header h4 {
+    margin: 0;
+    color: var(--color-secondary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.member-role {
+    background: var(--color-third);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.member-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--color-second-text);
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 14px;
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-second-text);
+    font-size: 16px;
+    background: var(--color-primary);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
 @media (max-width: 768px) {
     .charts-section {
         grid-template-columns: 1fr;
@@ -194,5 +287,13 @@
     
     .filters-section {
         flex-direction: column;
+    }
+    
+    .team-members-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .member-stats {
+        grid-template-columns: 1fr;
     }
 }

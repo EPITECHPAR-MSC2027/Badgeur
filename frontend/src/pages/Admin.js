@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import '../style/Admin.css';
 import authService from '../services/authService';
 import UsersSection from '../component/UsersSection';
@@ -7,10 +8,12 @@ import PointagesSection from '../component/PointagesSection';
 import PlanningsSection from '../component/PlanningsSection';
 import TypeDemandesSection from '../component/TypeDemandesSection';
 import SeedDataPanel from '../component/SeedDataPanel';
+import AdminAnalytics from './AdminAnalytics';
 // Use authService with baseURL handled centrally
 
 
 function Admin() {
+    const [searchParams] = useSearchParams();
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
 
@@ -30,6 +33,14 @@ function Admin() {
         fetchUsers();
         fetchTeams();
     }, []);
+
+    // Gérer le paramètre de query pour afficher directement analytics
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab === 'analytics') {
+            setActiveSection('analytics');
+        }
+    }, [searchParams]);
 
     const fetchUsers = async () => {
         try {
@@ -185,6 +196,12 @@ function Admin() {
                     >
                         Types de demande
                     </button>
+                    <button 
+                        className={`nav-button ${activeSection === 'analytics' ? 'active' : ''}`}
+                        onClick={() => setActiveSection('analytics')}
+                    >
+                        Analytics
+                    </button>
                 </div>
             </header>
             <div className="admin-page">
@@ -199,6 +216,8 @@ function Admin() {
                      />
                  ) : activeSection === 'plannings' ? (
                      <PlanningsSection />
+                 ) : activeSection === 'analytics' ? (
+                     <AdminAnalytics />
                  ) : (
                      <TypeDemandesSection />
                  )}
