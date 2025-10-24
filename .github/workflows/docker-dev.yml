@@ -23,9 +23,10 @@ jobs:
             dotnet-version: 8.0.x
 
       - name: Restore and run tests
+        working-directory: ./badgeur-backend-tests
         run: |
             dotnet restore
-            dotnet test ./badgeur-backend-tests/*.csproj --configuration Release --nologo
+            dotnet test --configuration Release --nologo
 
       - name: Sanity check variables (masked)
         run: |
