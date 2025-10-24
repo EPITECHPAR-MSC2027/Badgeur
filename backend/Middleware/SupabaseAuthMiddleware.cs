@@ -15,6 +15,12 @@ namespace badgeur_backend.Middleware
         // Intercepts each HTTP request and validates the Authorization header
         public async Task InvokeAsync(HttpContext context, Client supabaseClient)
         {
+            // Allow CORS preflight without auth
+            if (string.Equals(context.Request.Method, "OPTIONS", StringComparison.OrdinalIgnoreCase))
+            {
+                await _next(context);
+                return;
+            }
             if (context.Request.Path.StartsWithSegments("/login") ||
                 context.Request.Path.StartsWithSegments("/register")) 
             {
@@ -37,8 +43,8 @@ namespace badgeur_backend.Middleware
                 return;
             }
 
-            // Check that the scheme is "Bearer" (case-sensitive)
-            if (authenticationHeaderValue.Scheme != "Bearer")
+            // Check that the scheme is "Bearer" (case-insensitive)
+            if (!string.Equals(authenticationHeaderValue.Scheme, "Bearer", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.StatusCode = 401;
                 return;
@@ -65,7 +71,7 @@ namespace badgeur_backend.Middleware
                 // Call the next middleware/component in the pipeline.
                 await _next(context);
             } 
-            catch
+            catch (Exception)
             {
                 // If an error occurs during validation, we return a 401 error
                 context.Response.StatusCode = 401;

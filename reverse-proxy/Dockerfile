@@ -1,30 +1,20 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Use .NET 8 SDK
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+# Set working directory
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-
-# This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["reverse-proxy.csproj", "."]
-RUN dotnet restore "./reverse-proxy.csproj"
+# Copy everything from current directory
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./reverse-proxy.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./reverse-proxy.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Restore NuGet packages
+RUN dotnet restore reverse-proxy.csproj
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "reverse-proxy.dll"]
+# Expose port
+EXPOSE 8080
+
+# Set environment to listen on all interfaces
+ENV ASPNETCORE_URLS=http://+:8080
+
+# Run the application
+CMD ["dotnet", "run", "--project", "reverse-proxy.csproj", "--no-launch-profile"]

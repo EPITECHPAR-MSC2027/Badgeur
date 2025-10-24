@@ -12,6 +12,7 @@ namespace badgeur_backend.Services
         // Allows us to calculate the two different variants of each KPI
         public enum Period
         {
+            ONE_WEEK = 7,
             TWO_WEEKS = 14,
             FOUR_WEEKS = 28
         };
@@ -95,15 +96,21 @@ namespace badgeur_backend.Services
             };
 
             var response = await _client.From<UserKPI>().Where(n => n.UserId == userId).Get();
-            var userKPI = response.Models.FirstOrDefault();
+            var existingUserKPI = response.Models.FirstOrDefault();
 
-            if (userKPI == null)
+            if (existingUserKPI == null)
             {
+                // Insert new KPI record
                 response = await _client.From<UserKPI>().Insert(userKPIs);
-                userKPI = response.Models.FirstOrDefault();
+                return response.Models.FirstOrDefault();
             }
-
-            return userKPI;
+            else
+            {
+                // Update existing KPI record
+                userKPIs.Id = existingUserKPI.Id;
+                response = await _client.From<UserKPI>().Where(n => n.Id == existingUserKPI.Id).Update(userKPIs);
+                return response.Models.FirstOrDefault();
+            }
         }
 
 

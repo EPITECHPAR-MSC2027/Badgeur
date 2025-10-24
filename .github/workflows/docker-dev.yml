@@ -1,0 +1,48 @@
+name: Docker-Compose - Dev Build
+
+on:
+  push:
+    branches: [ "preprod" ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      JWT_SECRET:   ${{ secrets.JWT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
+
+      - name: Restore and run tests
+        working-directory: ./badgeur-backend-tests
+        run: |
+            dotnet restore
+            dotnet test --configuration Release --nologo
+
+      - name: Sanity check variables (masked)
+        run: |
+            test -n "$SUPABASE_URL" || (echo "SUPABASE_URL missing" && exit 1)
+            test -n "$SUPABASE_KEY" || (echo "SUPABASE_KEY missing" && exit 1)
+            test -n "$JWT_SECRET"   || (echo "JWT_SECRET missing" && exit 1)
+
+      - name: Compose config
+        run: docker compose -f docker-compose.dev.yml config
+
+      - name: Build images
+        run: docker compose -f docker-compose.dev.yml build
+
+      - name: Run stack
+        run: docker compose -f docker-compose.dev.yml up -d --build
+
+      - name: Stop containers
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down

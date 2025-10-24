@@ -7,10 +7,26 @@
   ```bash
   cd backend
   dotnet run
-
+  ```
 ## ⚛️ Frontend (React)
 - Lancer l’interface
   ```bash
-  cd frontend
+  cd frontend && npm install chart.js
   npm start
+  ```
 
+## Docker Compose
+- Spin up containers (dev)
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+- Spin up containers (prod)
+```bash
+docker-compose -f docker-compose.prod.yml up --build
+```
+
+- Spin down containers
+```bash
+docker-compose down
+```
