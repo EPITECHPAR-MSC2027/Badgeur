@@ -1,6 +1,7 @@
 using badgeur_backend.Endpoints;
 using badgeur_backend.Extensions;
 using badgeur_backend.Services;
+using badgeur_backend.Services.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -43,6 +44,10 @@ builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
 builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
+
+// --- Interfaces/Adapters/Misc ---
+builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
+builder.Services.AddScoped<IUserLookup, UserServiceAdapter>();
 
 var app = builder.Build();
 

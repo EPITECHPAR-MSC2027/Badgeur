@@ -6,7 +6,7 @@ using TableAttribute = Supabase.Postgrest.Attributes.TableAttribute;
 namespace badgeur_backend.Models;
 
 [Table("users")]
-    public class User : BaseModel
+public class User : BaseModel
 {
     [PrimaryKey("id", false)]
     public long Id { get; set; }

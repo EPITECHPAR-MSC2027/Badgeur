@@ -124,7 +124,7 @@ namespace badgeur_backend.Services
 
             return false;
         }
-        
+
         public async Task<List<UserResponse>> GetUsersByTeamIdAsync(long teamId)
         {
             var response = await _client.From<User>().Where(n => n.TeamId == teamId).Get();
@@ -132,6 +132,6 @@ namespace badgeur_backend.Services
             return response.Models.Select(u => CreateUserResponse(u)).ToList();
         }
 
-            
+
     }
 }
