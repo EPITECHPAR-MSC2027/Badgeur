@@ -16,12 +16,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+  
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+            dotnet-version: 8.0.x
+
+      - name: Restore and run tests
+        run: |
+            dotnet restore
+            dotnet test ./badgeur-backend-tests/*.csproj --configuration Release --nologo
 
       - name: Sanity check variables (masked)
         run: |
-          test -n "$SUPABASE_URL" || (echo "SUPABASE_URL missing" && exit 1)
-          test -n "$SUPABASE_KEY" || (echo "SUPABASE_KEY missing" && exit 1)
-          test -n "$JWT_SECRET"   || (echo "JWT_SECRET missing" && exit 1)
+            test -n "$SUPABASE_URL" || (echo "SUPABASE_URL missing" && exit 1)
+            test -n "$SUPABASE_KEY" || (echo "SUPABASE_KEY missing" && exit 1)
+            test -n "$JWT_SECRET"   || (echo "JWT_SECRET missing" && exit 1)
 
       - name: Compose config
         run: docker compose -f docker-compose.dev.yml config
