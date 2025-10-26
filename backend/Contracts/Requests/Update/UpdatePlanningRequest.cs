@@ -1,5 +1,8 @@
-namespace badgeur_backend.Contracts.Requests
+using System.Text.Json.Serialization;
+
+namespace badgeur_backend.Contracts.Requests.Update
 {
+    [JsonSerializable(typeof(UpdatePlanningRequest))]
     public class UpdatePlanningRequest
     {
         public DateTime Date { get; set; }

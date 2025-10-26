@@ -1,4 +1,4 @@
-﻿﻿using badgeur_backend.Services;
+﻿﻿﻿using badgeur_backend.Services;
 using badgeur_backend.Models;
 using Supabase;
 
@@ -8,7 +8,7 @@ namespace badgeur_backend.Endpoints
     {
         public static void MapUserKPIEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/kpis");
+            var group = app.MapGroup("/reports");
 
             // Endpoint pour récupérer ses propres KPIs
             group.MapGet("/me", async (UserKPIService userKPIService, BadgeLogEventService badgeLogEventService, HttpContext context) =>
@@ -23,7 +23,7 @@ namespace badgeur_backend.Endpoints
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
                 var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
-                
+
                 if (connectedUser == null)
                 {
                     return Results.Unauthorized();
@@ -84,7 +84,7 @@ namespace badgeur_backend.Endpoints
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
                 var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
-                
+
                 if (connectedUser == null)
                 {
                     return Results.Unauthorized();
