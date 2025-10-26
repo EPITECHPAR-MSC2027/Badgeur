@@ -7,9 +7,8 @@ services:
       - '8080:8080'
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'
-      - ASPNETCORE_ENVIRONMENT=Development
-      - >-
-        ReverseProxy__Clusters__badgeur-api__Destinations__badgeur-api/destination1__Address=http://badgeur-backend:8080/
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ReverseProxy__Clusters__badgeur-api__Destinations__badgeur-api/destination1__Address=http://badgeur-backend:8080/
     depends_on:
       - badgeur-backend
     networks:
@@ -21,9 +20,17 @@ services:
       dockerfile: Dockerfile
     expose:
       - '8080'
+    env_file:
+      - ./backend/appsettings.json
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
+      - Supabase__Url=${SUPABASE_URL}
+      - Supabase__Key=${SUPABASE_KEY}
+      - Authentication__ValidIssuer=${SUPABASE_URL} 
+      - Authentication__ValidAudience=authenticated
+      - Authentication__JwtSecret=${JWT_SECRET}
+
     networks:
       - badgeur-network
 

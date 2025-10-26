@@ -16,10 +16,16 @@
   ```
 
 ## Docker Compose
-- Spin up containers
+- Spin up containers (dev)
 ```bash
-docker-compose up --build
+docker-compose -f docker-compose.dev.yml up --build
 ```
+
+- Spin up containers (prod)
+```bash
+docker-compose -f docker-compose.prod.yml up --build
+```
+
 - Spin down containers
 ```bash
 docker-compose down

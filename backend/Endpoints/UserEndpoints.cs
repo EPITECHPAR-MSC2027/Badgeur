@@ -1,4 +1,6 @@
-﻿using badgeur_backend.Contracts.Requests;
+﻿using badgeur_backend.Contracts.Requests.Create;
+using badgeur_backend.Contracts.Requests.Update;
+using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Services;
 
 namespace badgeur_backend.Endpoints
@@ -57,9 +59,11 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(updatedUser);
             }).WithDescription("Update the user's information");
 
-            group.MapGet("/{id:long}/clocks", async (long id, UpdateUserRequest request, BadgeLogEventService badgeLogEventService) =>
+            group.MapGet("/{id:long}/clocks", async (long id, BadgeLogEventService badgeLogEventService) =>
             {
-                // Return the 7 last arrivals and 7 last departures of a user
+                UserSummaryResponse userSummary = await badgeLogEventService.GetUserSummaryAsync(id);
+
+                return Results.Ok(userSummary);
             }).WithDescription("Get a summary of the arrivals and departures of an employee.");
 
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>

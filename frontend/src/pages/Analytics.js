@@ -107,60 +107,32 @@ function Analytics() {
 
         const { kpi, events } = analyticsData;
         
-        let avgDailyHours = 0;
-        let avgWeeklyHours = 0;
-        let presenceRate = 0;
-        let absenceRate = 0;
-
-        if (kpi && (kpi.raw7 || kpi.raw14)) {
-            try {
-                // Parse raw7 if available, else raw14 (format "HH:mm")
-                const sourceRaw = kpi.raw7 || kpi.raw14;
-                const timeParts = sourceRaw.split(':');
-                if (timeParts.length === 2) {
-                    const hours = parseInt(timeParts[0], 10);
-                    const minutes = parseInt(timeParts[1], 10);
-                    avgDailyHours = hours + (minutes / 60);
-                    avgWeeklyHours = avgDailyHours * 5;
-                }
-            } catch (e) {
-                console.error('Error parsing RAW value:', e);
-                avgDailyHours = 0;
-            }
+        // Use backend calculated values if available
+        if (kpi) {
+            return {
+                teamSize: 1,
+                hoursPerDay: kpi.hoursPerDay || '00:00',
+                hoursPerWeek: kpi.hoursPerWeek || '00:00',
+                workingDays: kpi.workingDays || 0,
+                totalDays: kpi.totalDays || 0,
+                presenceRate: kpi.presenceRate || 0,
+                absenceRate: 100 - (kpi.presenceRate || 0)
+            };
         }
 
-        // Calculate presence rate from events
+        // Fallback calculation if no KPI data
         const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
         const totalDaysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-        presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
-        absenceRate = 100 - presenceRate;
-
-        // Parse times safely
-        const formatTime = (timeStr) => {
-            if (!timeStr) return 'N/A';
-            try {
-                const date = new Date(timeStr);
-                return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            } catch {
-                return timeStr;
-            }
-        };
+        const presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
 
         return {
             teamSize: 1,
-            avgDailyHours: avgDailyHours.toFixed(1),
-            avgWeeklyHours: avgWeeklyHours.toFixed(1),
+            hoursPerDay: '00:00',
+            hoursPerWeek: '00:00',
+            workingDays: workingDays,
+            totalDays: totalDaysInMonth,
             presenceRate: presenceRate.toFixed(1),
-            absenceRate: absenceRate.toFixed(1),
-            raat7: kpi?.raat7 ? formatTime(kpi.raat7) : 'N/A',
-            raat14: kpi?.raat14 ? formatTime(kpi.raat14) : 'N/A',
-            raat28: kpi?.raat28 ? formatTime(kpi.raat28) : 'N/A',
-            radt7: kpi?.radt7 ? formatTime(kpi.radt7) : 'N/A',
-            radt14: kpi?.radt14 ? formatTime(kpi.radt14) : 'N/A',
-            radt28: kpi?.radt28 ? formatTime(kpi.radt28) : 'N/A',
-            raw7: kpi?.raw7 || 'N/A',
-            raw14: kpi?.raw14 || 'N/A',
-            raw28: kpi?.raw28 || 'N/A'
+            absenceRate: (100 - presenceRate).toFixed(1)
         };
     };
 
@@ -217,69 +189,24 @@ function Analytics() {
                 <>
                     <div className="kpi-grid">
                         <KPICard 
-                            title="Équipe" 
-                            value={`${kpis.teamSize} personne${kpis.teamSize > 1 ? 's' : ''}`}
-                            description="Effectif total"
-                        />
-                        <KPICard 
-                            title="Heures/jour (7j)" 
-                            value={kpis.raw7 ? `${kpis.raw7}h` : 'N/A'}
-                            description="Moyenne 7 jours"
+                            title="Jours travaillés" 
+                            value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
+                            description="Sur 14 jours"
                         />
                         <KPICard 
                             title="Heures/jour" 
-                            value={`${kpis.avgDailyHours}h`}
-                            description="Moyenne quotidienne"
+                            value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
+                            description="Moyenne par jour de présence"
                         />
                         <KPICard 
                             title="Heures/semaine" 
-                            value={`${kpis.avgWeeklyHours}h`}
+                            value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
                             description="Moyenne hebdomadaire"
                         />
                         <KPICard 
                             title="Taux de présence" 
-                            value={`${kpis.presenceRate}%`}
-                            description={`${kpis.absenceRate}% d'absence`}
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée (7j)" 
-                            value={kpis.raat7}
-                            description="Moyenne 7 jours"
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée" 
-                            value={kpis.raat14}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée (28j)" 
-                            value={kpis.raat28}
-                            description="Moyenne 28 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ (7j)" 
-                            value={kpis.radt7}
-                            description="Moyenne 7 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ" 
-                            value={kpis.radt14}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ (28j)" 
-                            value={kpis.radt28}
-                            description="Moyenne 28 jours"
-                        />
-                        <KPICard 
-                            title="Heures/jour (14j)" 
-                            value={kpis.raw14 ? `${kpis.raw14}h` : 'N/A'}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heures/jour (28j)" 
-                            value={kpis.raw28 ? `${kpis.raw28}h` : 'N/A'}
-                            description="Moyenne 28 jours"
+                            value={`${kpis.presenceRate || 0}%`}
+                            description={`${kpis.absenceRate || 0}% d'absence`}
                         />
                     </div>
 
