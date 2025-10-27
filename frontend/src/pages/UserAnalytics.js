@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../style/Analytics.css';
 import '../style/Chart.css';
 import authService from '../services/authService';
@@ -6,6 +6,8 @@ import KPICard from '../component/KPICard';
 import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
 import HeatmapCalendar from '../component/HeatmapCalendar';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 function UserAnalytics() {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -13,6 +15,8 @@ function UserAnalytics() {
     const [analyticsData, setAnalyticsData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isExporting, setIsExporting] = useState(false);
+    const dashboardRef = useRef(null);
 
     const months = [
         'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -119,9 +123,62 @@ function UserAnalytics() {
         }
     };
 
-    const handleExport = () => {
-        console.log('Export analytics data');
-        // TODO: Implémenter l'export des données
+    const handleExport = async () => {
+        if (!dashboardRef.current) return;
+        
+        setIsExporting(true);
+        
+        try {
+            // Capture le dashboard en canvas
+            const canvas = await html2canvas(dashboardRef.current, {
+                scale: 2, // Meilleure qualité
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#f5f5f5'
+            });
+            
+            // Convertir le canvas en image
+            const imgData = canvas.toDataURL('image/png');
+            
+            // Créer le PDF
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            // Calculer les dimensions pour ajuster l'image au PDF
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const imgX = (pdfWidth - imgWidth * ratio) / 2;
+            const imgY = 10;
+            
+            // Ajouter l'image au PDF
+            pdf.addImage(
+                imgData, 
+                'PNG', 
+                imgX, 
+                imgY, 
+                imgWidth * ratio, 
+                imgHeight * ratio
+            );
+            
+            // Générer le nom du fichier avec la date
+            const fileName = `Mes_Analytics_${months[selectedMonth - 1]}_${selectedYear}.pdf`;
+            
+            // Télécharger le PDF
+            pdf.save(fileName);
+            
+            console.log('Export réussi:', fileName);
+        } catch (error) {
+            console.error('Erreur lors de l\'export:', error);
+            alert('Erreur lors de l\'export du PDF. Veuillez réessayer.');
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     const calculateKPIs = () => {
@@ -129,30 +186,97 @@ function UserAnalytics() {
 
         const { kpi, events } = analyticsData;
         
-        // Use backend calculated values if available
-        if (kpi) {
-            return {
-                hoursPerDay: kpi.hoursPerDay || '00:00',
-                hoursPerWeek: kpi.hoursPerWeek || '00:00',
-                workingDays: kpi.workingDays || 0,
-                totalDays: kpi.totalDays || 0,
-                presenceRate: kpi.presenceRate || 0,
-                absenceRate: 100 - (kpi.presenceRate || 0)
-            };
-        }
-
-        // Fallback calculation if no KPI data
+        // Calculate from events
         const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
         const totalDaysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
         const presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
 
+        // Calculate hours per day and per week from events
+        let totalHours = 0;
+        let totalMinutes = 0;
+        const weeklyHours = {};
+        
+        // Group events by day and calculate daily hours
+        const eventsByDay = {};
+        events.forEach(event => {
+            const date = new Date(event.badgedAt);
+            const dayKey = date.toDateString();
+            if (!eventsByDay[dayKey]) {
+                eventsByDay[dayKey] = [];
+            }
+            eventsByDay[dayKey].push(date);
+        });
+
+        // Helper function to get week number
+        const getWeekNumber = (date) => {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        };
+
+        // Calculate total hours from paired events (in/out)
+        Object.values(eventsByDay).forEach(dayEvents => {
+            // Sort events by time
+            dayEvents.sort((a, b) => a - b);
+            
+            // Pair events (entry-exit, entry-exit, ...)
+            for (let i = 0; i < dayEvents.length - 1; i += 2) {
+                const entry = dayEvents[i];
+                const exit = dayEvents[i + 1];
+                const diffMs = exit - entry;
+                const hours = Math.floor(diffMs / 3600000);
+                const minutes = Math.floor((diffMs % 3600000) / 60000);
+                totalHours += hours;
+                totalMinutes += minutes;
+
+                // Track by week
+                const weekNumber = getWeekNumber(entry);
+                if (!weeklyHours[weekNumber]) {
+                    weeklyHours[weekNumber] = { hours: 0, minutes: 0 };
+                }
+                weeklyHours[weekNumber].hours += hours;
+                weeklyHours[weekNumber].minutes += minutes;
+            }
+        });
+
+        // Normalize minutes to hours
+        totalHours += Math.floor(totalMinutes / 60);
+        totalMinutes = totalMinutes % 60;
+
+        // Calculate average hours per day of presence
+        // Convert everything to minutes for accurate division
+        const totalMinutesOverall = totalHours * 60 + totalMinutes;
+        const avgMinutesPerDay = workingDays > 0 ? totalMinutesOverall / workingDays : 0;
+        const avgHoursPerDayFinal = Math.floor(avgMinutesPerDay / 60);
+        const avgMinutesPerDayFinal = Math.floor(avgMinutesPerDay % 60);
+        const hoursPerDay = `${avgHoursPerDayFinal.toString().padStart(2, '0')}:${avgMinutesPerDayFinal.toString().padStart(2, '0')}`;
+
+        // Calculate average hours per week
+        const weekCount = Object.keys(weeklyHours).length;
+        let avgWeekHours = 0;
+        let avgWeekMinutes = 0;
+        if (weekCount > 0) {
+            // Convert each week to total minutes first
+            let totalWeekMinutes = 0;
+            Object.values(weeklyHours).forEach(week => {
+                const weekTotalMinutes = week.hours * 60 + week.minutes;
+                totalWeekMinutes += weekTotalMinutes;
+            });
+            // Calculate average minutes per week
+            const avgMinutesPerWeek = totalWeekMinutes / weekCount;
+            avgWeekHours = Math.floor(avgMinutesPerWeek / 60);
+            avgWeekMinutes = Math.floor(avgMinutesPerWeek % 60);
+        }
+        const hoursPerWeek = `${avgWeekHours.toString().padStart(2, '0')}:${avgWeekMinutes.toString().padStart(2, '0')}`;
+
+        // Use backend KPI values if available, otherwise use calculated values
         return {
-            hoursPerDay: '00:00',
-            hoursPerWeek: '00:00',
-            workingDays: workingDays,
+            hoursPerDay: (kpi && kpi.hoursPerDay && kpi.hoursPerDay !== '00:00') ? kpi.hoursPerDay : hoursPerDay,
+            hoursPerWeek: (kpi && kpi.hoursPerWeek && kpi.hoursPerWeek !== '00:00') ? kpi.hoursPerWeek : hoursPerWeek,
+            workingDays: kpi ? (kpi.workingDays || workingDays) : workingDays,
             totalDays: totalDaysInMonth,
-            presenceRate: presenceRate.toFixed(1),
-            absenceRate: (100 - presenceRate).toFixed(1)
+            presenceRate: (kpi && kpi.presenceRate) ? parseFloat(kpi.presenceRate).toFixed(2) : presenceRate.toFixed(2),
+            absenceRate: (kpi && kpi.presenceRate) ? (100 - parseFloat(kpi.presenceRate)).toFixed(2) : (100 - presenceRate).toFixed(2)
         };
     };
 
@@ -165,11 +289,16 @@ function UserAnalytics() {
                     <h1>Mes Analytics</h1>
                     <p>Analyse de mes données personnelles</p>
                 </div>
-                <button className="export-btn" onClick={handleExport}>
-                    📊 Exporter
+                <button 
+                    className="export-btn" 
+                    onClick={handleExport}
+                    disabled={isExporting || loading}
+                >
+                    {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
                 </button>
             </div>
 
+            <div ref={dashboardRef} className="dashboard-content">
             <div className="filters-section">
                 <div className="filter-group">
                     <label>Mois:</label>
@@ -257,6 +386,7 @@ function UserAnalytics() {
                     </div>
                 </>
             )}
+            </div>
         </div>
     );
 }

@@ -1,57 +1,49 @@
 import React from 'react';
 import {
     Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
+    ArcElement,
     Title,
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
+    ArcElement,
     Title,
     Tooltip,
     Legend
 );
 
 function PresenceChart({ data }) {
-    // Calculate daily presence data
+    // Calculate total days with presence and absence
     const dailyData = {};
     data.forEach(event => {
         const date = new Date(event.badgedAt);
         const day = date.getDate();
         if (!dailyData[day]) {
-            dailyData[day] = { presence: 0, absence: 0 };
+            dailyData[day] = true; // Mark as present
         }
-        dailyData[day].presence += 1;
     });
 
-    // Convert to arrays for chart
-    const days = Object.keys(dailyData).map(Number).sort((a, b) => a - b);
-    const presenceData = days.map(day => dailyData[day].presence);
-    const absenceData = days.map(day => Math.max(0, 1 - dailyData[day].presence)); // Simplified absence calculation
+    // Count presence and absence days
+    const presenceDays = Object.keys(dailyData).length;
+    
+    // Get total days in the current month (we need to infer month from data or context)
+    const currentDate = data.length > 0 ? new Date(data[0].badgedAt) : new Date();
+    const totalDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const absenceDays = totalDays - presenceDays;
 
     const chartData = {
-        labels: days.map(day => day.toString()),
+        labels: ['Présence', 'Absence'],
         datasets: [
             {
-                label: 'Présence',
-                data: presenceData,
-                backgroundColor: '#10b981',
-                borderColor: '#059669',
-                borderWidth: 1
-            },
-            {
-                label: 'Absence',
-                data: absenceData,
-                backgroundColor: '#ef4444',
-                borderColor: '#dc2626',
-                borderWidth: 1
+                label: 'Jours',
+                data: [presenceDays, absenceDays],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderColor: ['#059669', '#dc2626'],
+                borderWidth: 2,
+                hoverOffset: 4
             }
         ]
     };
@@ -62,33 +54,33 @@ function PresenceChart({ data }) {
         plugins: {
             legend: {
                 position: 'top',
+                labels: {
+                    font: {
+                        size: 14
+                    },
+                    padding: 15
+                }
             },
             title: {
                 display: false
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 1,
-                ticks: {
-                    callback: function(value) {
-                        return (value * 100) + '%';
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed || 0;
+                        const percentage = ((value / totalDays) * 100).toFixed(2);
+                        return `${label}: ${value} jours (${percentage}%)`;
                     }
                 }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Jours du mois'
-                }
             }
-        }
+        },
+        cutout: '60%' // Makes it a donut (inner circle)
     };
 
     return (
         <div className="chart-wrapper">
-            <Bar data={chartData} options={options} />
+            <Doughnut data={chartData} options={options} />
         </div>
     );
 }
