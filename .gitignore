@@ -16,7 +16,6 @@ packages/
 # User secrets and environment files (e.g., for Supabase keys)
 *.env
 secrets.json
-appsettings.json
 appsettings.Development.json
 
 # Test http requests
