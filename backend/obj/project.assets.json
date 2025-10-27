@@ -1391,31 +1391,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\mrand\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\eya12\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\mrand\\source\\repos\\EPITECHPAR-MSC2027\\Badgeur\\backend\\badgeur-backend.csproj",
+      "projectUniqueName": "C:\\Users\\eya12\\Desktop\\Badgeur\\backend\\badgeur-backend.csproj",
       "projectName": "badgeur-backend",
-      "projectPath": "C:\\Users\\mrand\\source\\repos\\EPITECHPAR-MSC2027\\Badgeur\\backend\\badgeur-backend.csproj",
-      "packagesPath": "C:\\Users\\mrand\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\mrand\\source\\repos\\EPITECHPAR-MSC2027\\Badgeur\\backend\\obj\\",
+      "projectPath": "C:\\Users\\eya12\\Desktop\\Badgeur\\backend\\badgeur-backend.csproj",
+      "packagesPath": "C:\\Users\\eya12\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\eya12\\Desktop\\Badgeur\\backend\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\mrand\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\eya12\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1433,8 +1426,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -1498,7 +1490,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
