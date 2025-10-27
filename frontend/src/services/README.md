@@ -1,3 +1,20 @@
+# Services de l'Application Badgeur
+
+Ce dossier contient tous les services pour communiquer avec l'API backend.
+
+## Services disponibles
+
+- **authService** : Authentification JWT
+- **teamService** : Gestion des équipes
+- **planningService** : Gestion des plannings
+- **typeDemandeService** : Gestion des types de demandes
+- **statsService** : Statistiques et analytics
+- **floorService** : Gestion des étages
+- **roomService** : Gestion des salles
+- **workspaceService** : Gestion des espaces de travail
+
+---
+
 # Service d'Authentification JWT
 
 Ce service gère l'authentification JWT pour l'application Badgeur.
@@ -136,6 +153,282 @@ function MyComponent() {
     return (
         <div>
             {/* Votre interface utilisateur */}
+        </div>
+    )
+}
+```
+
+---
+
+# Services de Gestion des Espaces
+
+## floorService
+
+Service pour gérer les étages (floors).
+
+### Méthodes disponibles
+
+#### `getAllFloors()`
+Récupère tous les étages.
+
+```javascript
+import floorService from '../services/floorService'
+
+const floors = await floorService.getAllFloors()
+// Retourne: [{id: 1, floorNumber: 0}, {id: 2, floorNumber: 1}, ...]
+```
+
+#### `getFloorById(id)`
+Récupère un étage par son ID.
+
+```javascript
+const floor = await floorService.getFloorById(1)
+// Retourne: {id: 1, floorNumber: 0} ou null
+```
+
+#### `createFloor(floorData)`
+Crée un nouvel étage.
+
+```javascript
+const newFloorId = await floorService.createFloor({
+    floorNumber: 2
+})
+// Retourne: l'ID du nouvel étage ou null en cas d'erreur
+```
+
+#### `updateFloor(id, floorData)`
+Met à jour un étage existant.
+
+```javascript
+const updatedFloor = await floorService.updateFloor(1, {
+    floorNumber: 3
+})
+// Retourne: l'étage mis à jour ou null
+```
+
+#### `deleteFloor(id)`
+Supprime un étage.
+
+```javascript
+const success = await floorService.deleteFloor(1)
+// Retourne: true si succès, false sinon
+```
+
+---
+
+## roomService
+
+Service pour gérer les salles (rooms).
+
+### Méthodes disponibles
+
+#### `getAllRooms()`
+Récupère toutes les salles.
+
+```javascript
+import roomService from '../services/roomService'
+
+const rooms = await roomService.getAllRooms()
+// Retourne: [{id: 1, name: "Salle A", idFloor: 1}, ...]
+```
+
+#### `getRoomById(id)`
+Récupère une salle par son ID.
+
+```javascript
+const room = await roomService.getRoomById(1)
+```
+
+#### `getRoomsByFloorId(floorId)`
+Récupère toutes les salles d'un étage spécifique.
+
+```javascript
+const rooms = await roomService.getRoomsByFloorId(1)
+// Retourne: [{id: 1, name: "Salle A", idFloor: 1}, ...]
+```
+
+#### `createRoom(roomData)`
+Crée une nouvelle salle.
+
+```javascript
+const newRoomId = await roomService.createRoom({
+    name: "Salle de réunion",
+    idFloor: 1
+})
+```
+
+#### `updateRoom(id, roomData)`
+Met à jour une salle existante.
+
+```javascript
+const updatedRoom = await roomService.updateRoom(1, {
+    name: "Salle de conférence",
+    idFloor: 2
+})
+```
+
+#### `deleteRoom(id)`
+Supprime une salle.
+
+```javascript
+const success = await roomService.deleteRoom(1)
+```
+
+---
+
+## workspaceService
+
+Service pour gérer les espaces de travail (workspaces).
+
+### Méthodes disponibles
+
+#### `getAllWorkspaces()`
+Récupère tous les espaces de travail.
+
+```javascript
+import workspaceService from '../services/workspaceService'
+
+const workspaces = await workspaceService.getAllWorkspaces()
+// Retourne: [{id: 1, number: 101, idFloor: 1}, ...]
+```
+
+#### `getWorkspaceById(id)`
+Récupère un espace de travail par son ID.
+
+```javascript
+const workspace = await workspaceService.getWorkspaceById(1)
+```
+
+#### `getWorkspacesByFloorId(floorId)`
+Récupère tous les espaces de travail d'un étage spécifique.
+
+```javascript
+const workspaces = await workspaceService.getWorkspacesByFloorId(1)
+// Retourne: [{id: 1, number: 101, idFloor: 1}, ...]
+```
+
+#### `createWorkspace(workspaceData)`
+Crée un nouvel espace de travail.
+
+```javascript
+const newWorkspaceId = await workspaceService.createWorkspace({
+    number: 205,
+    idFloor: 2
+})
+```
+
+#### `updateWorkspace(id, workspaceData)`
+Met à jour un espace de travail existant.
+
+```javascript
+const updatedWorkspace = await workspaceService.updateWorkspace(1, {
+    number: 206,
+    idFloor: 2
+})
+```
+
+#### `deleteWorkspace(id)`
+Supprime un espace de travail.
+
+```javascript
+const success = await workspaceService.deleteWorkspace(1)
+```
+
+---
+
+## Exemple d'utilisation complète
+
+Voici un exemple de composant React utilisant les nouveaux services :
+
+```javascript
+import React, { useState, useEffect } from 'react'
+import floorService from '../services/floorService'
+import roomService from '../services/roomService'
+import workspaceService from '../services/workspaceService'
+
+function SpaceManagement() {
+    const [floors, setFloors] = useState([])
+    const [selectedFloor, setSelectedFloor] = useState(null)
+    const [rooms, setRooms] = useState([])
+    const [workspaces, setWorkspaces] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        loadFloors()
+    }, [])
+
+    const loadFloors = async () => {
+        setLoading(true)
+        try {
+            const floorsData = await floorService.getAllFloors()
+            setFloors(floorsData)
+        } catch (error) {
+            console.error('Erreur lors du chargement des étages:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const loadFloorDetails = async (floorId) => {
+        setSelectedFloor(floorId)
+        try {
+            const [roomsData, workspacesData] = await Promise.all([
+                roomService.getRoomsByFloorId(floorId),
+                workspaceService.getWorkspacesByFloorId(floorId)
+            ])
+            setRooms(roomsData)
+            setWorkspaces(workspacesData)
+        } catch (error) {
+            console.error('Erreur lors du chargement des détails:', error)
+        }
+    }
+
+    const handleCreateRoom = async (floorId, roomName) => {
+        try {
+            const newRoomId = await roomService.createRoom({
+                name: roomName,
+                idFloor: floorId
+            })
+            if (newRoomId) {
+                alert('Salle créée avec succès!')
+                loadFloorDetails(floorId) // Recharger
+            }
+        } catch (error) {
+            alert('Erreur lors de la création')
+        }
+    }
+
+    if (loading) return <div>Chargement...</div>
+
+    return (
+        <div>
+            <h1>Gestion des espaces</h1>
+            <div>
+                {floors.map(floor => (
+                    <button 
+                        key={floor.id} 
+                        onClick={() => loadFloorDetails(floor.id)}
+                    >
+                        Étage {floor.floorNumber}
+                    </button>
+                ))}
+            </div>
+            {selectedFloor && (
+                <div>
+                    <h2>Salles</h2>
+                    <ul>
+                        {rooms.map(room => (
+                            <li key={room.id}>{room.name}</li>
+                        ))}
+                    </ul>
+                    <h2>Espaces de travail</h2>
+                    <ul>
+                        {workspaces.map(ws => (
+                            <li key={ws.id}>Place n°{ws.number}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     )
 }

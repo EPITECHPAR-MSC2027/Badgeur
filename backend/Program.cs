@@ -44,6 +44,9 @@ builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
 builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
+builder.Services.AddScoped<FloorService>();
+builder.Services.AddScoped<RoomService>();
+builder.Services.AddScoped<WorkspaceService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
@@ -81,5 +84,8 @@ app.MapUserKPIEndpoints();
 app.MapPlanningEndpoints();
 app.MapTypeDemandeEndpoints();
 app.MapClocksEndpoints();
+app.MapFloorEndpoints();
+app.MapRoomEndpoints();
+app.MapWorkspaceEndpoints();
 
 app.Run();

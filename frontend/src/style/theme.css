@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+
+/* Dyslexic mode: Apply special font family */
+body.dyslexic-mode,
+body.dyslexic-mode * {
+    font-family: 'Lexend', 'Comic Sans MS', 'Arial', sans-serif !important;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+}
+
 [data-theme='main'] {
     --color-primary: #FFFFFF;
     --color-secondary: #1C1B1F;
