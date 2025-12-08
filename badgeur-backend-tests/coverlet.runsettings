@@ -6,7 +6,7 @@
         <Configuration>
           <Format>opencover</Format>
           <Exclude>[Microsoft.*]*,[System.*]*,[xunit.*]*,[Xunit.*]*,[FluentAssertions.*]*,[*.Generated]*,[*]Microsoft.AspNetCore.Http.Generated.*,[testhost]*</Exclude>
-          <ExcludeByAttribute>ExcludeFromCodeCoverage,GeneratedCode,CompilerGenerated</ExcludeByAttribute>
+          <ExcludeByAttribute>ExcludeFromCodeCoverage,GeneratedCode</ExcludeByAttribute>
           <ExcludeByFile>**/Microsoft.*.cs,**/Program.cs,**/*.Generated.cs,**/GeneratedRouteBuilderExtensions.g.cs,**/backend/Models/**,**/backend/Contracts/**,**/backend/Extensions/**,**/backend/Middleware/**</ExcludeByFile>
           <IncludeTestAssembly>false</IncludeTestAssembly>
           <SingleHit>false</SingleHit>
