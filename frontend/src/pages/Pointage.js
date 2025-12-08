@@ -18,6 +18,8 @@ function Pointage() {
     const [showToast, setShowToast] = useState(false)
     const [history, setHistory] = useState([]) // [{time: Date}]
     const [loading, setLoading] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 5
 
     const toastTimerRef = useRef(null)
 
@@ -43,7 +45,11 @@ function Pointage() {
             if (response.ok) {
                 const data = await response.json()
                 console.log('Données reçues:', data)
-                setHistory(data.map(item => ({ time: new Date(item.badgedAt) })))
+                // Trier par date décroissante (plus récent en premier)
+                const sortedHistory = data
+                    .map(item => ({ time: new Date(item.badgedAt) }))
+                    .sort((a, b) => b.time - a.time)
+                setHistory(sortedHistory)
             } else {
                 const errorText = await response.text()
                 console.error('Erreur lors du chargement de l\'historique:', response.status, errorText)
@@ -83,7 +89,13 @@ function Pointage() {
             if (response.ok) {
                 const result = await response.json()
                 console.log('Badgeage réussi, ID:', result)
-                setHistory((prev) => [{ time: now }, ...prev])
+                // Ajouter le nouveau badgeage au début et trier pour maintenir l'ordre
+                setHistory((prev) => {
+                    const updated = [{ time: now }, ...prev]
+                    return updated.sort((a, b) => b.time - a.time)
+                })
+                // Retourner à la première page pour voir le nouveau badgeage
+                setCurrentPage(1)
                 setShowToast(true)
                 if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
                 toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
@@ -103,6 +115,38 @@ function Pointage() {
     useEffect(() => () => {
         if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     }, [])
+
+    // Calculer les éléments à afficher pour la page actuelle
+    // L'historique est déjà trié du plus récent au plus ancien
+    const totalPages = Math.ceil(history.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const currentHistory = history.slice(startIndex, endIndex)
+
+    // Réinitialiser à la page 1 si on est sur une page vide
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(1)
+        }
+    }, [history.length, currentPage, totalPages])
+
+    const goToPage = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page)
+        }
+    }
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1)
+        }
+    }
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1)
+        }
+    }
 
 
     return (
@@ -174,27 +218,55 @@ function Pointage() {
                                 <p>Effectuez votre premier badgeage</p>
                             </div>
                         ) : (
-                            <div>
-                                {[...history].reverse().map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="pointage-badge-item"
-                                    >
-                                        <div className="pointage-badge-info">
-                                            <div className="pointage-badge-indicator" />
-                                            <div>
-                                                <p className="pointage-badge-type">Badgeage</p>
-                                                <p className="pointage-badge-time">
-                                                    {formatDate(new Date(item.time))} à {formatTime(new Date(item.time))}
-                                                </p>
+                            <>
+                                <div>
+                                    {currentHistory.map((item, index) => {
+                                        const globalIndex = startIndex + index
+                                        // Le premier élément (index 0) est toujours le plus récent
+                                        const isLastItem = globalIndex === 0
+                                        return (
+                                            <div
+                                                key={globalIndex}
+                                                className="pointage-badge-item"
+                                            >
+                                                <div className="pointage-badge-info">
+                                                    <div className="pointage-badge-indicator" />
+                                                    <div>
+                                                        <p className="pointage-badge-type">Badgeage</p>
+                                                        <p className="pointage-badge-time">
+                                                            {formatDate(new Date(item.time))} à {formatTime(new Date(item.time))}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {isLastItem && (
+                                                    <span className="pointage-last-badge">Dernier</span>
+                                                )}
                                             </div>
+                                        )
+                                    })}
+                                </div>
+                                {totalPages > 1 && (
+                                    <div className="pointage-pagination">
+                                        <button
+                                            className="pointage-pagination-button"
+                                            onClick={goToPreviousPage}
+                                            disabled={currentPage === 1}
+                                        >
+                                            ‹ Précédent
+                                        </button>
+                                        <div className="pointage-pagination-info">
+                                            Page {currentPage} sur {totalPages}
                                         </div>
-                                        {index === 0 && (
-                                            <span className="pointage-last-badge">Dernier</span>
-                                        )}
+                                        <button
+                                            className="pointage-pagination-button"
+                                            onClick={goToNextPage}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            Suivant ›
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../style/Analytics.css';
 import '../style/Chart.css';
 import authService from '../services/authService';
@@ -6,6 +6,8 @@ import KPICard from '../component/KPICard';
 import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
 import HeatmapCalendar from '../component/HeatmapCalendar';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 function Analytics() {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -13,6 +15,8 @@ function Analytics() {
     const [analyticsData, setAnalyticsData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isExporting, setIsExporting] = useState(false);
+    const dashboardRef = useRef(null);
 
     const months = [
         'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -98,8 +102,62 @@ function Analytics() {
         }
     };
 
-    const handleExport = () => {
-        console.log('Export analytics data');
+    const handleExport = async () => {
+        if (!dashboardRef.current) return;
+        
+        setIsExporting(true);
+        
+        try {
+            // Capture le dashboard en canvas
+            const canvas = await html2canvas(dashboardRef.current, {
+                scale: 2, // Meilleure qualité
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#f5f5f5'
+            });
+            
+            // Convertir le canvas en image
+            const imgData = canvas.toDataURL('image/png');
+            
+            // Créer le PDF
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            // Calculer les dimensions pour ajuster l'image au PDF
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const imgX = (pdfWidth - imgWidth * ratio) / 2;
+            const imgY = 10;
+            
+            // Ajouter l'image au PDF
+            pdf.addImage(
+                imgData, 
+                'PNG', 
+                imgX, 
+                imgY, 
+                imgWidth * ratio, 
+                imgHeight * ratio
+            );
+            
+            // Générer le nom du fichier avec la date
+            const fileName = `Dashboard_Analytics_${months[selectedMonth - 1]}_${selectedYear}.pdf`;
+            
+            // Télécharger le PDF
+            pdf.save(fileName);
+            
+            console.log('Export réussi:', fileName);
+        } catch (error) {
+            console.error('Erreur lors de l\'export:', error);
+            alert('Erreur lors de l\'export du PDF. Veuillez réessayer.');
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     const calculateKPIs = () => {
@@ -107,61 +165,98 @@ function Analytics() {
 
         const { kpi, events } = analyticsData;
         
-        let avgDailyHours = 0;
-        let avgWeeklyHours = 0;
-        let presenceRate = 0;
-        let absenceRate = 0;
-
-        if (kpi && (kpi.raw7 || kpi.raw14)) {
-            try {
-                // Parse raw7 if available, else raw14 (format "HH:mm")
-                const sourceRaw = kpi.raw7 || kpi.raw14;
-                const timeParts = sourceRaw.split(':');
-                if (timeParts.length === 2) {
-                    const hours = parseInt(timeParts[0], 10);
-                    const minutes = parseInt(timeParts[1], 10);
-                    avgDailyHours = hours + (minutes / 60);
-                    avgWeeklyHours = avgDailyHours * 5;
-                }
-            } catch (e) {
-                console.error('Error parsing RAW value:', e);
-                avgDailyHours = 0;
-            }
-        }
-
-        // Calculate presence rate from events
+        // Calculate from events
         const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
         const totalDaysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-        presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
-        absenceRate = 100 - presenceRate;
+        const presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
 
-        // Parse times safely
-        const formatTime = (timeStr) => {
-            if (!timeStr) return 'N/A';
-            try {
-                const date = new Date(timeStr);
-                return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            } catch {
-                return timeStr;
+        // Calculate hours per day and per week from events
+        let totalHours = 0;
+        let totalMinutes = 0;
+        const weeklyHours = {};
+        
+        // Group events by day and calculate daily hours
+        const eventsByDay = {};
+        events.forEach(event => {
+            const date = new Date(event.badgedAt);
+            const dayKey = date.toDateString();
+            if (!eventsByDay[dayKey]) {
+                eventsByDay[dayKey] = [];
             }
-        };
+            eventsByDay[dayKey].push(date);
+        });
 
+        // Calculate total hours from paired events (in/out)
+        Object.values(eventsByDay).forEach(dayEvents => {
+            // Sort events by time
+            dayEvents.sort((a, b) => a - b);
+            
+            // Pair events (entry-exit, entry-exit, ...)
+            for (let i = 0; i < dayEvents.length - 1; i += 2) {
+                const entry = dayEvents[i];
+                const exit = dayEvents[i + 1];
+                const diffMs = exit - entry;
+                const hours = Math.floor(diffMs / 3600000);
+                const minutes = Math.floor((diffMs % 3600000) / 60000);
+                totalHours += hours;
+                totalMinutes += minutes;
+
+                // Track by week
+                const weekNumber = getWeekNumber(entry);
+                if (!weeklyHours[weekNumber]) {
+                    weeklyHours[weekNumber] = { hours: 0, minutes: 0 };
+                }
+                weeklyHours[weekNumber].hours += hours;
+                weeklyHours[weekNumber].minutes += minutes;
+            }
+        });
+
+        // Normalize minutes to hours
+        totalHours += Math.floor(totalMinutes / 60);
+        totalMinutes = totalMinutes % 60;
+
+        // Calculate average hours per day of presence
+        // Convert everything to minutes for accurate division
+        const totalMinutesOverall = totalHours * 60 + totalMinutes;
+        const avgMinutesPerDay = workingDays > 0 ? totalMinutesOverall / workingDays : 0;
+        const avgHoursPerDayFinal = Math.floor(avgMinutesPerDay / 60);
+        const avgMinutesPerDayFinal = Math.floor(avgMinutesPerDay % 60);
+        const hoursPerDay = `${avgHoursPerDayFinal.toString().padStart(2, '0')}:${avgMinutesPerDayFinal.toString().padStart(2, '0')}`;
+
+        // Calculate average hours per week
+        const weekCount = Object.keys(weeklyHours).length;
+        let avgWeekHours = 0;
+        let avgWeekMinutes = 0;
+        if (weekCount > 0) {
+            // Convert each week to total minutes first
+            let totalWeekMinutes = 0;
+            Object.values(weeklyHours).forEach(week => {
+                const weekTotalMinutes = week.hours * 60 + week.minutes;
+                totalWeekMinutes += weekTotalMinutes;
+            });
+            // Calculate average minutes per week
+            const avgMinutesPerWeek = totalWeekMinutes / weekCount;
+            avgWeekHours = Math.floor(avgMinutesPerWeek / 60);
+            avgWeekMinutes = Math.floor(avgMinutesPerWeek % 60);
+        }
+        const hoursPerWeek = `${avgWeekHours.toString().padStart(2, '0')}:${avgWeekMinutes.toString().padStart(2, '0')}`;
+
+        // Use backend KPI values if available, otherwise use calculated values
         return {
             teamSize: 1,
-            avgDailyHours: avgDailyHours.toFixed(1),
-            avgWeeklyHours: avgWeeklyHours.toFixed(1),
-            presenceRate: presenceRate.toFixed(1),
-            absenceRate: absenceRate.toFixed(1),
-            raat7: kpi?.raat7 ? formatTime(kpi.raat7) : 'N/A',
-            raat14: kpi?.raat14 ? formatTime(kpi.raat14) : 'N/A',
-            raat28: kpi?.raat28 ? formatTime(kpi.raat28) : 'N/A',
-            radt7: kpi?.radt7 ? formatTime(kpi.radt7) : 'N/A',
-            radt14: kpi?.radt14 ? formatTime(kpi.radt14) : 'N/A',
-            radt28: kpi?.radt28 ? formatTime(kpi.radt28) : 'N/A',
-            raw7: kpi?.raw7 || 'N/A',
-            raw14: kpi?.raw14 || 'N/A',
-            raw28: kpi?.raw28 || 'N/A'
+            hoursPerDay: (kpi && kpi.hoursPerDay && kpi.hoursPerDay !== '00:00') ? kpi.hoursPerDay : hoursPerDay,
+            hoursPerWeek: (kpi && kpi.hoursPerWeek && kpi.hoursPerWeek !== '00:00') ? kpi.hoursPerWeek : hoursPerWeek,
+            workingDays: kpi ? (kpi.workingDays || workingDays) : workingDays,
+            totalDays: totalDaysInMonth,
+            presenceRate: (kpi && kpi.presenceRate) ? parseFloat(kpi.presenceRate).toFixed(2) : presenceRate.toFixed(2),
+            absenceRate: (kpi && kpi.presenceRate) ? (100 - parseFloat(kpi.presenceRate)).toFixed(2) : (100 - presenceRate).toFixed(2)
         };
+    };
+
+    const getWeekNumber = (date) => {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     };
 
     const kpis = calculateKPIs();
@@ -173,11 +268,16 @@ function Analytics() {
                     <h1>Dashboard Analytics</h1>
                     <p>Analyse et statistiques de présence</p>
                 </div>
-                <button className="export-btn" onClick={handleExport}>
-                    📊 Exporter
+                <button 
+                    className="export-btn" 
+                    onClick={handleExport}
+                    disabled={isExporting || loading}
+                >
+                    {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
                 </button>
             </div>
 
+            <div ref={dashboardRef} className="dashboard-content">
             <div className="filters-section">
                 <div className="filter-group">
                     <label>Mois:</label>
@@ -217,69 +317,24 @@ function Analytics() {
                 <>
                     <div className="kpi-grid">
                         <KPICard 
-                            title="Équipe" 
-                            value={`${kpis.teamSize} personne${kpis.teamSize > 1 ? 's' : ''}`}
-                            description="Effectif total"
-                        />
-                        <KPICard 
-                            title="Heures/jour (7j)" 
-                            value={kpis.raw7 ? `${kpis.raw7}h` : 'N/A'}
-                            description="Moyenne 7 jours"
+                            title="Jours travaillés" 
+                            value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
+                            description="Sur le mois"
                         />
                         <KPICard 
                             title="Heures/jour" 
-                            value={`${kpis.avgDailyHours}h`}
-                            description="Moyenne quotidienne"
+                            value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
+                            description="Moyenne par jour de présence"
                         />
                         <KPICard 
                             title="Heures/semaine" 
-                            value={`${kpis.avgWeeklyHours}h`}
+                            value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
                             description="Moyenne hebdomadaire"
                         />
                         <KPICard 
                             title="Taux de présence" 
-                            value={`${kpis.presenceRate}%`}
-                            description={`${kpis.absenceRate}% d'absence`}
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée (7j)" 
-                            value={kpis.raat7}
-                            description="Moyenne 7 jours"
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée" 
-                            value={kpis.raat14}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heure d'arrivée (28j)" 
-                            value={kpis.raat28}
-                            description="Moyenne 28 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ (7j)" 
-                            value={kpis.radt7}
-                            description="Moyenne 7 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ" 
-                            value={kpis.radt14}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heure de départ (28j)" 
-                            value={kpis.radt28}
-                            description="Moyenne 28 jours"
-                        />
-                        <KPICard 
-                            title="Heures/jour (14j)" 
-                            value={kpis.raw14 ? `${kpis.raw14}h` : 'N/A'}
-                            description="Moyenne 14 jours"
-                        />
-                        <KPICard 
-                            title="Heures/jour (28j)" 
-                            value={kpis.raw28 ? `${kpis.raw28}h` : 'N/A'}
-                            description="Moyenne 28 jours"
+                            value={`${kpis.presenceRate || 0}%`}
+                            description={`${kpis.absenceRate || 0}% d'absence`}
                         />
                     </div>
 
@@ -310,6 +365,7 @@ function Analytics() {
                     </div>
                 </>
             )}
+            </div>
         </div>
     );
 }

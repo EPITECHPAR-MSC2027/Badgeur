@@ -1,16 +1,24 @@
 using badgeur_backend.Endpoints;
 using badgeur_backend.Extensions;
 using badgeur_backend.Services;
+using badgeur_backend.Services.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (File.Exists(".env"))
+{
+    DotNetEnv.Env.Load();
+}
+
+// Add environment variables to configuration
+builder.Configuration.AddEnvironmentVariables();
+
 // --- Service configuration ---
 builder.Services.AddSupabase(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddAuthorization();
 
@@ -35,6 +43,14 @@ builder.Services.AddScoped<TeamService>();
 builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
 builder.Services.AddScoped<DemandTypeService>();
+builder.Services.AddScoped<ClocksService>();
+builder.Services.AddScoped<FloorService>();
+builder.Services.AddScoped<RoomService>();
+builder.Services.AddScoped<WorkspaceService>();
+
+// --- Interfaces/Adapters/Misc ---
+builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
+builder.Services.AddScoped<IUserLookup, UserServiceAdapter>();
 
 var app = builder.Build();
 
@@ -67,5 +83,9 @@ app.MapTeamEndpoints();
 app.MapUserKPIEndpoints();
 app.MapPlanningEndpoints();
 app.MapTypeDemandeEndpoints();
+app.MapClocksEndpoints();
+app.MapFloorEndpoints();
+app.MapRoomEndpoints();
+app.MapWorkspaceEndpoints();
 
 app.Run();

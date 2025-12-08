@@ -44,11 +44,11 @@
 
 - Build the Docker image
 ```bash
-docker build -t badgeur-backend .
-   ```
+docker compose -f docker-compose.dev.yml up --build
+```
 - Spin up the image
 ```bash
-docker run -d -p 5158:8080 --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
-   ```
+docker run -p 5158:8080 --name backend -e ASPNETCORE_ENVIRONMENT=Development badgeur-backend
+```
 
 

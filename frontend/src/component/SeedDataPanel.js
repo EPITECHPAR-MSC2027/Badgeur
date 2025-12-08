@@ -40,19 +40,19 @@ function SeedDataPanel() {
                 if (random() < 0.8) {
                     // Arrivée entre 8h et 9h30
                     const arrival = new Date(date);
-                    arrival.setHours(8, randomInt(0, 90), 0);
+                    arrival.setHours(8, 0, 0);
                     
                     // Pause déjeuner entre 12h et 13h
                     const lunchStart = new Date(date);
-                    lunchStart.setHours(12, randomInt(0, 60), 0);
+                    lunchStart.setHours(12, 0, 0);
                     
                     // Retour de pause (45-75 minutes après)
                     const lunchEnd = new Date(lunchStart);
-                    lunchEnd.setMinutes(lunchEnd.getMinutes() + randomInt(45, 75));
+                    lunchEnd.setMinutes(14, 0, 0);
                     
                     // Départ entre 17h et 19h
                     const departure = new Date(date);
-                    departure.setHours(17, randomInt(0, 120), 0);
+                    departure.setHours(17, 0, 0);
                     
                     // Créer les 4 pointages
                     const events = [arrival, lunchStart, lunchEnd, departure];

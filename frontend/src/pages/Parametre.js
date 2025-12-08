@@ -4,6 +4,7 @@ import '../index.css'
 
 function ParamTre() {
     const [selectedTheme, setSelectedTheme] = useState(() => localStorage.getItem('theme') || 'main');
+    const [dyslexicMode, setDyslexicMode] = useState(() => localStorage.getItem('dyslexicMode') === 'true');
 
     const themes = [
         { value: 'main', label: 'Principal' },
@@ -22,8 +23,21 @@ function ParamTre() {
         localStorage.setItem('theme', selectedTheme)
     }, [selectedTheme]);
 
+    useEffect(() => {
+        if (dyslexicMode) {
+            document.body.classList.add('dyslexic-mode');
+        } else {
+            document.body.classList.remove('dyslexic-mode');
+        }
+        localStorage.setItem('dyslexicMode', dyslexicMode.toString());
+    }, [dyslexicMode]);
+
     const handleThemeChange = (event) => {
         setSelectedTheme(event.target.value);
+    };
+
+    const handleDyslexicModeToggle = (event) => {
+        setDyslexicMode(event.target.checked);
     };
 
     return (
@@ -52,6 +66,46 @@ function ParamTre() {
                             </option>
                         ))}
                     </select>
+                </div>
+
+                <div style={{ marginTop: '30px' }}>
+                    <h2>Accessibilité</h2>
+                    <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '10px',
+                        padding: '10px',
+                        backgroundColor: 'var(--color-primary)',
+                        borderRadius: '8px',
+                        border: '1px solid var(--color-third)'
+                    }}>
+                        <input
+                            type="checkbox"
+                            id="dyslexicMode"
+                            checked={dyslexicMode}
+                            onChange={handleDyslexicModeToggle}
+                            style={{
+                                width: '20px',
+                                height: '20px',
+                                cursor: 'pointer',
+                                accentColor: 'var(--color-secondary)'
+                            }}
+                        />
+                        <label 
+                            htmlFor="dyslexicMode" 
+                            style={{ 
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                color: 'var(--color-secondary)',
+                                margin: 0
+                            }}
+                        >
+                            Mode dyslexique (police adaptée)
+                        </label>
+                    </div>
+                    <p style={{ marginTop: '10px', fontSize: '14px', color: 'var(--color-second-text)' }}>
+                        Active une police spécialement conçue pour faciliter la lecture aux personnes dyslexiques
+                    </p>
                 </div>
 
                 <div>

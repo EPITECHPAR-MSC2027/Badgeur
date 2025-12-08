@@ -1,4 +1,4 @@
-﻿using badgeur_backend.Services;
+﻿﻿﻿using badgeur_backend.Services;
 using badgeur_backend.Models;
 using Supabase;
 
@@ -8,10 +8,10 @@ namespace badgeur_backend.Endpoints
     {
         public static void MapUserKPIEndpoints(this IEndpointRouteBuilder app)
         {
-            var group = app.MapGroup("/kpis");
+            var group = app.MapGroup("/reports");
 
             // Endpoint pour récupérer ses propres KPIs
-            group.MapGet("/me", async (UserKPIService userKPIService, HttpContext context) =>
+            group.MapGet("/me", async (UserKPIService userKPIService, BadgeLogEventService badgeLogEventService, HttpContext context) =>
             {
                 // Récupérer l'utilisateur connecté depuis le middleware
                 var authenticatedUser = context.Items["User"] as Supabase.Gotrue.User;
@@ -23,31 +23,48 @@ namespace badgeur_backend.Endpoints
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
                 var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
-                
+
                 if (connectedUser == null)
                 {
                     return Results.Unauthorized();
                 }
 
-                var userKPIs = await userKPIService.CalculateAllUserKPIs(connectedUser.Id);
+                // Calculate new KPIs
+                var hoursPerDay = await userKPIService.CalculateRollingAverageWorkingHours(connectedUser.Id, UserKPIService.Period.TWO_WEEKS);
+                var hoursPerWeek = await userKPIService.CalculateWeeklyWorkingHours(connectedUser.Id);
+                
+                // Calculate working days and presence rate for the last 14 days
+                var cutoffDate = DateTime.UtcNow.Date.AddDays(-14);
+                var events = await badgeLogEventService.GetBadgeLogEventsByUserIdAsync(connectedUser.Id);
+                var recentEvents = events.Where(e => e.BadgedAt.Date >= cutoffDate).ToList();
+                
+                var workingDays = recentEvents
+                    .GroupBy(e => e.BadgedAt.Date)
+                    .Where(g => g.Count() >= 2)
+                    .Count();
+                
+                var totalDays = 14;
+                var presenceRate = totalDays > 0 ? (double)workingDays / totalDays * 100 : 0;
 
-                if (userKPIs == null) return Results.NotFound("Failed to calcuate KPIs. Contact an administrator.");
-
-                // Enrichir avec les KPIs sur 7 jours, calculés à la volée
                 var response = new UserKPIResponse
                 {
-                    Id = userKPIs.Id,
-                    UserId = userKPIs.UserId,
-                    Raat14 = userKPIs.Raat14,
-                    Raat28 = userKPIs.Raat28,
-                    Radt14 = userKPIs.Radt14,
-                    Radt28 = userKPIs.Radt28,
-                    Raw14 = userKPIs.Raw14,
-                    Raw28 = userKPIs.Raw28,
-                    // Valeurs 7 jours (avec gestion des cas insuffisants)
-                    Raat7 = await userKPIService.CalculateRollingAverageArrivalTime(connectedUser.Id, UserKPIService.Period.ONE_WEEK),
-                    Radt7 = await userKPIService.CalculateRollingAverageDepartureTime(connectedUser.Id, UserKPIService.Period.ONE_WEEK),
-                    Raw7 = await userKPIService.CalculateRollingAverageWorkingHours(connectedUser.Id, UserKPIService.Period.ONE_WEEK)
+                    Id = 1, // Placeholder since we're not persisting this
+                    UserId = connectedUser.Id,
+                    HoursPerDay = hoursPerDay,
+                    HoursPerWeek = hoursPerWeek,
+                    WorkingDays = workingDays,
+                    TotalDays = totalDays,
+                    PresenceRate = Math.Round(presenceRate, 1),
+                    // Legacy fields for backward compatibility
+                    Raat7 = DateTimeOffset.MinValue,
+                    Radt7 = DateTimeOffset.MinValue,
+                    Raw7 = hoursPerDay,
+                    Raat14 = DateTimeOffset.MinValue,
+                    Raat28 = DateTimeOffset.MinValue,
+                    Radt14 = DateTimeOffset.MinValue,
+                    Radt28 = DateTimeOffset.MinValue,
+                    Raw14 = hoursPerDay,
+                    Raw28 = hoursPerDay
                 };
 
                 return Results.Ok(response);
@@ -67,7 +84,7 @@ namespace badgeur_backend.Endpoints
                 // Récupérer les informations de l'utilisateur connecté depuis la base de données
                 var userService = context.RequestServices.GetRequiredService<UserService>();
                 var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
-                
+
                 if (connectedUser == null)
                 {
                     return Results.Unauthorized();

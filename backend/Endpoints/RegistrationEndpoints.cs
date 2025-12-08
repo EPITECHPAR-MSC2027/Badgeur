@@ -1,4 +1,5 @@
 ﻿using badgeur_backend.Contracts.Requests;
+using badgeur_backend.Contracts.Requests.Create;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Services;
 using Supabase.Gotrue;

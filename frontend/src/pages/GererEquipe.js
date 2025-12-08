@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import authService from '../services/authService'
 import statsService from '../services/statsService'
 import profilImg from '../assets/profil.png'
 
 function GererEquipe() {
+    const navigate = useNavigate()
     const [tab, setTab] = useState('manage') // 'manage' | 'dashboard'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -128,7 +130,34 @@ function GererEquipe() {
                 </div>
                 <div style={{ marginTop: 18, background: 'var(--color-primary)', padding: 16, borderRadius: 10 }}>
                     <div style={{ color: 'var(--color-second-text)', fontSize: 14, marginBottom: 8 }}>Aperçu</div>
-                    <p style={{ margin: 0 }}>Ce tableau de bord présentera des KPIs (absences, retards, temps hebdo, etc.).</p>
+                    <p style={{ margin: '0 0 16px 0' }}>Ce tableau de bord présentera des KPIs (absences, retards, temps hebdo, etc.).</p>
+                    <button 
+                        onClick={() => navigate('/admin?tab=analytics')}
+                        style={{
+                            background: 'var(--color-third)',
+                            color: 'white',
+                            border: 'none',
+                            padding: '12px 24px',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                            e.target.style.background = 'var(--color-secondary)'
+                            e.target.style.transform = 'translateY(-2px)'
+                        }}
+                        onMouseOut={(e) => {
+                            e.target.style.background = 'var(--color-third)'
+                            e.target.style.transform = 'translateY(0)'
+                        }}
+                    >
+                        📊 Voir Analytics Équipe
+                    </button>
                 </div>
             </div>
         )
