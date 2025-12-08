@@ -6,7 +6,6 @@ import Pointage from './pages/Pointage';
 import Planning from './pages/Planning';
 import Calendrier from './pages/Calendrier';
 import Profil from './pages/Profil';
-import ParamTre from './pages/Parametre';
 import Login from './pages/Login';
 import GererEquipe from './pages/GererEquipe';
 import Admin from './pages/Admin';
@@ -92,7 +91,7 @@ function App() {
           path="/parametre"
           element={
             <RequireAuth>
-              <ParamTre />
+              <Profil />
             </RequireAuth>
           }
         />
