@@ -24,18 +24,18 @@ namespace badgeur_backend.Services
         }
 
         // Function that calculates the KPIs RAAT14 or RAAT28
-        public async Task<DateTimeOffset> CalculateRollingAverageArrivalTime(long userId, Period period)
+        public virtual async Task<DateTimeOffset> CalculateRollingAverageArrivalTime(long userId, Period period)
         {
             return await CalculateRollingAverageTime(userId, period, true);
         }
 
         // Function that calculates the KPIs RADT14 or RADT28 
-        public async Task<DateTimeOffset> CalculateRollingAverageDepartureTime(long userId, Period period)
+        public virtual async Task<DateTimeOffset> CalculateRollingAverageDepartureTime(long userId, Period period)
         {
             return await CalculateRollingAverageTime(userId, period, false);
         }
 
-        public async Task<DateTimeOffset> CalculateRollingAverageTime(long userId, Period period, bool isArrival)
+        public virtual async Task<DateTimeOffset> CalculateRollingAverageTime(long userId, Period period, bool isArrival)
         {
             DateTime cutoffDate = DateTime.UtcNow.Date.AddDays(-(int)period - 1);
 
@@ -68,7 +68,7 @@ namespace badgeur_backend.Services
         }
 
         // Function that calculates the KPIs RAW14 or RAW28
-        public async Task<string> CalculateRollingAverageWorkingHours(long userId, Period period)
+        public virtual async Task<string> CalculateRollingAverageWorkingHours(long userId, Period period)
         {
             DateTime cutoffDate = DateTime.UtcNow.Date.AddDays(-(int)period - 1);
 
@@ -139,7 +139,7 @@ namespace badgeur_backend.Services
         }
 
         // Function that calculates weekly working hours
-        public async Task<string> CalculateWeeklyWorkingHours(long userId)
+        public virtual async Task<string> CalculateWeeklyWorkingHours(long userId)
         {
             // Get events from the last 7 days
             DateTime weekStart = DateTime.UtcNow.Date.AddDays(-7);
@@ -206,7 +206,7 @@ namespace badgeur_backend.Services
         }
 
         // Calculate and store User KPIs. Return the values upon success
-        public async Task<UserKPI> CalculateAllUserKPIs(long userId)
+        public virtual async Task<UserKPI> CalculateAllUserKPIs(long userId)
         {
             UserKPI userKPIs = new UserKPI
             {
