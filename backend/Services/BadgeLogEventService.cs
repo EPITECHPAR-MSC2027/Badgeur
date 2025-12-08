@@ -73,7 +73,7 @@ namespace badgeur_backend.Services
             return CreateBadgeLogEventResponse(ble);
         }
 
-        public async Task<UserSummaryResponse> GetUserSummaryAsync(long id)
+        public virtual async Task<UserSummaryResponse> GetUserSummaryAsync(long id)
         {
             DateTime cutoffDate = DateTime.UtcNow.Date.AddDays(-7);
 
