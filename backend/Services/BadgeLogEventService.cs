@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateBadgeLogEventAsync(CreateBadgeLogEventRequest request)
+        public virtual async Task<long> CreateBadgeLogEventAsync(CreateBadgeLogEventRequest request)
         {
             var badgeLogEvent = new BadgeLogEvent
             {
@@ -28,14 +28,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<BadgeLogEventResponse>> GetAllBadgeLogEventsAsync()
+        public virtual async Task<List<BadgeLogEventResponse>> GetAllBadgeLogEventsAsync()
         {
             var response = await _client.From<BadgeLogEvent>().Get();
 
             return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
         }
 
-        public async Task<BadgeLogEventResponse?> GetBadgeLogEventByIdAsync(long id)
+        public virtual async Task<BadgeLogEventResponse?> GetBadgeLogEventByIdAsync(long id)
         {
             var response = await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Get();
             var badgeLogEvent = response.Models.FirstOrDefault();
@@ -45,19 +45,19 @@ namespace badgeur_backend.Services
             return CreateBadgeLogEventResponse(badgeLogEvent);
         }
 
-        public async Task<List<BadgeLogEventResponse>> GetBadgeLogEventsByUserIdAsync(long userId)
+        public virtual async Task<List<BadgeLogEventResponse>> GetBadgeLogEventsByUserIdAsync(long userId)
         {
             var response = await _client.From<BadgeLogEvent>().Where(n => n.UserId == userId).Get();
 
             return response.Models.Select(ble => CreateBadgeLogEventResponse(ble)).ToList();
         }
 
-        public async Task DeleteBadgeLogEventAsync(long id)
+        public virtual async Task DeleteBadgeLogEventAsync(long id)
         {
             await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Delete();
         }
 
-        public async Task<BadgeLogEventResponse> UpdateBadgeLogEventAsync(long id, UpdateBadgeLogEventRequest updateBadgeLogEventRequest)
+        public virtual async Task<BadgeLogEventResponse> UpdateBadgeLogEventAsync(long id, UpdateBadgeLogEventRequest updateBadgeLogEventRequest)
         {
             var request = await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Get();
             var ble = request.Models.FirstOrDefault();

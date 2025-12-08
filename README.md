@@ -16,9 +16,9 @@
   ```
 
 ## Docker Compose
-- Spin up containers (dev)
+- Spin up containers (local dev)
 ```bash
-docker-compose -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.local.dev.yml up --build
 ```
 
 - Spin up containers (prod)
