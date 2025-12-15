@@ -50,6 +50,7 @@ builder.Services.AddScoped<WorkspaceService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
+builder.Services.AddScoped<IAuthRegistration, SupabaseAuthRegistration>();
 builder.Services.AddScoped<IUserLookup, UserServiceAdapter>();
 
 var app = builder.Build();
