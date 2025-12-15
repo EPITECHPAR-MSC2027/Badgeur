@@ -33,10 +33,12 @@ function Planning() {
     const [refreshToggle, setRefreshToggle] = React.useState(false)
 
     const appStyle = {
-        padding : 16,
+        padding: 16,
         alignItems: 'start',
-        marginTop: 16
-    } 
+        marginTop: 16,
+        width: '100%',
+        boxSizing: 'border-box'
+    }
     // Fetch from DB for coloring
     React.useEffect(() => {
         const userIdStr = localStorage.getItem('userId')
@@ -55,7 +57,6 @@ function Planning() {
                     const period = String(r.period ?? r.Period)
                     // Backend returns Statut as string, convert to number
                     const statut = Number(r.statut ?? r.Statut ?? 0)
-                    // Backend uses DemandTypeId, not TypeDemandeId
                     const typeId = Number(r.demandTypeId ?? r.DemandTypeId ?? r.typeDemandeId ?? r.TypeDemandeId)
                     if (!perSlot[ymd]) perSlot[ymd] = {}
                     perSlot[ymd][period] = { typeId, statut }
@@ -78,7 +79,7 @@ function Planning() {
     }
 
     // Two-column layout helpers
-    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%' }
+    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px' }
     const leftColStyle = { flex: '1 1 0' }
     const rightColStyle = { width: 500, display: 'grid', gap: 16 }
     const selectStyle = {
