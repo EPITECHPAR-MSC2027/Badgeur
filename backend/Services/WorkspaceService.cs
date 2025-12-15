@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateWorkspaceAsync(CreateWorkspaceRequest request)
+        public virtual async Task<long> CreateWorkspaceAsync(CreateWorkspaceRequest request)
         {
             var workspace = new Workspace
             {
@@ -27,14 +27,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<WorkspaceResponse>> GetAllWorkspacesAsync()
+        public virtual async Task<List<WorkspaceResponse>> GetAllWorkspacesAsync()
         {
             var response = await _client.From<Workspace>().Get();
 
             return response.Models.Select(w => CreateWorkspaceResponse(w)).ToList();
         }
 
-        public async Task<WorkspaceResponse?> GetWorkspaceByIdAsync(long id)
+        public virtual async Task<WorkspaceResponse?> GetWorkspaceByIdAsync(long id)
         {
             var response = await _client.From<Workspace>().Where(w => w.Id == id).Get();
             var workspace = response.Models.FirstOrDefault();
@@ -44,14 +44,14 @@ namespace badgeur_backend.Services
             return CreateWorkspaceResponse(workspace);
         }
 
-        public async Task<List<WorkspaceResponse>> GetWorkspacesByFloorIdAsync(long floorId)
+        public virtual async Task<List<WorkspaceResponse>> GetWorkspacesByFloorIdAsync(long floorId)
         {
             var response = await _client.From<Workspace>().Where(w => w.IdFloor == floorId).Get();
 
             return response.Models.Select(w => CreateWorkspaceResponse(w)).ToList();
         }
 
-        public async Task<WorkspaceResponse?> UpdateWorkspaceAsync(long id, UpdateWorkspaceRequest updateWorkspaceRequest)
+        public virtual async Task<WorkspaceResponse?> UpdateWorkspaceAsync(long id, UpdateWorkspaceRequest updateWorkspaceRequest)
         {
             var request = await _client.From<Workspace>().Where(w => w.Id == id).Get();
             var workspace = request.Models.FirstOrDefault();
@@ -66,7 +66,7 @@ namespace badgeur_backend.Services
             return CreateWorkspaceResponse(workspace);
         }
 
-        public async Task DeleteWorkspaceAsync(long id)
+        public virtual async Task DeleteWorkspaceAsync(long id)
         {
             await _client.From<Workspace>().Where(w => w.Id == id).Delete();
         }
