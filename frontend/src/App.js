@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import GererEquipe from './pages/GererEquipe';
 import Admin from './pages/Admin';
 import UserAnalytics from './pages/UserAnalytics';
+import BookingRoom from './pages/BookingRoom';
 import authService from './services/authService';
 
 function App() {
@@ -76,6 +77,14 @@ function App() {
           element={
             <RequireAuth>
               <Calendrier />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/booking-room"
+          element={
+            <RequireAuth>
+              <BookingRoom />
             </RequireAuth>
           }
         />

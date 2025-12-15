@@ -47,6 +47,7 @@ builder.Services.AddScoped<ClocksService>();
 builder.Services.AddScoped<FloorService>();
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<WorkspaceService>();
+builder.Services.AddScoped<BookingRoomService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
@@ -87,5 +88,6 @@ app.MapClocksEndpoints();
 app.MapFloorEndpoints();
 app.MapRoomEndpoints();
 app.MapWorkspaceEndpoints();
+app.MapBookingRoomEndpoints();
 
 app.Run();

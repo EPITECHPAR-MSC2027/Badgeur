@@ -55,6 +55,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/pointage'
             case 'planning':
                 return '/planning'
+            case 'bookingRoom':
+                return '/booking-room'
             case 'calendrier':
                 return '/calendrier'
             case 'profil':
@@ -125,6 +127,9 @@ function Upbar({ currentPage, onNavigate }) {
                         </button>
                         <button style={buttonStyle} onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}>
                             Planning
+                        </button>
+                        <button style={buttonStyle} onClick={() => { handleNavigate('bookingRoom'); setIsActionsOpen(false) }}>
+                            Réserver une salle
                         </button>
                     </div>
                 </div>
