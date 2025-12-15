@@ -20,7 +20,11 @@ namespace badgeur_backend.Services
             var room = new Room
             {
                 Name = request.Name,
-                IdFloor = request.IdFloor
+                IdFloor = request.IdFloor,
+                Capacity = request.Capacity,
+                HasLargeScreen = request.HasLargeScreen,
+                HasBoard = request.HasBoard,
+                HasMic = request.HasMic
             };
 
             var response = await _client.From<Room>().Insert(room);
@@ -78,7 +82,11 @@ namespace badgeur_backend.Services
             {
                 Id = room.Id,
                 Name = room.Name,
-                IdFloor = room.IdFloor
+                IdFloor = room.IdFloor,
+                Capacity = room.Capacity,
+                HasLargeScreen = room.HasLargeScreen,
+                HasBoard = room.HasBoard,
+                HasMic = room.HasMic
             };
         }
     }
