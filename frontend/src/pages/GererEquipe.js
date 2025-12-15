@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import authService from '../services/authService'
 import statsService from '../services/statsService'
 import profilImg from '../assets/profil.png'
+import ValidationPlanning from './ValidationPlanning'
 
 function GererEquipe() {
     const navigate = useNavigate()
-    const [tab, setTab] = useState('manage') // 'manage' | 'dashboard'
+    const [tab, setTab] = useState('manage') // 'manage' | 'dashboard' | 'validation'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [teamMembers, setTeamMembers] = useState([]) // [{id, firstName, lastName, email, roleId, teamId}]
@@ -169,6 +170,7 @@ function GererEquipe() {
                 <h1>Gérer équipe</h1>
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                     {tabButton('manage', 'Membres')}
+                    {tabButton('validation', 'Validation plannings')}
                     {tabButton('dashboard', 'Dashboard')}
                 </div>
             </header>
@@ -180,7 +182,9 @@ function GererEquipe() {
             )}
 
             <div style={{ padding: 20, opacity: loading ? 0.6 : 1 }}>
-                {tab === 'manage' ? <ManageView /> : <DashboardView />}
+                {tab === 'manage' && <ManageView />}
+                {tab === 'validation' && <ValidationPlanning />}
+                {tab === 'dashboard' && <DashboardView />}
             </div>
         </div>
     )
