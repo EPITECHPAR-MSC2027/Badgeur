@@ -280,8 +280,8 @@ function Planning() {
                                 const dayKey = toYMD(c)
                                 const slot0 = submittedSlots[dayKey]?.['0']
                                 const slot1 = submittedSlots[dayKey]?.['1']
-                                const color0 = slot0 ? fixedTypes.find(t => t.id === slot0.typeId)?.color : undefined
-                                const color1 = slot1 ? fixedTypes.find(t => t.id === slot1.typeId)?.color : undefined
+                                const color0 = slot0 && slot0.statut !== 2 ? fixedTypes.find(t => t.id === slot0.typeId)?.color : undefined
+                                const color1 = slot1 && slot1.statut !== 2 ? fixedTypes.find(t => t.id === slot1.typeId)?.color : undefined
                                 const bgDefault = isSelected ? '#ede9fe' : '#ffffff'
                                 const border = isEdge ? '2px solid #7c3aed' : '1px solid #e5e7eb'
                                 return (
@@ -305,8 +305,8 @@ function Planning() {
                                         {/* top half (matin) */}
                                         {(slot0 || slot1) && (
                                             <>
-                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
-                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: color0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: color1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
                                             </>
                                         )}
                                         <span style={{ position: 'relative' }}>{c.getDate()}</span>
