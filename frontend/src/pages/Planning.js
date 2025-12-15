@@ -205,12 +205,15 @@ function Planning() {
 
         // Expand inclusive half-day slots between start and end
         const slots = getSelectedHalfSlots()
+        const roleId = Number(localStorage.getItem('roleId') || 0)
+        const statutValue = roleId === 1 ? '1' : '0' // manager = validé direct
+
         const payloads = slots.map(s => ({
             UserId: userId,
             // set at noon to avoid UTC shift to previous day in DB
             Date: `${s.date}T12:00:00`,
             Period: s.period,
-            Statut: '0',
+            Statut: statutValue,
             TypeDemandeId: Number(selectedTypeId)
         }))
 
