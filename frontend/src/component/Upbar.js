@@ -61,6 +61,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/profil'
             case 'analytics':
                 return '/analytics'
+            case 'reservationVehicule':
+                return '/reservation-vehicule'
             case 'login':
                 return '/login'
             default:
@@ -125,6 +127,9 @@ function Upbar({ currentPage, onNavigate }) {
                         </button>
                         <button style={buttonStyle} onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}>
                             Planning
+                        </button>
+                        <button style={buttonStyle} onClick={() => { handleNavigate('reservationVehicule'); setIsActionsOpen(false) }}>
+                            Réserver un véhicule
                         </button>
                     </div>
                 </div>
