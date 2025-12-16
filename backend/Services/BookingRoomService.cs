@@ -14,8 +14,8 @@ namespace badgeur_backend.Services
         {
             _client = client;
         }
-
-        public async Task<long> CreateBookingAsync(CreateBookingRoomRequest request)
+        // APRÈS (retourne l'objet complet)
+        public async Task<BookingRoomResponse> CreateBookingAsync(CreateBookingRoomRequest request)
         {
             var booking = new BookingRoom
             {
@@ -28,7 +28,8 @@ namespace badgeur_backend.Services
             };
 
             var response = await _client.From<BookingRoom>().Insert(booking);
-            return response.Models.First().Id;
+            var created = response.Models.First();
+            return CreateBookingRoomResponse(created);
         }
 
         public async Task<List<BookingRoomResponse>> GetAllAsync()

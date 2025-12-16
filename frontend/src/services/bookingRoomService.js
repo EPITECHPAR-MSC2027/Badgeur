@@ -14,7 +14,13 @@ const bookingRoomService = {
     async create(data) {
         const res = await authService.post('/booking-rooms', data)
         if (!res.ok) throw new Error('Création de réservation échouée')
-        return res.json()
+        const result = await res.json()
+        
+        console.log('Réponse brute de l\'API:', result)
+        
+        // Le backend retourne maintenant un objet BookingRoomResponse complet
+        // On le retourne tel quel
+        return result
     },
     async update(id, data) {
         const res = await authService.put(`/booking-rooms/${id}`, data)
@@ -39,4 +45,3 @@ const bookingRoomService = {
 }
 
 export default bookingRoomService
-

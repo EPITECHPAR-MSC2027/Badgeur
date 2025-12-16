@@ -1,6 +1,7 @@
 import React from 'react'
 import roomService from '../services/roomService'
 import bookingRoomService from '../services/bookingRoomService'
+import teamService from '../services/teamService'
 
 const tagStyle = {
     display: 'inline-flex',
@@ -33,6 +34,12 @@ function BookingRoom() {
     const [end, setEnd] = React.useState('')
     const [submitting, setSubmitting] = React.useState(false)
     const [feedback, setFeedback] = React.useState(null)
+    
+    // Participants
+    const [allUsers, setAllUsers] = React.useState([])
+    const [searchQuery, setSearchQuery] = React.useState('')
+    const [selectedParticipants, setSelectedParticipants] = React.useState([])
+    const [showUserSearch, setShowUserSearch] = React.useState(false)
 
     React.useEffect(() => {
         let cancelled = false
@@ -40,8 +47,14 @@ function BookingRoom() {
             setLoading(true)
             setError('')
             try {
-                const data = await roomService.getAllRooms()
-                if (!cancelled) setRooms(data)
+                const [roomsData, usersData] = await Promise.all([
+                    roomService.getAllRooms(),
+                    teamService.listUsers()
+                ])
+                if (!cancelled) {
+                    setRooms(roomsData)
+                    setAllUsers(usersData || [])
+                }
             } catch (e) {
                 if (!cancelled) setError(e.message || 'Chargement impossible.')
             } finally {
@@ -57,7 +70,7 @@ function BookingRoom() {
         d.setHours(d.getHours() + offsetHours)
         d.setMinutes(0, 0, 0)
         const iso = d.toISOString()
-        return iso.slice(0, 16) // yyyy-MM-ddTHH:mm for input type=datetime-local
+        return iso.slice(0, 16)
     }
 
     React.useEffect(() => {
@@ -105,15 +118,52 @@ function BookingRoom() {
 
         setSubmitting(true)
         try {
-            await bookingRoomService.create({
+            // Créer la réservation
+            const bookingResponse = await bookingRoomService.create({
                 UserId: userId,
                 RoomId: selectedRoom.id ?? selectedRoom.Id,
                 Title: title.trim(),
                 StartDatetime: startDate.toISOString(),
                 EndDatetime: endDate.toISOString()
             })
-            setFeedback({ type: 'success', message: 'Réservation créée.' })
+            
+            console.log('Réponse complète du backend:', bookingResponse)
+            
+            // Récupérer l'ID depuis la réponse
+            const bookingId = bookingResponse?.Id || bookingResponse?.id
+            
+            if (!bookingId || isNaN(bookingId) || bookingId === 0) {
+                console.error('Impossible de récupérer l\'ID. Résultat reçu:', bookingResponse)
+                throw new Error('Impossible de récupérer l\'ID de la réservation.')
+            }
+            
+            console.log('✅ ID de la réservation récupéré:', bookingId)
+            
+            // Créer le participant organisateur (créateur)
+            await bookingRoomService.addParticipant({
+                BookingId: bookingId,
+                UserId: userId,
+                Role: 'organisateur',
+                Status: 'accepté'
+            })
+            
+            // Créer les participants invités
+            if (selectedParticipants.length > 0) {
+                const participantPromises = selectedParticipants.map(p => 
+                    bookingRoomService.addParticipant({
+                        BookingId: bookingId,
+                        UserId: p.userId,
+                        Role: p.role,
+                        Status: 'non répondu'
+                    })
+                )
+                await Promise.all(participantPromises)
+            }
+            
+            setFeedback({ type: 'success', message: 'Réservation créée avec succès.' })
             setTitle('')
+            setSelectedParticipants([])
+            setSelectedRoom(null)
         } catch (err) {
             setFeedback({ type: 'error', message: err.message || 'Erreur lors de la réservation.' })
         } finally {
@@ -123,7 +173,7 @@ function BookingRoom() {
 
     return (
         <div style={{ padding: 16 }}>
-            <header style={{ marginBottom: 16 }}>
+            <header style={{ marginBottom: 50 }}>
                 <h1 style={{ margin: 0 }}>Réserver une salle</h1>
                 <p style={{ margin: 0, color: '#6b7280' }}>Choisissez une salle puis définissez le créneau.</p>
             </header>
@@ -198,6 +248,163 @@ function BookingRoom() {
                                 style={{ padding: 10, borderRadius: 8, border: '1px solid #d1d5db' }}
                             />
                         </div>
+                        
+                        {/* Section Participants */}
+                        <div style={{ display: 'grid', gap: 8, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <label style={{ fontWeight: 700 }}>Participants</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowUserSearch(!showUserSearch)}
+                                    style={{
+                                        padding: '6px 12px',
+                                        borderRadius: 6,
+                                        border: '1px solid #d1d5db',
+                                        background: 'white',
+                                        cursor: 'pointer',
+                                        fontSize: 13
+                                    }}
+                                >
+                                    {showUserSearch ? 'Masquer' : '+ Ajouter'}
+                                </button>
+                            </div>
+                            
+                            {showUserSearch && (
+                                <div style={{ position: 'relative' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Rechercher un employé..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: 8,
+                                            borderRadius: 6,
+                                            border: '1px solid #d1d5db',
+                                            fontSize: 14
+                                        }}
+                                    />
+                                    {searchQuery && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: 0,
+                                            right: 0,
+                                            background: 'white',
+                                            border: '1px solid #e5e7eb',
+                                            borderRadius: 6,
+                                            marginTop: 4,
+                                            maxHeight: 200,
+                                            overflowY: 'auto',
+                                            zIndex: 10,
+                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        }}>
+                                            {allUsers
+                                                .filter(u => {
+                                                    const query = searchQuery.toLowerCase()
+                                                    const name = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase()
+                                                    const email = (u.email || '').toLowerCase()
+                                                    return (name.includes(query) || email.includes(query)) &&
+                                                           !selectedParticipants.some(p => p.userId === (u.id || u.Id))
+                                                })
+                                                .slice(0, 10)
+                                                .map(u => (
+                                                    <div
+                                                        key={u.id || u.Id}
+                                                        onClick={() => {
+                                                            const newParticipant = {
+                                                                userId: u.id || u.Id,
+                                                                firstName: u.firstName,
+                                                                lastName: u.lastName,
+                                                                email: u.email,
+                                                                role: 'invité'
+                                                            }
+                                                            setSelectedParticipants([...selectedParticipants, newParticipant])
+                                                            setSearchQuery('')
+                                                        }}
+                                                        style={{
+                                                            padding: '8px 12px',
+                                                            cursor: 'pointer',
+                                                            borderBottom: '1px solid #f3f4f6'
+                                                        }}
+                                                        onMouseEnter={(e) => e.target.style.background = '#f9fafb'}
+                                                        onMouseLeave={(e) => e.target.style.background = 'white'}
+                                                    >
+                                                        <div style={{ fontWeight: 600, fontSize: 14 }}>
+                                                            {u.firstName} {u.lastName}
+                                                        </div>
+                                                        <div style={{ fontSize: 12, color: '#6b7280' }}>{u.email}</div>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {selectedParticipants.length > 0 && (
+                                <div style={{ display: 'grid', gap: 6 }}>
+                                    {selectedParticipants.map((p, idx) => (
+                                        <div
+                                            key={idx}
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: 8,
+                                                background: '#f9fafb',
+                                                borderRadius: 6,
+                                                border: '1px solid #e5e7eb'
+                                            }}
+                                        >
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: 14 }}>
+                                                    {p.firstName} {p.lastName}
+                                                </div>
+                                                <div style={{ fontSize: 12, color: '#6b7280' }}>{p.email}</div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                                <select
+                                                    value={p.role}
+                                                    onChange={(e) => {
+                                                        const updated = [...selectedParticipants]
+                                                        updated[idx].role = e.target.value
+                                                        setSelectedParticipants(updated)
+                                                    }}
+                                                    style={{
+                                                        padding: '4px 8px',
+                                                        borderRadius: 4,
+                                                        border: '1px solid #d1d5db',
+                                                        fontSize: 13,
+                                                        background: 'white'
+                                                    }}
+                                                >
+                                                    <option value="obligatoire">Obligatoire</option>
+                                                    <option value="optionnel">Optionnel</option>
+                                                </select>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedParticipants(selectedParticipants.filter((_, i) => i !== idx))
+                                                    }}
+                                                    style={{
+                                                        padding: '4px 8px',
+                                                        borderRadius: 4,
+                                                        border: '1px solid #dc2626',
+                                                        background: 'white',
+                                                        color: '#dc2626',
+                                                        cursor: 'pointer',
+                                                        fontSize: 12
+                                                    }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        
                         {selectedRoom && (
                             <div style={{ padding: 10, borderRadius: 8, background: '#f3f4f6', color: '#374151', fontSize: 14 }}>
                                 Salle sélectionnée : <strong>{selectedRoom.name ?? selectedRoom.Name}</strong>
@@ -223,4 +430,3 @@ function BookingRoom() {
 }
 
 export default BookingRoom
-
