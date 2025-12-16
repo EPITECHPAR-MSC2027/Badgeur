@@ -1,6 +1,5 @@
 /* ---- Variables de couleurs ---- */
 :root {
-  --primary-gold: #D4AF37;
   --dark-bg: #1a1a1a;
   --light-text: #e8e8e8;
   --border-gray: #3a3a3a;
@@ -42,7 +41,6 @@
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: var(--dark-bg);
   position: fixed;
   top: 0;
   left: 0;
@@ -67,8 +65,8 @@
   background: linear-gradient(90deg, 
       transparent 0%, 
       transparent 20%,
-      var(--primary-gold) 40%,
-      var(--primary-gold) 60%,
+      var(--highlight1) 40%,
+      var(--highlight1) 60%,
       transparent 80%,
       transparent 100%
   );
@@ -76,7 +74,7 @@
   left: -50%;
   transform: rotate(-15deg);
   opacity: 0.3;
-  box-shadow: 0 0 20px var(--primary-gold);
+  box-shadow: 0 0 20px var(--highlight1);
   animation: lineMove1 12s ease-in-out infinite;
 }
 
@@ -89,8 +87,8 @@
   background: linear-gradient(90deg, 
       transparent 0%, 
       transparent 30%,
-      var(--primary-gold) 45%,
-      var(--primary-gold) 55%,
+      var(--highlight1) 45%,
+      var(--highlight1) 55%,
       transparent 70%,
       transparent 100%
   );
@@ -98,7 +96,7 @@
   right: -50%;
   transform: rotate(-15deg);
   opacity: 0.3;
-  box-shadow: 0 0 20px var(--primary-gold);
+  box-shadow: 0 0 20px var(--highlight1);
   animation: lineMove2 15s ease-in-out infinite;
 }
 
@@ -110,14 +108,14 @@
   height: 2px;
   background: linear-gradient(90deg, 
       transparent 0%, 
-      var(--primary-gold) 50%,
+      var(--highlight1) 50%,
       transparent 100%
   );
   top: 55%;
   left: -25%;
   transform: rotate(10deg);
   opacity: 0.2;
-  box-shadow: 0 0 15px var(--primary-gold);
+  box-shadow: 0 0 15px var(--highlight1);
   animation: lineMove3 10s ease-in-out infinite;
   z-index: 1;
 }
@@ -163,7 +161,7 @@
   align-items: flex-start;
   justify-content: center;
   background-color: var(--dark-bg);
-  color: #fff;
+  color: var(--color-primary);
   overflow: hidden;
 }
 
@@ -173,13 +171,13 @@
   left: 80px;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: #fff;
+  color: var(--color-primary);
   position: relative;
   z-index: 2;
 }
 
 .login-page h1 .highlight {
-  color: var(--primary-gold);
+  color: var(--highlight1);
   font-weight: 400;
 }
 
@@ -211,7 +209,7 @@
   width: 100%;
   height: 100%;
   --s: 84px;
-  --c1: #FFFFFF;
+  --c1: #FEFEFE;
   --c2: #E8E8E8;
   --c3: #EEEEEE;
   --_g: 0 120deg, #0000 0;
