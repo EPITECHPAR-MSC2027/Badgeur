@@ -10,6 +10,7 @@ namespace badgeur_backend.Contracts.Requests.Update
         public string FuelType { get; set; } = default!;
         public string LicensePlate { get; set; } = default!;
         public string TransmissionType { get; set; } = default!;
+        public string TypeVehicule { get; set; } = default!;
     }
 }
 

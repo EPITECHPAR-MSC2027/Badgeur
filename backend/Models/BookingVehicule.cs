@@ -25,5 +25,8 @@ public class BookingVehicule : BaseModel
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
+
+    [Column("destination")]
+    public string Destination { get; set; } = default!;
 }
 

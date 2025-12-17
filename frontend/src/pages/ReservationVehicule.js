@@ -35,25 +35,12 @@ function ReservationVehicule() {
 
     const getVehiculeTypeIcon = (type) => {
         const typeLower = type?.toLowerCase() || '';
-        if (typeLower.includes('citadine') || typeLower.includes('berline')) {
-            return '🚗';
-        } else if (typeLower.includes('suv')) {
-            return '🚙';
-        } else if (typeLower.includes('utilitaire')) {
-            return '🚐';
-        } else if (typeLower.includes('électrique') || typeLower.includes('electrique')) {
-            return '⚡';
-        }
+        if (typeLower.includes('citadine')) return '🚗';
+        if (typeLower.includes('berline')) return '🚗';
+        if (typeLower.includes('suv')) return '🚙';
+        if (typeLower.includes('utilitaire')) return '🚐';
+        if (typeLower.includes('électrique') || typeLower.includes('electrique')) return '⚡';
         return '🚗';
-    };
-
-    const getVehiculeTypeLabel = (vehicule) => {
-        const nameLower = vehicule.name?.toLowerCase() || '';
-        if (nameLower.includes('clio') || nameLower.includes('citadine')) return 'Citadine';
-        if (nameLower.includes('3008') || nameLower.includes('suv')) return 'SUV';
-        if (nameLower.includes('model') || nameLower.includes('tesla')) return 'Berline';
-        if (nameLower.includes('kangoo') || nameLower.includes('utilitaire')) return 'Utilitaire';
-        return 'Véhicule';
     };
 
     const getTransmissionLabel = (transmission) => {
@@ -102,7 +89,8 @@ function ReservationVehicule() {
                 idVehicule: selectedVehicule.id,
                 userId: userId,
                 startDatetime: startDatetime.toISOString(),
-                endDatetime: endDatetime.toISOString()
+                endDatetime: endDatetime.toISOString(),
+                destination: destination.trim()
             });
 
             setFeedback({ type: 'success', message: 'Réservation confirmée avec succès!' });
@@ -118,23 +106,6 @@ function ReservationVehicule() {
         } finally {
             setSubmitting(false);
         }
-    };
-
-    const formatDateForInput = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-    const formatTimeForInput = (date) => {
-        if (!date) return '';
-        const d = new Date(date);
-        const hours = String(d.getHours()).padStart(2, '0');
-        const minutes = String(d.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
     };
 
     return (
@@ -155,7 +126,7 @@ function ReservationVehicule() {
                         <div className="vehicules-grid">
                             {vehicules.map((vehicule) => {
                                 const isSelected = selectedVehicule?.id === vehicule.id;
-                                const vehiculeType = getVehiculeTypeLabel(vehicule);
+                                const vehiculeType = vehicule.typeVehicule || 'Véhicule';
                                 const transmissionLabel = getTransmissionLabel(vehicule.transmissionType);
 
                                 return (
@@ -168,10 +139,10 @@ function ReservationVehicule() {
                                         <div className="vehicule-type">{vehiculeType}</div>
                                         <div className="vehicule-name">{vehicule.name}</div>
                                         <div className="vehicule-plate">{vehicule.licensePlate}</div>
-                                        <div className="vehicule-details">
-                                            <span>{vehicule.capacity} places</span>
-                                            <span>{transmissionLabel}</span>
-                                            <span>{vehicule.fuelType}</span>
+                                        <div className="vehicule-tags">
+                                            <span className="vehicule-tag">{vehicule.capacity} places</span>
+                                            <span className="vehicule-tag">{transmissionLabel}</span>
+                                            <span className="vehicule-tag">{vehicule.fuelType}</span>
                                         </div>
                                         <div className="vehicule-status">
                                             <span className="status-dot available"></span>

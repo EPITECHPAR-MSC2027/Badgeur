@@ -25,5 +25,8 @@ public class Vehicule : BaseModel
 
     [Column("transmission_type")]
     public string TransmissionType { get; set; } = default!;
+
+    [Column("type_vehicule")]
+    public string TypeVehicule { get; set; } = default!;
 }
 

@@ -23,7 +23,8 @@ namespace badgeur_backend.Services
                 UserId = request.UserId,
                 StartDatetime = request.StartDatetime,
                 EndDatetime = request.EndDatetime,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Destination = request.Destination
             };
 
             var response = await _client.From<BookingVehicule>().Insert(bookingVehicule);
@@ -72,6 +73,7 @@ namespace badgeur_backend.Services
             bookingVehicule.UserId = updateBookingVehiculeRequest.UserId;
             bookingVehicule.StartDatetime = updateBookingVehiculeRequest.StartDatetime;
             bookingVehicule.EndDatetime = updateBookingVehiculeRequest.EndDatetime;
+            bookingVehicule.Destination = updateBookingVehiculeRequest.Destination;
 
             request = await _client.From<BookingVehicule>().Update(bookingVehicule);
 
@@ -92,7 +94,8 @@ namespace badgeur_backend.Services
                 UserId = bookingVehicule.UserId,
                 StartDatetime = bookingVehicule.StartDatetime,
                 EndDatetime = bookingVehicule.EndDatetime,
-                CreatedAt = bookingVehicule.CreatedAt
+                CreatedAt = bookingVehicule.CreatedAt,
+                Destination = bookingVehicule.Destination
             };
         }
     }

@@ -23,7 +23,8 @@ namespace badgeur_backend.Services
                 Capacity = request.Capacity,
                 FuelType = request.FuelType,
                 LicensePlate = request.LicensePlate,
-                TransmissionType = request.TransmissionType
+                TransmissionType = request.TransmissionType,
+                TypeVehicule = request.TypeVehicule
             };
 
             var response = await _client.From<Vehicule>().Insert(vehicule);
@@ -59,6 +60,7 @@ namespace badgeur_backend.Services
             vehicule.FuelType = updateVehiculeRequest.FuelType;
             vehicule.LicensePlate = updateVehiculeRequest.LicensePlate;
             vehicule.TransmissionType = updateVehiculeRequest.TransmissionType;
+            vehicule.TypeVehicule = updateVehiculeRequest.TypeVehicule;
 
             request = await _client.From<Vehicule>().Update(vehicule);
 
@@ -79,7 +81,8 @@ namespace badgeur_backend.Services
                 Capacity = vehicule.Capacity,
                 FuelType = vehicule.FuelType,
                 LicensePlate = vehicule.LicensePlate,
-                TransmissionType = vehicule.TransmissionType
+                TransmissionType = vehicule.TransmissionType,
+                TypeVehicule = vehicule.TypeVehicule
             };
         }
     }

@@ -9,6 +9,7 @@ namespace badgeur_backend.Contracts.Requests.Create
         public required long UserId { get; set; }
         public required DateTime StartDatetime { get; set; }
         public required DateTime EndDatetime { get; set; }
+        public required string Destination { get; set; }
     }
 }
 

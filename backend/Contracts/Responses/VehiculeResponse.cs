@@ -8,6 +8,7 @@ namespace badgeur_backend.Contracts.Responses
         public required string FuelType { get; set; }
         public required string LicensePlate { get; set; }
         public required string TransmissionType { get; set; }
+        public required string TypeVehicule { get; set; }
     }
 }
 

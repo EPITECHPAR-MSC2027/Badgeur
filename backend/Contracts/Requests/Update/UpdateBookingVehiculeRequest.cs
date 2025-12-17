@@ -9,6 +9,7 @@ namespace badgeur_backend.Contracts.Requests.Update
         public long UserId { get; set; }
         public DateTime StartDatetime { get; set; }
         public DateTime EndDatetime { get; set; }
+        public string Destination { get; set; } = default!;
     }
 }
 

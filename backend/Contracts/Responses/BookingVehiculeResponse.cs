@@ -8,6 +8,7 @@ namespace badgeur_backend.Contracts.Responses
         public required DateTime StartDatetime { get; set; }
         public required DateTime EndDatetime { get; set; }
         public required DateTime CreatedAt { get; set; }
+        public required string Destination { get; set; }
     }
 }
 

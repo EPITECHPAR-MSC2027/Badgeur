@@ -27,9 +27,9 @@
 
 .reservation-content {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 380px;
     gap: 30px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .vehicules-section {
@@ -105,20 +105,27 @@
     letter-spacing: 1px;
 }
 
-.vehicule-details {
+.vehicule-tags {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 12px;
     width: 100%;
     padding-top: 12px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
+    justify-content: center;
 }
 
-.vehicule-details span {
-    color: var(--color-second-text);
+.vehicule-tag {
+    background-color: var(--color-highlight);
+    color: var(--color-highlight-text);
     font-family: 'Fustat', sans-serif;
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
 }
 
 .vehicule-status {
@@ -152,6 +159,8 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 100px;
+    height: fit-content;
+    align-self: start;
 }
 
 .trip-details-header {
