@@ -9,13 +9,29 @@ body.dyslexic-mode * {
 }
 
 [data-theme='main'] {
-    --color-primary: #FFFFFF;
-    --color-secondary: #1C1B1F;
-    --color-third: #2B2B2B;
-    --color-background: #EBEBEB;
+    --color-primary: #FEFEFE;
+    --color-secondary: #F4F3F7;
+    --color-third: #303B4C;
+    --color-background: #F4F3F7;
     --color-second-text: #8B8686;
     --color-highlight: #E8F4FD;
     --color-highlight-text: #1C1B1F;
+    --highlight1: #629DDF;
+    --highlight2: #FD9342;
+    --highlight3: #7155BC;
+    --highlight4: #DD4B91;
+}
+
+[data-theme='night'] {
+    --color-primary: #16161a;
+    --color-secondary: #F4F3F7;
+    --color-third: #94a1b2;
+    --color-background: #16161a;
+    --color-second-text: #2cb67d;
+    --highlight1: #7bb3e7;
+    --highlight2: #fca059;
+    --highlight3: #8063cf;
+    --highlight4: #eb5da2;
 }
 
 [data-theme='azure'] {
