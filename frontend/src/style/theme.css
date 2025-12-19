@@ -14,6 +14,8 @@ body.dyslexic-mode * {
     --color-third: #303B4C;
     --color-background: #F4F3F7;
     --color-second-text: #8B8686;
+    --color-highlight: #E8F4FD;
+    --color-highlight-text: #1C1B1F;
     --highlight1: #629DDF;
     --highlight2: #FD9342;
     --highlight3: #7155BC;
@@ -38,6 +40,8 @@ body.dyslexic-mode * {
     --color-third: #f0acac;
     --color-background: #F5F5F5;
     --color-second-text: #d8a3c7;
+    --color-highlight: #D4E8F5;
+    --color-highlight-text: #507695;
 }
 
 [data-theme='pink-matcha'] {
@@ -46,6 +50,8 @@ body.dyslexic-mode * {
     --color-third: #285823;
     --color-background: #FFF6FF;
     --color-second-text: #55A155;
+    --color-highlight: #E8F5E9;
+    --color-highlight-text: #285823;
 }
 
 [data-theme='coffee'] {
@@ -54,6 +60,8 @@ body.dyslexic-mode * {
     --color-third: #BD8E89;
     --color-background: #EAEFFF;
     --color-second-text: #b29482;
+    --color-highlight: #F5E6E4;
+    --color-highlight-text: #7F6269;
 }
 
 [data-theme='deep-blue'] {
@@ -62,6 +70,8 @@ body.dyslexic-mode * {
     --color-third: #272C4F;
     --color-background: #EAEFFF;
     --color-second-text: #acb2e5;
+    --color-highlight: #D8DCF5;
+    --color-highlight-text: #272C4F;
 }
 
 [data-theme='cyber'] {
@@ -70,6 +80,8 @@ body.dyslexic-mode * {
     --color-third: #838282;
     --color-background: #2B2B2B;
     --color-second-text: #6390f8;
+    --color-highlight: #3D3D3D;
+    --color-highlight-text: #DADADA;
 }
 
 [data-theme='warm'] {
@@ -78,6 +90,8 @@ body.dyslexic-mode * {
     --color-third: #5C1A29;
     --color-background: #FFDDD2;
     --color-second-text: #B0344C;
+    --color-highlight: #FFE8E0;
+    --color-highlight-text: #5C1A29;
 }
 
 [data-theme='desert'] {
@@ -86,6 +100,8 @@ body.dyslexic-mode * {
     --color-third: #859a68;
     --color-background: #EADED0;
     --color-second-text: #95714F;
+    --color-highlight: #E5DDD0;
+    --color-highlight-text: #676D40;
 }
 
 [data-theme='starlight'] {
@@ -94,4 +110,6 @@ body.dyslexic-mode * {
     --color-third: #996aa7;
     --color-background: #19173B;
     --color-second-text: #dba2bb;
+    --color-highlight: #2D2A52;
+    --color-highlight-text: #EAE5E7;
 }

@@ -47,6 +47,8 @@ builder.Services.AddScoped<ClocksService>();
 builder.Services.AddScoped<FloorService>();
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<WorkspaceService>();
+builder.Services.AddScoped<VehiculeService>();
+builder.Services.AddScoped<BookingVehiculeService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
@@ -87,5 +89,7 @@ app.MapClocksEndpoints();
 app.MapFloorEndpoints();
 app.MapRoomEndpoints();
 app.MapWorkspaceEndpoints();
+app.MapVehiculeEndpoints();
+app.MapBookingVehiculeEndpoints();
 
 app.Run();

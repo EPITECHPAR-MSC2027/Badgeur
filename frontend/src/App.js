@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import GererEquipe from './pages/GererEquipe';
 import Admin from './pages/Admin';
 import UserAnalytics from './pages/UserAnalytics';
+import ReservationVehicule from './pages/ReservationVehicule';
 import authService from './services/authService';
 
 function App() {
@@ -116,6 +117,14 @@ function App() {
           element={
             <RequireAuth>
               <UserAnalytics />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reservation-vehicule"
+          element={
+            <RequireAuth>
+              <ReservationVehicule />
             </RequireAuth>
           }
         />
