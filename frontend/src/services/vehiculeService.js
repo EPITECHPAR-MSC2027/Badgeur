@@ -99,8 +99,54 @@ const vehiculeService = {
     },
 
     /**
+     * Check if a vehicule is available for a given time period
+     * @param {number} vehiculeId - Vehicule ID
+     * @param {string} startDatetime - Start datetime ISO string
+     * @param {string} endDatetime - End datetime ISO string
+     * @returns {Promise<boolean>} True if available, false otherwise
+     */
+    async checkVehiculeAvailability(vehiculeId, startDatetime, endDatetime) {
+        const bookings = await this.getBookingsByVehiculeId(vehiculeId);
+        const start = new Date(startDatetime);
+        const end = new Date(endDatetime);
+
+        // Check for conflicts
+        const hasConflict = bookings.some(booking => {
+            const bookingStart = new Date(booking.startDatetime);
+            const bookingEnd = new Date(booking.endDatetime);
+
+            return (
+                (start >= bookingStart && start < bookingEnd) ||
+                (end > bookingStart && end <= bookingEnd) ||
+                (start <= bookingStart && end >= bookingEnd)
+            );
+        });
+
+        return !hasConflict;
+    },
+
+    /**
+     * Check if a vehicule is currently available (not booked right now)
+     * @param {number} vehiculeId - Vehicule ID
+     * @returns {Promise<boolean>} True if currently available, false otherwise
+     */
+    async isVehiculeCurrentlyAvailable(vehiculeId) {
+        const bookings = await this.getBookingsByVehiculeId(vehiculeId);
+        const now = new Date();
+
+        // Check if there's any active booking
+        const isBooked = bookings.some(booking => {
+            const bookingStart = new Date(booking.startDatetime);
+            const bookingEnd = new Date(booking.endDatetime);
+            return now >= bookingStart && now <= bookingEnd;
+        });
+
+        return !isBooked;
+    },
+
+    /**
      * Create a new booking
-     * @param {Object} bookingData - Booking data {idVehicule: number, userId: number, startDatetime: Date, endDatetime: Date}
+     * @param {Object} bookingData - Booking data {idVehicule: number, userId: number, startDatetime: Date, endDatetime: Date, destination: string}
      * @returns {Promise<number|null>} Created booking ID or null if failed
      */
     async createBooking(bookingData) {
@@ -136,4 +182,3 @@ const vehiculeService = {
 };
 
 export default vehiculeService;
-

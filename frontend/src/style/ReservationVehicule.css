@@ -75,6 +75,29 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
+.vehicule-card.unavailable {
+    opacity: 0.6;
+    cursor: default;
+    position: relative;
+}
+
+.vehicule-card.unavailable::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.vehicule-card.unavailable:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .vehicule-icon {
     font-size: 48px;
     margin-bottom: 8px;
@@ -145,6 +168,10 @@
     background-color: #10b981;
 }
 
+.status-dot.unavailable {
+    background-color: #ef4444;
+}
+
 .status-text {
     color: var(--color-second-text);
     font-family: 'Fustat', sans-serif;
@@ -186,6 +213,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    padding: 0;
 }
 
 .form-group {
@@ -317,4 +345,3 @@
         padding: 16px;
     }
 }
-

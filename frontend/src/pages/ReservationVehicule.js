@@ -4,6 +4,7 @@ import '../style/ReservationVehicule.css';
 
 function ReservationVehicule() {
     const [vehicules, setVehicules] = useState([]);
+    const [vehiculesAvailability, setVehiculesAvailability] = useState({});
     const [selectedVehicule, setSelectedVehicule] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -25,6 +26,14 @@ function ReservationVehicule() {
             setLoading(true);
             const data = await vehiculeService.getAllVehicules();
             setVehicules(data);
+            
+            // Check current availability for each vehicule
+            const availabilityMap = {};
+            for (const vehicule of data) {
+                const isAvailable = await vehiculeService.isVehiculeCurrentlyAvailable(vehicule.id);
+                availabilityMap[vehicule.id] = isAvailable;
+            }
+            setVehiculesAvailability(availabilityMap);
         } catch (error) {
             console.error('Erreur lors du chargement des véhicules:', error);
             setFeedback({ type: 'error', message: 'Erreur lors du chargement des véhicules' });
@@ -83,8 +92,25 @@ function ReservationVehicule() {
             return;
         }
 
+        // Vérifier la disponibilité pour la période demandée
         setSubmitting(true);
         try {
+            const isAvailable = await vehiculeService.checkVehiculeAvailability(
+                selectedVehicule.id,
+                startDatetime.toISOString(),
+                endDatetime.toISOString()
+            );
+
+            if (!isAvailable) {
+                setFeedback({ 
+                    type: 'error', 
+                    message: 'Ce véhicule est déjà réservé pour cette période. Veuillez choisir d\'autres dates.' 
+                });
+                setSubmitting(false);
+                return;
+            }
+
+            // Créer la réservation
             await vehiculeService.createBooking({
                 idVehicule: selectedVehicule.id,
                 userId: userId,
@@ -94,6 +120,7 @@ function ReservationVehicule() {
             });
 
             setFeedback({ type: 'success', message: 'Réservation confirmée avec succès!' });
+            
             // Reset form
             setSelectedVehicule(null);
             setDestination('');
@@ -101,6 +128,9 @@ function ReservationVehicule() {
             setStartTime('');
             setEndDate('');
             setEndTime('');
+            
+            // Recharger les véhicules pour mettre à jour la disponibilité
+            await loadVehicules();
         } catch (error) {
             setFeedback({ type: 'error', message: error.message || 'Erreur lors de la création de la réservation' });
         } finally {
@@ -128,11 +158,12 @@ function ReservationVehicule() {
                                 const isSelected = selectedVehicule?.id === vehicule.id;
                                 const vehiculeType = vehicule.typeVehicule || 'Véhicule';
                                 const transmissionLabel = getTransmissionLabel(vehicule.transmissionType);
+                                const isAvailable = vehiculesAvailability[vehicule.id] !== false;
 
                                 return (
                                     <div
                                         key={vehicule.id}
-                                        className={`vehicule-card ${isSelected ? 'selected' : ''}`}
+                                        className={`vehicule-card ${isSelected ? 'selected' : ''} ${!isAvailable ? 'unavailable' : ''}`}
                                         onClick={() => setSelectedVehicule(vehicule)}
                                     >
                                         <div className="vehicule-icon">{getVehiculeTypeIcon(vehiculeType)}</div>
@@ -145,8 +176,8 @@ function ReservationVehicule() {
                                             <span className="vehicule-tag">{vehicule.fuelType}</span>
                                         </div>
                                         <div className="vehicule-status">
-                                            <span className="status-dot available"></span>
-                                            <span className="status-text">Disponible</span>
+                                            <span className={`status-dot ${isAvailable ? 'available' : 'unavailable'}`}></span>
+                                            <span className="status-text">{isAvailable ? 'Disponible' : 'Indisponible'}</span>
                                         </div>
                                     </div>
                                 );
@@ -188,6 +219,7 @@ function ReservationVehicule() {
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     className="form-input date-input"
+                                    min={new Date().toISOString().split('T')[0]}
                                 />
                                 <input
                                     type="time"
@@ -209,6 +241,7 @@ function ReservationVehicule() {
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
                                     className="form-input date-input"
+                                    min={startDate || new Date().toISOString().split('T')[0]}
                                 />
                                 <input
                                     type="time"
@@ -231,7 +264,7 @@ function ReservationVehicule() {
                             className="confirm-button"
                         >
                             <span className="button-icon">✓</span>
-                            {submitting ? 'Confirmation...' : 'Confirmer la réservation'}
+                            {submitting ? 'Vérification...' : 'Confirmer la réservation'}
                         </button>
 
                         {!selectedVehicule && (
@@ -245,4 +278,3 @@ function ReservationVehicule() {
 }
 
 export default ReservationVehicule;
-
