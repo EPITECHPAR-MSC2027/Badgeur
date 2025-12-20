@@ -38,7 +38,7 @@ function Home() {
     const dateText = dateFormatter.format(parisNow)
 
     const timeBoxStyle = {
-        backgroundColor: 'var(--color-third)',
+        backgroundColor: 'var(--color-primary)',
         borderRadius: '9px',
         padding: '12px 20px',
         display: 'inline-block',
@@ -46,7 +46,8 @@ function Home() {
         fontFamily: 'Alata, sans-serif',
         margin: '12px 20px',
         width : '94%',
-        height : '110px'
+        height : '110px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
     }
 
     const gridStyle = {
@@ -63,9 +64,9 @@ function Home() {
                 <h2>Bienvenue {userData.firstName} {userData.lastName}</h2>
             </header>
             <div className="time" style={timeBoxStyle}>
-                <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-primary)' }}>Heures et date actuelle</h1>
-                <div style={{ fontSize: '38px', fontWeight: 600 }}>{timeText}</div>
-                <div style={{ fontSize: '14px' }}>{dateText}</div>
+                <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-secondary)' }}>Heures et date actuelle</h1>
+                <div style={{ fontSize: '38px', fontWeight: 600, color: 'var(--color-secondary)' }}>{timeText}</div>
+                <div style={{ fontSize: '14px', color: 'var(--color-secondary)' }}>{dateText}</div>
             </div>
             <div style={gridStyle}>
                 <LastPunch />
