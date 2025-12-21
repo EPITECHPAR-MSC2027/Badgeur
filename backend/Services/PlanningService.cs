@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreatePlanningAsync(CreatePlanningRequest request)
+        public virtual async Task<long> CreatePlanningAsync(CreatePlanningRequest request)
         {
             var planning = new Planning
             {
@@ -32,21 +32,21 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<PlanningResponse>> GetAllPlanningsAsync()
+        public virtual async Task<List<PlanningResponse>> GetAllPlanningsAsync()
         {
             var response = await _client.From<Planning>().Get();
 
             return response.Models.Select(CreatePlanningResponse).ToList();
         }
 
-        public async Task<List<PlanningResponse>> GetPlanningsByUserAsync(long userId)
+        public virtual async Task<List<PlanningResponse>> GetPlanningsByUserAsync(long userId)
         {
             var response = await _client.From<Planning>().Where(p => p.UserId == userId).Get();
 
             return response.Models.Select(CreatePlanningResponse).ToList();
         }
 
-        public async Task<PlanningResponse?> GetPlanningByIdAsync(long id)
+        public virtual async Task<PlanningResponse?> GetPlanningByIdAsync(long id)
         {
             var response = await _client.From<Planning>().Where(p => p.Id == id).Get();
             var planning = response.Models.FirstOrDefault();
@@ -55,7 +55,7 @@ namespace badgeur_backend.Services
             return CreatePlanningResponse(planning);
         }
 
-        public async Task<PlanningResponse?> UpdatePlanningAsync(long id, UpdatePlanningRequest request)
+        public virtual async Task<PlanningResponse?> UpdatePlanningAsync(long id, UpdatePlanningRequest request)
         {
             var query = await _client.From<Planning>().Where(p => p.Id == id).Get();
             var planning = query.Models.FirstOrDefault();
@@ -71,12 +71,12 @@ namespace badgeur_backend.Services
             return CreatePlanningResponse(planning);
         }
 
-        public async Task DeletePlanningAsync(long id)
+        public virtual async Task DeletePlanningAsync(long id)
         {
             await _client.From<Planning>().Where(p => p.Id == id).Delete();
         }
 
-        public PlanningResponse CreatePlanningResponse(Planning planning)
+        public virtual PlanningResponse CreatePlanningResponse(Planning planning)
         {
             return new PlanningResponse
             {

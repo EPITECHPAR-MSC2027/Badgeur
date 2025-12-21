@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateFloorAsync(CreateFloorRequest request)
+        public virtual async Task<long> CreateFloorAsync(CreateFloorRequest request)
         {
             var floor = new Floor
             {
@@ -26,14 +26,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<FloorResponse>> GetAllFloorsAsync()
+        public virtual async Task<List<FloorResponse>> GetAllFloorsAsync()
         {
             var response = await _client.From<Floor>().Get();
 
             return response.Models.Select(f => CreateFloorResponse(f)).ToList();
         }
 
-        public async Task<FloorResponse?> GetFloorByIdAsync(long id)
+        public virtual async Task<FloorResponse?> GetFloorByIdAsync(long id)
         {
             var response = await _client.From<Floor>().Where(f => f.Id == id).Get();
             var floor = response.Models.FirstOrDefault();
@@ -43,7 +43,7 @@ namespace badgeur_backend.Services
             return CreateFloorResponse(floor);
         }
 
-        public async Task<FloorResponse?> UpdateFloorAsync(long id, UpdateFloorRequest updateFloorRequest)
+        public virtual async Task<FloorResponse?> UpdateFloorAsync(long id, UpdateFloorRequest updateFloorRequest)
         {
             var request = await _client.From<Floor>().Where(f => f.Id == id).Get();
             var floor = request.Models.FirstOrDefault();
@@ -57,12 +57,12 @@ namespace badgeur_backend.Services
             return CreateFloorResponse(floor);
         }
 
-        public async Task DeleteFloorAsync(long id)
+        public virtual async Task DeleteFloorAsync(long id)
         {
             await _client.From<Floor>().Where(f => f.Id == id).Delete();
         }
 
-        public FloorResponse CreateFloorResponse(Floor floor)
+        public virtual FloorResponse CreateFloorResponse(Floor floor)
         {
             return new FloorResponse
             {
