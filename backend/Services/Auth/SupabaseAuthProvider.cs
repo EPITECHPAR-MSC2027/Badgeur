@@ -69,12 +69,12 @@ namespace badgeur_backend.Services.Auth
             }
         }
 
-        public async Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken)
+        public async Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken, string refreshToken)
         {
             try
             {
-                // Restore the session before verifying
-                await _client.Auth.SetSession(accessToken, string.Empty);
+                // Restore the session with both tokens
+                await _client.Auth.SetSession(accessToken, refreshToken);
 
                 var challenge = await _client.Auth.Challenge(new MfaChallengeParams
                 {

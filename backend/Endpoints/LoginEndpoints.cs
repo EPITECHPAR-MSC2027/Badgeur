@@ -62,7 +62,6 @@ namespace badgeur_backend.Endpoints
         {
             try
             {
-                // First, authenticate the user
                 var session = await authProvider.SignInWithPassword(request.Email, request.Password);
 
                 if (session == null || string.IsNullOrEmpty(session.AccessToken))
@@ -70,7 +69,6 @@ namespace badgeur_backend.Endpoints
                     return Results.Unauthorized();
                 }
 
-                // Enroll in MFA
                 var enrollResponse = await authProvider.EnrollMfa(session.AccessToken);
 
                 if (enrollResponse == null)
@@ -84,7 +82,8 @@ namespace badgeur_backend.Endpoints
                     QrCode = enrollResponse.QrCode,
                     Secret = enrollResponse.Secret,
                     Uri = enrollResponse.Uri,
-                    AccessToken = session.AccessToken // Include the access token
+                    AccessToken = session.AccessToken,
+                    RefreshToken = session.RefreshToken  // Include refresh token
                 };
 
                 return Results.Ok(response);
@@ -100,8 +99,11 @@ namespace badgeur_backend.Endpoints
         {
             try
             {
-                // Pass the access token to restore the session
-                var verifyResponse = await authProvider.VerifyMfaEnrollment(request.FactorId, request.Code, request.AccessToken);
+                var verifyResponse = await authProvider.VerifyMfaEnrollment(
+                    request.FactorId,
+                    request.Code,
+                    request.AccessToken,
+                    request.RefreshToken);  // Pass refresh token
 
                 if (verifyResponse == null)
                 {

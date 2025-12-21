@@ -15,7 +15,7 @@
 
         // MFA
         Task<MfaEnrollResponse?> EnrollMfa(string accessToken);
-        Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken);
+        Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken, string refreshToken);
         Task<MfaVerifyResponse?> ChallengeMfa(string factorId);
         Task<MfaVerifyResponse?> VerifyMfaChallenge(string factorId, string challengeId, string code);
         Task<List<MfaFactor>> ListMfaFactors(string accessToken);

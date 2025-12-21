@@ -11,7 +11,8 @@ function MfaSetup() {
     const [qrCode, setQrCode] = useState('');
     const [secret, setSecret] = useState('');
     const [factorId, setFactorId] = useState('');
-    const [accessToken, setAccessToken] = useState(''); // Store the access token
+    const [accessToken, setAccessToken] = useState('');
+    const [refreshToken, setRefreshToken] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -122,7 +123,8 @@ function MfaSetup() {
             setQrCode(data.qrCode);
             setSecret(data.secret);
             setFactorId(data.factorId);
-            setAccessToken(data.accessToken); // Store the access token
+            setAccessToken(data.accessToken);
+            setRefreshToken(data.refreshToken);
             setPassword(''); // Clear password from memory
             setStep(2);
         } catch (err) {
@@ -141,7 +143,7 @@ function MfaSetup() {
             const res = await fetch(`${API_URL}/login/mfa-verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ factorId, code: verificationCode, accessToken }) // Include accessToken
+                body: JSON.stringify({ factorId, code: verificationCode, accessToken, refreshToken })
             });
 
             if (!res.ok) {
