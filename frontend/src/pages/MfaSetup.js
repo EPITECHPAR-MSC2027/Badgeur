@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../style/MfaSetup.css';
 import API_URL from '../config/api';
@@ -16,11 +16,46 @@ function MfaSetup() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [mfaAlreadyEnabled, setMfaAlreadyEnabled] = useState(false);
+    const [checkingStatus, setCheckingStatus] = useState(true);
 
     const navigate = useNavigate();
 
     const userEmail = localStorage.getItem('email') || '';
     const userName = `${localStorage.getItem('firstName') || ''} ${localStorage.getItem('lastName') || ''}`.trim();
+
+    useEffect(() => {
+        checkMfaStatus();
+    }, []);
+
+    const checkMfaStatus = async () => {
+        try {
+            const storedAccessToken = localStorage.getItem('accessToken');
+            const storedRefreshToken = localStorage.getItem('refreshToken');
+
+            if (!storedAccessToken) {
+                setCheckingStatus(false);
+                return;
+            }
+
+            const response = await fetch(`${API_URL}/login/mfa-status`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${storedAccessToken}`,
+                    'X-Refresh-Token': storedRefreshToken || ''
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setMfaAlreadyEnabled(data.mfaEnabled);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la vérification du statut MFA:', error);
+        } finally {
+            setCheckingStatus(false);
+        }
+    };
 
     const handleStartEnroll = async (e) => {
         e.preventDefault();
@@ -97,6 +132,68 @@ function MfaSetup() {
     const handleBack = () => {
         navigate('/profil');
     };
+
+    // Loading state while checking MFA status
+    if (checkingStatus) {
+        return (
+            <div className="mfa-setup-container">
+                <h1 className="mfa-setup-title">Configuration MFA</h1>
+                <div className="mfa-setup-card">
+                    <div className="mfa-user-header">
+                        <div className="mfa-user-avatar">🔐</div>
+                        <div className="mfa-user-info">
+                            <div className="mfa-user-name">{userName || 'Utilisateur'}</div>
+                            <div className="mfa-user-email">{userEmail}</div>
+                        </div>
+                    </div>
+                    <p className="mfa-description" style={{ textAlign: 'center' }}>
+                        Vérification du statut MFA...
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // MFA already enabled state
+    if (mfaAlreadyEnabled) {
+        return (
+            <div className="mfa-setup-container">
+                <h1 className="mfa-setup-title">Configuration MFA</h1>
+                <div className="mfa-setup-card">
+                    <div className="mfa-user-header">
+                        <div className="mfa-user-avatar">🔐</div>
+                        <div className="mfa-user-info">
+                            <div className="mfa-user-name">{userName || 'Utilisateur'}</div>
+                            <div className="mfa-user-email">{userEmail}</div>
+                        </div>
+                    </div>
+
+                    <div className="mfa-already-enabled">
+                        <div className="mfa-already-enabled-icon">✅</div>
+                        <h2 className="mfa-section-title" style={{ textAlign: 'center' }}>
+                            MFA déjà activé
+                        </h2>
+                        <p className="mfa-description" style={{ textAlign: 'center' }}>
+                            L'authentification à deux facteurs est déjà activée sur ce compte.
+                        </p>
+                        <div className="mfa-info-box">
+                            <p className="mfa-description" style={{ margin: 0, textAlign: 'center' }}>
+                                Si vous souhaitez désactiver ou réinitialiser votre MFA, veuillez contacter le support IT.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleBack}
+                        className="mfa-button-primary"
+                    >
+                        ← Retour au profil
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="mfa-setup-container">

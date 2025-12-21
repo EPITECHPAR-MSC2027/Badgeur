@@ -311,3 +311,16 @@
         letter-spacing: 6px;
     }
 }
+
+/* ---- MFA Already Enabled State ---- */
+.mfa-already-enabled {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.mfa-already-enabled-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
