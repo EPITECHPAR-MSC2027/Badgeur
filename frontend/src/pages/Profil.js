@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '../style/theme.css'
 import '../index.css'
 
@@ -12,6 +13,9 @@ function Profil() {
     const [loading, setLoading] = useState(true)
     const [selectedTheme, setSelectedTheme] = useState(() => localStorage.getItem('theme') || 'main')
     const [dyslexicMode, setDyslexicMode] = useState(() => localStorage.getItem('dyslexicMode') === 'true')
+    const [mfaEnabled, setMfaEnabled] = useState(false) // TODO: Check actual MFA status from backend
+
+    const navigate = useNavigate()
 
     const themes = [
         { value: 'main', label: 'Principal' },
@@ -52,18 +56,25 @@ function Profil() {
             const roleId = localStorage.getItem('roleId') || null
 
             setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
-            
-            // Optionnel : faire une requête API pour récupérer les données à jour
-            // const response = await authService.get('/users/me')
+
+            // TODO: Check MFA status from backend
+            // const accessToken = localStorage.getItem('accessToken')
+            // const response = await fetch(`${API_URL}/login/mfa-status`, {
+            //     headers: { 'Authorization': `Bearer ${accessToken}` }
+            // })
             // if (response.ok) {
             //     const data = await response.json()
-            //     setUserData(data)
+            //     setMfaEnabled(data.mfaEnabled)
             // }
         } catch (error) {
             console.error('Erreur lors du chargement des données utilisateur:', error)
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleMfaSetup = () => {
+        navigate('/login/mfa-setup')
     }
 
     const cardStyle = {
@@ -91,6 +102,20 @@ function Profil() {
         border: '1px solid #e0e0e0'
     }
 
+    const buttonStyle = {
+        padding: '10px 20px',
+        fontSize: '16px',
+        borderRadius: '6px',
+        border: 'none',
+        cursor: 'pointer',
+        fontWeight: 600,
+        transition: 'all 0.3s ease',
+        backgroundColor: 'var(--color-secondary)',
+        color: 'var(--color-primary)',
+        width: '100%',
+        marginTop: 10
+    }
+
     const handleThemeChange = (event) => {
         setSelectedTheme(event.target.value)
     }
@@ -113,18 +138,18 @@ function Profil() {
     return (
         <div>
             <h1 style={{ marginTop: '1.5em' }}>Profil</h1>
-            
-            {/* Container flex pour afficher les deux sections côte à côte */}
-            <div style={{ 
-                display: 'flex', 
-                gap: 24, 
+
+            {/* Container flex pour afficher les sections côte à côte */}
+            <div style={{
+                display: 'flex',
+                gap: 24,
                 marginTop: 16,
                 flexWrap: 'wrap'
             }}>
                 {/* Section Informations personnelles */}
                 <div style={{ ...cardStyle, flex: '1', minWidth: 300 }}>
                     <h2 style={{ marginTop: 0, marginBottom: 20 }}>Informations personnelles</h2>
-                    
+
                     <div>
                         <div style={labelStyle}>Prénom</div>
                         <div style={valueStyle}>{userData.firstName}</div>
@@ -151,14 +176,14 @@ function Profil() {
                 {/* Section Paramètres */}
                 <div style={{ ...cardStyle, flex: '1', minWidth: 300 }}>
                     <h2 style={{ marginTop: 0, marginBottom: 20 }}>Paramètres</h2>
-                    
+
                     <div style={{ marginBottom: 30 }}>
                         <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Thème</h3>
                         <p style={{ marginBottom: 12, color: 'var(--color-second-text)', fontSize: 14 }}>
                             Choisissez votre thème préféré :
                         </p>
-                        <select 
-                            value={selectedTheme} 
+                        <select
+                            value={selectedTheme}
                             onChange={handleThemeChange}
                             style={{
                                 padding: '8px 12px',
@@ -179,11 +204,11 @@ function Profil() {
                         </select>
                     </div>
 
-                    <div>
+                    <div style={{ marginBottom: 30 }}>
                         <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Accessibilité</h3>
-                        <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: '10px',
                             padding: '10px',
                             backgroundColor: 'var(--color-background)',
@@ -203,9 +228,9 @@ function Profil() {
                                     accentColor: 'var(--color-secondary)'
                                 }}
                             />
-                            <label 
-                                htmlFor="dyslexicMode" 
-                                style={{ 
+                            <label
+                                htmlFor="dyslexicMode"
+                                style={{
                                     cursor: 'pointer',
                                     fontSize: '16px',
                                     color: 'var(--color-secondary)',
@@ -219,6 +244,55 @@ function Profil() {
                             Active une police spécialement conçue pour faciliter la lecture aux personnes dyslexiques
                         </p>
                     </div>
+
+                    {/* Section Sécurité / MFA */}
+                    <div>
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Sécurité</h3>
+                        <div style={{
+                            padding: '15px',
+                            backgroundColor: 'var(--color-background)',
+                            borderRadius: '8px',
+                            border: '1px solid var(--color-third)',
+                            marginBottom: 10
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginBottom: 10
+                            }}>
+                                <div>
+                                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-secondary)' }}>
+                                        🔐 Authentification à deux facteurs
+                                    </div>
+                                    <div style={{ fontSize: '14px', color: 'var(--color-second-text)', marginTop: 5 }}>
+                                        {mfaEnabled ? 'Activée' : 'Désactivée'}
+                                    </div>
+                                </div>
+                                <div style={{
+                                    padding: '4px 12px',
+                                    borderRadius: '12px',
+                                    backgroundColor: mfaEnabled ? '#d4edda' : '#f8d7da',
+                                    color: mfaEnabled ? '#155724' : '#721c24',
+                                    fontSize: '12px',
+                                    fontWeight: 600
+                                }}>
+                                    {mfaEnabled ? '✓ Active' : '○ Inactive'}
+                                </div>
+                            </div>
+                            <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-second-text)' }}>
+                                Ajoutez une couche de sécurité supplémentaire à votre compte avec un code de vérification temporaire.
+                            </p>
+                            <button
+                                onClick={handleMfaSetup}
+                                style={buttonStyle}
+                                onMouseOver={(e) => e.target.style.opacity = '0.9'}
+                                onMouseOut={(e) => e.target.style.opacity = '1'}
+                            >
+                                {mfaEnabled ? 'Gérer MFA' : 'Configurer MFA'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,5 +300,3 @@ function Profil() {
 }
 
 export default Profil
-
-

@@ -50,21 +50,21 @@ function Login({ onSubmit }) {
                     <span className="header-title">BADGEUR</span>
                 </div>
             </div>
-            
+
             {/* Partie gauche - Informations avec lignes dorées */}
             <div className="login-page">
                 <div className="decorative-lines"></div>
-                
+
                 <h1>
                     Gérez votre temps<br />
                     <span className="highlight">avec précision</span>
                 </h1>
                 <p>
-                    Solution complète de gestion du temps pour les professionnels RH. 
+                    Solution complète de gestion du temps pour les professionnels RH.
                     Optimisez vos processus et gagnez en efficacité.
                 </p>
                 <div className="login-footer">
-                    <span>© 2024 Badgeur</span>
+                    <span>© 2026 Badgeur</span>
                     <span>Tous droits réservés</span>
                 </div>
             </div>
@@ -73,16 +73,16 @@ function Login({ onSubmit }) {
             <div className="login-container">
                 <div className="geometric-background"></div>
                 {/* Logo en haut à gauche */}
-                <img 
-                    src={primeBankLogo} 
-                    alt="Logo" 
-                    className="login-logo" 
+                <img
+                    src={primeBankLogo}
+                    alt="Logo"
+                    className="login-logo"
                 />
-                
+
                 <form onSubmit={handleSubmit}>
                     <div className="login-form-group">
-                    <h1 className="login-title">Connexion</h1>
-                    <p className="login-subtitle">Accédez à votre espace de gestion du temps</p>
+                        <h1 className="login-title">Connexion</h1>
+                        <p className="login-subtitle">Accédez à votre espace de gestion du temps</p>
                         <label className="login-label">Adresse Email</label>
                         <div className="login-input-wrapper">
                             <img src={emailIcon} alt="Email" className="login-input-icon" />
