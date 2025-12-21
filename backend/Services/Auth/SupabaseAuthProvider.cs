@@ -36,10 +36,6 @@ namespace badgeur_backend.Services.Auth
         {
             try
             {
-                // Note: SetSession requires both tokens, but for MFA enrollment 
-                // we should already have a valid session from SignInWithPassword
-                // The session should still be active on the client after sign in
-
                 var enrollResponse = await _client.Auth.Enroll(new MfaEnrollParams
                 {
                     FactorType = "totp"
@@ -65,7 +61,7 @@ namespace badgeur_backend.Services.Auth
             {
                 Console.WriteLine($"MFA Enroll error: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw; // Re-throw to see the actual error
+                throw;
             }
         }
 
@@ -73,7 +69,6 @@ namespace badgeur_backend.Services.Auth
         {
             try
             {
-                // Restore the session with both tokens
                 await _client.Auth.SetSession(accessToken, refreshToken);
 
                 var challenge = await _client.Auth.Challenge(new MfaChallengeParams
@@ -112,10 +107,12 @@ namespace badgeur_backend.Services.Auth
             }
         }
 
-        public async Task<MfaVerifyResponse?> ChallengeMfa(string factorId)
+        public async Task<MfaVerifyResponse?> ChallengeMfa(string factorId, string accessToken, string refreshToken)
         {
             try
             {
+                await _client.Auth.SetSession(accessToken, refreshToken);
+
                 var challenge = await _client.Auth.Challenge(new MfaChallengeParams
                 {
                     FactorId = factorId
@@ -127,7 +124,7 @@ namespace badgeur_backend.Services.Auth
                 }
 
                 return new MfaVerifyResponse(
-                    AccessToken: challenge.Id,
+                    AccessToken: challenge.Id,  // Return challenge ID here
                     RefreshToken: string.Empty
                 );
             }
@@ -138,10 +135,12 @@ namespace badgeur_backend.Services.Auth
             }
         }
 
-        public async Task<MfaVerifyResponse?> VerifyMfaChallenge(string factorId, string challengeId, string code)
+        public async Task<MfaVerifyResponse?> VerifyMfaChallenge(string factorId, string challengeId, string code, string accessToken, string refreshToken)
         {
             try
             {
+                await _client.Auth.SetSession(accessToken, refreshToken);
+
                 var verifyResponse = await _client.Auth.Verify(new MfaVerifyParams
                 {
                     FactorId = factorId,
@@ -166,11 +165,11 @@ namespace badgeur_backend.Services.Auth
             }
         }
 
-        public async Task<List<MfaFactor>> ListMfaFactors(string accessToken)
+        public async Task<List<MfaFactor>> ListMfaFactors(string accessToken, string refreshToken)
         {
             try
             {
-                await _client.Auth.SetSession(accessToken, string.Empty);
+                await _client.Auth.SetSession(accessToken, refreshToken);
 
                 var factors = await _client.Auth.ListFactors();
 

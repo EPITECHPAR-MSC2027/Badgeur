@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../style/theme.css'
 import '../index.css'
+import API_URL from '../config/api'
 
 function Profil() {
     const [userData, setUserData] = useState({
@@ -13,7 +14,8 @@ function Profil() {
     const [loading, setLoading] = useState(true)
     const [selectedTheme, setSelectedTheme] = useState(() => localStorage.getItem('theme') || 'main')
     const [dyslexicMode, setDyslexicMode] = useState(() => localStorage.getItem('dyslexicMode') === 'true')
-    const [mfaEnabled, setMfaEnabled] = useState(false) // TODO: Check actual MFA status from backend
+    const [mfaEnabled, setMfaEnabled] = useState(false)
+    const [mfaLoading, setMfaLoading] = useState(true)
 
     const navigate = useNavigate()
 
@@ -57,19 +59,41 @@ function Profil() {
 
             setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
 
-            // TODO: Check MFA status from backend
-            // const accessToken = localStorage.getItem('accessToken')
-            // const response = await fetch(`${API_URL}/login/mfa-status`, {
-            //     headers: { 'Authorization': `Bearer ${accessToken}` }
-            // })
-            // if (response.ok) {
-            //     const data = await response.json()
-            //     setMfaEnabled(data.mfaEnabled)
-            // }
+            // Check MFA status from backend
+            await checkMfaStatus()
         } catch (error) {
             console.error('Erreur lors du chargement des données utilisateur:', error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const checkMfaStatus = async () => {
+        try {
+            const accessToken = localStorage.getItem('accessToken')
+            const refreshToken = localStorage.getItem('refreshToken')
+
+            if (!accessToken) {
+                setMfaLoading(false)
+                return
+            }
+
+            const response = await fetch(`${API_URL}/login/mfa-status`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'X-Refresh-Token': refreshToken || ''
+                }
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setMfaEnabled(data.mfaEnabled)
+            }
+        } catch (error) {
+            console.error('Erreur lors de la vérification du statut MFA:', error)
+        } finally {
+            setMfaLoading(false)
         }
     }
 
@@ -266,19 +290,21 @@ function Profil() {
                                         🔐 Authentification à deux facteurs
                                     </div>
                                     <div style={{ fontSize: '14px', color: 'var(--color-second-text)', marginTop: 5 }}>
-                                        {mfaEnabled ? 'Activée' : 'Désactivée'}
+                                        {mfaLoading ? 'Chargement...' : (mfaEnabled ? 'Activée' : 'Désactivée')}
                                     </div>
                                 </div>
-                                <div style={{
-                                    padding: '4px 12px',
-                                    borderRadius: '12px',
-                                    backgroundColor: mfaEnabled ? '#d4edda' : '#f8d7da',
-                                    color: mfaEnabled ? '#155724' : '#721c24',
-                                    fontSize: '12px',
-                                    fontWeight: 600
-                                }}>
-                                    {mfaEnabled ? '✓ Active' : '○ Inactive'}
-                                </div>
+                                {!mfaLoading && (
+                                    <div style={{
+                                        padding: '4px 12px',
+                                        borderRadius: '12px',
+                                        backgroundColor: mfaEnabled ? '#d4edda' : '#f8d7da',
+                                        color: mfaEnabled ? '#155724' : '#721c24',
+                                        fontSize: '12px',
+                                        fontWeight: 600
+                                    }}>
+                                        {mfaEnabled ? '✓ Active' : '○ Inactive'}
+                                    </div>
+                                )}
                             </div>
                             <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-second-text)' }}>
                                 Ajoutez une couche de sécurité supplémentaire à votre compte avec un code de vérification temporaire.
@@ -286,10 +312,11 @@ function Profil() {
                             <button
                                 onClick={handleMfaSetup}
                                 style={buttonStyle}
+                                disabled={mfaLoading}
                                 onMouseOver={(e) => e.target.style.opacity = '0.9'}
                                 onMouseOut={(e) => e.target.style.opacity = '1'}
                             >
-                                {mfaEnabled ? 'Gérer MFA' : 'Configurer MFA'}
+                                {mfaLoading ? 'Chargement...' : (mfaEnabled ? 'Gérer MFA' : 'Configurer MFA')}
                             </button>
                         </div>
                     </div>
