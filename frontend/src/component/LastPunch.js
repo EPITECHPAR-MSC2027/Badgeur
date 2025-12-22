@@ -41,7 +41,7 @@ function LastPunch() {
 
     return (
         <div style={cardStyle}>
-            <h2 style={{ margin: 0, fontWeight: 500,fontSize: 22 }}>Dernier pointage</h2>
+            <h2 style={{ margin: 0, fontWeight: 500,fontSize: 22, color: 'var(--color-primary)' }}>Dernier pointage</h2>
             <div style={row}><span style={label}>Dernière action</span><span style={data}>{loading ? '…' : (lastAction ? `${lastAction}${lastTime ? ` - ${lastTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}` : 'Aucune')}</span></div>
             <div style={row}><span style={label}>Date</span><span style={data}>Aujourd'hui</span></div>
             <div style={{ marginTop: 35, color: 'color-mix(in srgb, var(--highlight1) 70%, black)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>Temps de présence aujourd'hui</div>
