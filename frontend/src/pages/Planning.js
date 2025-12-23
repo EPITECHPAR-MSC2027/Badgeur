@@ -1,4 +1,6 @@
 import React from 'react'
+import '../index.css'
+
 
 import planningService from '../services/planningService'
 

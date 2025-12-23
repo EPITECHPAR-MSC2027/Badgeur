@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import authService from '../services/authService'
+import icons from '../icons'
 import '../style/pointage.css'
+import '../index.css'
+import '../style/theme.css'
 
 function formatTime(date) {
     const pad = (n) => String(n).padStart(2, '0')
@@ -166,10 +169,10 @@ function Pointage() {
                 {/* Moments de la journée */}
                 <div className="pointage-moments">
                     {[
-                        { label: 'Arrivée Matin', time: '08h00', icon: '☀️' },
-                        { label: 'Pause déj. Midi', time: '12h00', icon: '☕' },
-                        { label: 'Reprise Après-midi', time: '13h00', icon: '🔄' },
-                        { label: 'Départ Soir', time: '17h00', icon: '🌙' }
+                        { label: 'Arrivée Matin', time: '08h00', icon: icons.morning },
+                        { label: 'Pause déj. Midi', time: '12h00', icon: icons.foodBar },
+                        { label: 'Reprise Après-midi', time: '13h00', icon: icons.repeat },
+                        { label: 'Départ Soir', time: '17h00', icon: icons.sunset }
                     ].map((moment, index) => (
                         <div
                             key={index}
@@ -177,7 +180,12 @@ function Pointage() {
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
                             <div className="pointage-moment-icon">
-                                {moment.icon}
+                                <img
+                                    width={moment.icon.width}
+                                    height={moment.icon.height}
+                                    src={moment.icon.url}
+                                    alt={moment.icon.alt}
+                                />
                             </div>
                             <div className="pointage-moment-text">
                                 <p className="pointage-moment-label">
@@ -197,7 +205,14 @@ function Pointage() {
                         onClick={onBadge} 
                         disabled={loading}
                     >
-                        <div className="pointage-badge-icon">👆</div>
+                        <div className="pointage-badge-icon">
+                            <img
+                                width={icons.badge.width}
+                                height={icons.badge.height}
+                                src={icons.badge.url}
+                                alt={icons.badge.alt}
+                            />
+                        </div>
                         <span className="pointage-badge-text">BADGER</span>
                     </button>
                 </div>
@@ -214,7 +229,14 @@ function Pointage() {
                     <div className="pointage-history-content">
                         {history.length === 0 ? (
                             <div className="pointage-empty-state">
-                                <div className="pointage-empty-icon">👆</div>
+                                <div className="pointage-empty-icon">
+                                    <img
+                                        width={icons.badge.width}
+                                        height={icons.badge.height}
+                                        src={icons.badge.url}
+                                        alt={icons.badge.alt}
+                                    />
+                                </div>
                                 <p>Effectuez votre premier badgeage</p>
                             </div>
                         ) : (
