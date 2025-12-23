@@ -81,7 +81,7 @@ function Planning() {
     }
 
     // Two-column layout helpers
-    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px' }
+    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px', padding: '0px 100px' }
     const leftColStyle = { flex: '1 1 0' }
     const rightColStyle = { width: 500, display: 'grid', gap: 16 }
     const selectStyle = {
