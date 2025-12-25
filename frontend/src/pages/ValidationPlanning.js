@@ -2,6 +2,7 @@ import React from 'react'
 import planningService from '../services/planningService'
 import teamService from '../services/teamService'
 
+
 // Page manager : validation / refus des demandes de planning
 function ValidationPlanning() {
     const fixedTypes = React.useMemo(() => ([
@@ -38,7 +39,6 @@ function ValidationPlanning() {
             try {
                 const team = await teamService.listMyTeamMembers()
                 if (!cancelled) setMembers(team)
-                // Charge les plannings en attente (statut 0) pour chaque membre
                 const entries = await Promise.all(team.map(async (m) => {
                     try {
                         const recs = await planningService.listByUser(m.id)
@@ -96,35 +96,35 @@ function ValidationPlanning() {
 
     function renderBadge(period) {
         return period === '0'
-            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: '#e5e7eb', fontSize: 12 }}>Matin</span>
-            : <span style={{ padding: '2px 8px', borderRadius: 6, background: '#e5e7eb', fontSize: 12 }}>Après-midi</span>
+            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: 'var(--color-primary)', fontSize: 12 }}>Matin</span>
+            : <span style={{ padding: '2px 8px', borderRadius: 6, background: 'var(--color-primary)', fontSize: 12 }}>Après-midi</span>
     }
 
     return (
         <div style={{ padding: 16 }}>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <div>
-                    <h1 style={{ margin: 0 }}>Validation des plannings</h1>
-                    <p style={{ margin: 0, color: '#6b7280' }}>Validez ou refusez les demandes de vos collaborateurs</p>
+                    <h2 style={{ margin: 0 }}>Validation des plannings</h2>
+                    <p style={{ margin: 0, color: 'var(--highlight2)', fontWeight:'700', fontSize:'10px' }}>Validez ou refusez les demandes de vos collaborateurs</p>
                 </div>
             </header>
 
             {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
-            {loading && <div style={{ color: '#6b7280' }}>Chargement...</div>}
+            {loading && <div style={{ color: 'var(--highlight3)' }}>Chargement...</div>}
 
             {!loading && members.map(user => {
                 const requests = pendingByUser[user.id] || []
                 return (
-                    <div key={user.id} style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12, marginBottom: 12 }}>
+                    <div key={user.id} style={{ border: '1px solid var(--color-secondary)', borderRadius: 10, padding: 12, marginBottom: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                             <div>
                                 <div style={{ fontWeight: 700 }}>{user.firstName} {user.lastName}</div>
-                                <div style={{ color: '#6b7280', fontSize: 13 }}>{requests.length} en attente</div>
+                                <div style={{ color: 'var(--highlight3)', fontSize: 13 }}>{requests.length} en attente</div>
                             </div>
                         </div>
 
                         {requests.length === 0 && (
-                            <div style={{ color: '#9ca3af' }}>Aucune demande en attente</div>
+                            <div style={{ color: 'var(--highlight4)' }}>Aucune demande en attente</div>
                         )}
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
@@ -132,7 +132,7 @@ function ValidationPlanning() {
                                 const typeColor = colorForType(plan.typeId)
                                 const typeLabel = fixedTypes.find(t => t.id === plan.typeId)?.label || 'Type inconnu'
                                 return (
-                                    <div key={plan.id} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }}>
+                                    <div key={plan.id} style={{ border: '1px solid var(--color-secondary)', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ fontWeight: 700 }}>{formatDateFr(plan.date)}</div>
                                             {renderBadge(plan.period)}

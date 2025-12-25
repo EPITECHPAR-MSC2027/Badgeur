@@ -2,7 +2,6 @@
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
-    background: var(--color-background);
     min-height: 100vh;
 }
 
@@ -10,7 +9,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     padding: 20px;
     background: var(--color-primary);
     border-radius: 12px;
@@ -25,7 +24,7 @@
 }
 
 .analytics-header p {
-    color: var(--color-second-text);
+    color: var(--highlight2);
     margin: 5px 0 0 0;
     font-size: 16px;
 }
@@ -99,7 +98,7 @@
 
 .filter-group select:focus {
     outline: none;
-    border-color: var(--color-third);
+    border-color: var(--highlight1);
 }
 
 .kpi-grid {
