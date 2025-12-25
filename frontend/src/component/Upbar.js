@@ -63,6 +63,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'trombinoscope':
+                return '/trombinoscope'
             case 'login':
                 return '/login'
             default:
@@ -108,6 +110,12 @@ function Upbar({ currentPage, onNavigate }) {
                 {roleId === 2 && (
                     <button onClick={() => handleNavigate('admin')} style={{ ...buttonStyle, ...isActive('admin') }}>
                         Admin
+                    </button>
+                )}
+
+                {roleId === 3 && (
+                    <button onClick={() => handleNavigate('trombinoscope')} style={{ ...buttonStyle, ...isActive('trombinoscope') }}>
+                        Trombinoscope
                     </button>
                 )}
 
