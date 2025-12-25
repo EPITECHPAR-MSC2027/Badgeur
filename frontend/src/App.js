@@ -11,6 +11,8 @@ import Planning from './pages/Planning';
 import Pointage from './pages/Pointage';
 import Profil from './pages/Profil';
 import ReservationVehicule from './pages/ReservationVehicule';
+import CreateAnnouncement from './pages/CreateAnnouncement';
+import Announcements from './pages/Announcements';
 import UserAnalytics from './pages/UserAnalytics';
 import authService from './services/authService';
 
@@ -136,6 +138,22 @@ function App() {
                     element={
                         <RequireAuth>
                             <ReservationVehicule />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/create-announcement"
+                    element={
+                        <RequireAuth>
+                            <CreateAnnouncement />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/announcements"
+                    element={
+                        <RequireAuth>
+                            <Announcements />
                         </RequireAuth>
                     }
                 />

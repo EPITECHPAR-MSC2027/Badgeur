@@ -63,6 +63,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'createAnnouncement':
+                return '/create-announcement'
+            case 'announcements':
+                return '/announcements'
             case 'login':
                 return '/login'
             default:
@@ -110,6 +114,16 @@ function Upbar({ currentPage, onNavigate }) {
                         Admin
                     </button>
                 )}
+
+                {roleId === 3 && (
+                    <button onClick={() => handleNavigate('createAnnouncement')} style={{ ...buttonStyle, ...isActive('createAnnouncement') }}>
+                        Faire une Annonce
+                    </button>
+                )}
+
+                <button onClick={() => handleNavigate('announcements')} style={{ ...buttonStyle, ...isActive('announcements') }}>
+                    Annonces
+                </button>
 
                 {/* Dropdown Actions */}
                 <div className="dropdown" style={dropdownStyle}>
