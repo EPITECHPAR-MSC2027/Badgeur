@@ -36,10 +36,9 @@ function Notifications() {
 
     const handleMarkAsRead = async (notificationId) => {
         try {
-            await notificationService.markAsRead(notificationId);
-            setNotifications(prev => 
-                prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-            );
+            await notificationService.markAsRead(notificationId, userId);
+            // Recharger les notifications pour s'assurer de la synchronisation
+            await loadNotifications();
         } catch (err) {
             console.error('Erreur lors de la mise à jour:', err);
         }
@@ -48,7 +47,8 @@ function Notifications() {
     const handleMarkAllAsRead = async () => {
         try {
             await notificationService.markAllAsRead(userId);
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            // Recharger les notifications pour s'assurer de la synchronisation
+            await loadNotifications();
         } catch (err) {
             console.error('Erreur lors de la mise à jour:', err);
         }
@@ -56,8 +56,9 @@ function Notifications() {
 
     const handleDelete = async (notificationId) => {
         try {
-            await notificationService.deleteNotification(notificationId);
-            setNotifications(prev => prev.filter(n => n.id !== notificationId));
+            await notificationService.deleteNotification(notificationId, userId);
+            // Recharger les notifications pour s'assurer de la synchronisation
+            await loadNotifications();
         } catch (err) {
             console.error('Erreur lors de la suppression:', err);
         }
