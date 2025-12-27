@@ -98,6 +98,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'notification':
+                return '/notification'
             case 'login':
                 return '/login'
             default:
@@ -225,8 +227,11 @@ function Upbar({ currentPage, onNavigate }) {
                     onMouseLeave={() => setHoveredButton(null)}
                     style={getButtonStyle('profil')}
                 >
-                    Profil
+                Profil
                 </button>
+                
+                <button onClick={() => handleNavigate('notification')} style={{ ...buttonStyle, ...isActive('notification') }}>
+                    Notifications</button>
 
                 <button 
                     style={getButtonStyle('deconnexion')}

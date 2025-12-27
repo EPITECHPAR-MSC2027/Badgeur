@@ -1,6 +1,7 @@
 import React from 'react'
 import planningService from '../services/planningService'
 import teamService from '../services/teamService'
+import notificationService from '../services/notificationService'
 
 
 // Page manager : validation / refus des demandes de planning
@@ -79,6 +80,39 @@ function ValidationPlanning() {
                 Statut: String(newStatut),
                 TypeDemandeId: plan.raw?.demandTypeId ?? plan.raw?.DemandTypeId ?? plan.raw?.typeDemandeId ?? plan.raw?.TypeDemandeId ?? plan.typeId
             })
+            
+            // Trouver l'utilisateur concerné par cette demande
+            // D'abord essayer depuis plan.raw, sinon chercher dans pendingByUser
+            const planUserId = plan.raw?.userId ?? plan.raw?.UserId ?? 
+                Object.keys(pendingByUser).find(uid => 
+                    pendingByUser[uid].some(p => p.id === plan.id)
+                )
+            
+            // Créer une notification pour l'employé (seulement si roleId = 0)
+            if (planUserId) {
+                const userIdNum = Number(planUserId)
+                const user = members.find(m => m.id === userIdNum)
+                if (user && user.roleId === 0) {
+                    try {
+                        const typeLabel = fixedTypes.find(t => t.id === plan.typeId)?.label || 'demande'
+                        const periodLabel = plan.period === '0' ? 'matin' : 'après-midi'
+                        const dateStr = formatDateFr(plan.date)
+                        const message = newStatut === 1 
+                            ? `Votre demande de planning (${typeLabel}, ${dateStr} ${periodLabel}) a été validée`
+                            : `Votre demande de planning (${typeLabel}, ${dateStr} ${periodLabel}) a été refusée`
+                        
+                        await notificationService.createNotification({
+                            userId: userIdNum,
+                            message: message,
+                            type: 'planning_response',
+                            relatedId: plan.id
+                        })
+                    } catch (notifError) {
+                        console.error('Erreur lors de la création de la notification:', notifError)
+                    }
+                }
+            }
+            
             // retrait immédiat de la liste locale
             setPendingByUser(prev => {
                 const clone = { ...prev }

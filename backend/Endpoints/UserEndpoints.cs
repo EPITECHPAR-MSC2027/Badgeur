@@ -2,6 +2,7 @@
 using badgeur_backend.Contracts.Requests.Update;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Services;
+using System.Threading.Tasks;
 
 namespace badgeur_backend.Endpoints
 {
@@ -13,75 +14,114 @@ namespace badgeur_backend.Endpoints
 
             group.MapPost("/", async (CreateUserRequest request, UserService userService) =>
             {
-                var id = await userService.CreateUserAsync(request);
-
-                if (id == null)
-                    return Results.BadRequest("Failed to create a new user.");
-
-                return Results.Ok(id);
+                return await HandleCreateUser(request, userService);
             }).WithDescription("Create a new user and returns the user ID.");
 
             group.MapGet("/", async (UserService userService) =>
             {
-                var users = await userService.GetAllUsersAsync();
-
-                if (!users.Any()) return Results.NotFound("No users found.");
-
-                return Results.Ok(users);
+                return await HandleGetAllUsers(userService);
             }).WithDescription("Retrieves all users from the database.");
 
             group.MapGet("/{id:long}", async (long id, UserService userService) =>
             {
-                var user = await userService.GetUserByIdAsync(id);
-
-                if (user == null) return Results.NotFound("User was not found.");
-
-                return Results.Ok(user);
+                return await HandleGetUserById(id, userService);
             }).WithDescription("Retrieve a user by their ID.");
 
             group.MapPut("/{id:long}/role", async (long id, UpdateUserRoleRequest request, UserService userService) =>
             {
-                var updatedUser = await userService.updateUserRoleAsync(id, request.NewRoleId);
-
-                if (updatedUser == null)
-                    return Results.NotFound("User not found.");
-
-                return Results.Ok(updatedUser);
+                return await HandleUpdateUserRole(id, request, userService);
             }).WithDescription("Update a user's role by their ID.");
 
             group.MapPut("/{id:long}", async (long id, UpdateUserRequest request, UserService userService) =>
             {
-                var updatedUser = await userService.UpdateUserAsync(id, request);
-
-                if (updatedUser == null)
-                    return Results.NotFound("User not found");
-
-                return Results.Ok(updatedUser);
+                return await HandleUpdateUser(id, request, userService);
             }).WithDescription("Update the user's information");
 
             group.MapGet("/{id:long}/clocks", async (long id, BadgeLogEventService badgeLogEventService) =>
             {
-                UserSummaryResponse userSummary = await badgeLogEventService.GetUserSummaryAsync(id);
-
-                return Results.Ok(userSummary);
+                return await HandleGetUserSummary(id, badgeLogEventService);
             }).WithDescription("Get a summary of the arrivals and departures of an employee.");
 
             group.MapDelete("/{id:long}", async (long id, UserService userService) =>
             {
-                await userService.DeleteUserAsync(id);
-
-                return Results.NoContent();
+                return await HandleDeleteUser(id, userService);
             }).WithDescription("Delete a user by their ID.");
 
             group.MapGet("/{teamId:long}/team", async (long teamId, UserService userService) =>
             {
-                var users = await userService.GetUsersByTeamIdAsync(teamId);
-
-                if (!users.Any()) return Results.NotFound("No users found for the specified team.");
-
-                return Results.Ok(users);
+                return await HandleGetUsersByTeamId(teamId, userService);
             }).WithDescription("Retrieve users by their team ID.");
+        }
 
+        public static async Task<IResult> HandleCreateUser(CreateUserRequest request, UserService userService)
+        {
+            var id = await userService.CreateUserAsync(request);
+
+            if (id == null)
+                return Results.BadRequest("Failed to create a new user.");
+
+            return Results.Ok(id);
+        }
+
+        public static async Task<IResult> HandleGetAllUsers(UserService userService)
+        {
+            var users = await userService.GetAllUsersAsync();
+
+            if (!users.Any()) return Results.NotFound("No users found.");
+
+            return Results.Ok(users);
+        }
+
+        public static async Task<IResult> HandleGetUserById(long id, UserService userService)
+        {
+            var user = await userService.GetUserByIdAsync(id);
+
+            if (user == null) return Results.NotFound("User was not found.");
+
+            return Results.Ok(user);
+        }
+
+        public static async Task<IResult> HandleUpdateUserRole(long id, UpdateUserRoleRequest request, UserService userService)
+        {
+            var updatedUser = await userService.updateUserRoleAsync(id, request.NewRoleId);
+
+            if (updatedUser == null)
+                return Results.NotFound("User not found.");
+
+            return Results.Ok(updatedUser);
+        }
+
+        public static async Task<IResult> HandleUpdateUser(long id, UpdateUserRequest request, UserService userService)
+        {
+            var updatedUser = await userService.UpdateUserAsync(id, request);
+
+            if (updatedUser == null)
+                return Results.NotFound("User not found");
+
+            return Results.Ok(updatedUser);
+        }
+
+        public static async Task<IResult> HandleGetUserSummary(long id, BadgeLogEventService badgeLogEventService)
+        {
+            UserSummaryResponse userSummary = await badgeLogEventService.GetUserSummaryAsync(id);
+
+            return Results.Ok(userSummary);
+        }
+
+        public static async Task<IResult> HandleDeleteUser(long id, UserService userService)
+        {
+            await userService.DeleteUserAsync(id);
+
+            return Results.NoContent();
+        }
+
+        public static async Task<IResult> HandleGetUsersByTeamId(long teamId, UserService userService)
+        {
+            var users = await userService.GetUsersByTeamIdAsync(teamId);
+
+            if (!users.Any()) return Results.NotFound("No users found for the specified team.");
+
+            return Results.Ok(users);
         }
     }
 }

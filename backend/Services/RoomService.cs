@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateRoomAsync(CreateRoomRequest request)
+        public virtual async Task<long> CreateRoomAsync(CreateRoomRequest request)
         {
             var room = new Room
             {
@@ -28,14 +28,14 @@ namespace badgeur_backend.Services
         }
 
 
-        public async Task<List<RoomResponse>> GetAllRoomsAsync()
+        public virtual async Task<List<RoomResponse>> GetAllRoomsAsync()
         {
             var response = await _client.From<Room>().Get();
 
             return response.Models.Select(r => CreateRoomResponse(r)).ToList();
         }
 
-        public async Task<RoomResponse?> GetRoomByIdAsync(long id)
+        public virtual async Task<RoomResponse?> GetRoomByIdAsync(long id)
         {
             var response = await _client.From<Room>().Where(r => r.Id == id).Get();
             var room = response.Models.FirstOrDefault();
@@ -45,14 +45,14 @@ namespace badgeur_backend.Services
             return CreateRoomResponse(room);
         }
 
-        public async Task<List<RoomResponse>> GetRoomsByFloorIdAsync(long floorId)
+        public virtual async Task<List<RoomResponse>> GetRoomsByFloorIdAsync(long floorId)
         {
             var response = await _client.From<Room>().Where(r => r.IdFloor == floorId).Get();
 
             return response.Models.Select(r => CreateRoomResponse(r)).ToList();
         }
 
-        public async Task<RoomResponse?> UpdateRoomAsync(long id, UpdateRoomRequest updateRoomRequest)
+        public virtual async Task<RoomResponse?> UpdateRoomAsync(long id, UpdateRoomRequest updateRoomRequest)
         {
             var request = await _client.From<Room>().Where(r => r.Id == id).Get();
             var room = request.Models.FirstOrDefault();
@@ -67,7 +67,7 @@ namespace badgeur_backend.Services
             return CreateRoomResponse(room);
         }
 
-        public async Task DeleteRoomAsync(long id)
+        public virtual async Task DeleteRoomAsync(long id)
         {
             await _client.From<Room>().Where(r => r.Id == id).Delete();
         }

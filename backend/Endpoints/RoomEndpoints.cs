@@ -10,60 +10,77 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/rooms");
 
-            group.MapPost("/", async (CreateRoomRequest request, RoomService roomService) =>
-            {
-                var id = await roomService.CreateRoomAsync(request);
+            group.MapPost("/", HandleCreateRoom)
+                .WithDescription("Create a new room. Upon success, returns the ID of the new room.");
 
-                if (id == null)
-                    return Results.BadRequest("Failed to create a new room.");
+            group.MapGet("/", HandleGetAllRooms)
+                .WithDescription("Retrieve all the rooms.");
 
-                return Results.Ok(id);
-            }).WithDescription("Create a new room. Upon success, returns the ID of the new room.");
+            group.MapGet("/{id:long}", HandleGetRoomById)
+                .WithDescription("Retrieve a room by ID.");
 
-            group.MapGet("/", async (RoomService roomService) =>
-            {
-                var rooms = await roomService.GetAllRoomsAsync();
+            group.MapGet("/floor/{floorId:long}", HandleGetRoomsByFloorId)
+                .WithDescription("Retrieve all rooms for a specific floor.");
 
-                if (!rooms.Any()) return Results.NotFound("No rooms found.");
+            group.MapPut("/{id:long}", HandleUpdateRoom)
+                .WithDescription("Update the room's information.");
 
-                return Results.Ok(rooms);
-            }).WithDescription("Retrieve all the rooms.");
+            group.MapDelete("/{id:long}", HandleDeleteRoom)
+                .WithDescription("Deletes a room by ID.");
+        }
 
-            group.MapGet("/{id:long}", async (long id, RoomService roomService) =>
-            {
-                var room = await roomService.GetRoomByIdAsync(id);
+        public static async Task<IResult> HandleCreateRoom(CreateRoomRequest request, RoomService roomService)
+        {
+            var id = await roomService.CreateRoomAsync(request);
 
-                if (room == null) return Results.NotFound("Room was not found.");
+            if (id == 0)
+                return Results.BadRequest("Failed to create a new room.");
 
-                return Results.Ok(room);
-            }).WithDescription("Retrieve a room by ID.");
+            return Results.Ok(id);
+        }
 
-            group.MapGet("/floor/{floorId:long}", async (long floorId, RoomService roomService) =>
-            {
-                var rooms = await roomService.GetRoomsByFloorIdAsync(floorId);
+        public static async Task<IResult> HandleGetAllRooms(RoomService roomService)
+        {
+            var rooms = await roomService.GetAllRoomsAsync();
 
-                if (!rooms.Any()) return Results.NotFound("No rooms found for this floor.");
+            if (!rooms.Any()) return Results.NotFound("No rooms found.");
 
-                return Results.Ok(rooms);
-            }).WithDescription("Retrieve all rooms for a specific floor.");
+            return Results.Ok(rooms);
+        }
 
-            group.MapPut("/{id:long}", async (long id, UpdateRoomRequest updateRoomRequest, RoomService roomService) =>
-            {
-                var updatedRoom = await roomService.UpdateRoomAsync(id, updateRoomRequest);
+        public static async Task<IResult> HandleGetRoomById(long id, RoomService roomService)
+        {
+            var room = await roomService.GetRoomByIdAsync(id);
 
-                if (updatedRoom == null)
-                    return Results.NotFound("Room not found");
+            if (room == null) return Results.NotFound("Room was not found.");
 
-                return Results.Ok(updatedRoom);
-            }).WithDescription("Update the room's information.");
+            return Results.Ok(room);
+        }
 
-            group.MapDelete("/{id:long}", async (long id, RoomService roomService) =>
-            {
-                await roomService.DeleteRoomAsync(id);
+        public static async Task<IResult> HandleGetRoomsByFloorId(long floorId, RoomService roomService)
+        {
+            var rooms = await roomService.GetRoomsByFloorIdAsync(floorId);
 
-                return Results.NoContent();
-            }).WithDescription("Deletes a room by ID.");
+            if (!rooms.Any()) return Results.NotFound("No rooms found for this floor.");
+
+            return Results.Ok(rooms);
+        }
+
+        public static async Task<IResult> HandleUpdateRoom(long id, UpdateRoomRequest updateRoomRequest, RoomService roomService)
+        {
+            var updatedRoom = await roomService.UpdateRoomAsync(id, updateRoomRequest);
+
+            if (updatedRoom == null)
+                return Results.NotFound("Room not found");
+
+            return Results.Ok(updatedRoom);
+        }
+
+        public static async Task<IResult> HandleDeleteRoom(long id, RoomService roomService)
+        {
+            await roomService.DeleteRoomAsync(id);
+
+            return Results.NoContent();
         }
     }
 }
-

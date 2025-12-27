@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateTeamAsync(CreateTeamRequest request)
+        public virtual async Task<long> CreateTeamAsync(CreateTeamRequest request)
         {
             var team = new Team
             {
@@ -27,14 +27,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<TeamResponse>> GetAllTeamsAsync()
+        public virtual async Task<List<TeamResponse>> GetAllTeamsAsync()
         {
             var response = await _client.From<Team>().Get();
 
             return response.Models.Select(t => CreateTeamResponse(t)).ToList();
         }
 
-        public async Task<TeamResponse?> GetTeamByIdAsync(long id)
+        public virtual async Task<TeamResponse?> GetTeamByIdAsync(long id)
         {
             var response = await _client.From<Team>().Where(n => n.Id == id).Get();
             var team = response.Models.FirstOrDefault();
@@ -44,7 +44,7 @@ namespace badgeur_backend.Services
             return CreateTeamResponse(team);
         }
 
-        public async Task<TeamResponse?> UpdateTeamAsync(long id, UpdateTeamRequest updateTeamRequest)
+        public virtual async Task<TeamResponse?> UpdateTeamAsync(long id, UpdateTeamRequest updateTeamRequest)
         {
             var request = await _client.From<Team>().Where(n => n.Id == id).Get();
             var team = request.Models.FirstOrDefault();
@@ -59,7 +59,7 @@ namespace badgeur_backend.Services
             return CreateTeamResponse(team);
         }
 
-        public async Task DeleteTeamAsync(long id)
+        public virtual async Task DeleteTeamAsync(long id)
         {
             await _client.From<Team>().Where(n => n.Id == id).Delete();
         }

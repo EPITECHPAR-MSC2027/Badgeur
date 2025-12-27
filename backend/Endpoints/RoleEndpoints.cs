@@ -8,23 +8,29 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/roles");
 
-            group.MapGet("/", async (RoleService roleService) =>
-            {
-                var roles = await roleService.GetAllRolesAsync();
+            group.MapGet("/", HandleGetAllRoles)
+                .WithDescription("Retrieve all roles.");
 
-                if (!roles.Any()) return Results.NotFound("No roles found.");
+            group.MapGet("/{id:long}", HandleGetRoleById)
+                .WithDescription("Retrieve a role by ID.");
+        }
 
-                return Results.Ok(roles);
-            }).WithDescription("Retrieve all roles.");
+        public static async Task<IResult> HandleGetAllRoles(RoleService roleService)
+        {
+            var roles = await roleService.GetAllRolesAsync();
 
-            group.MapGet("/{id:long}", async (long id, RoleService roleService) =>
-            {
-                var role = await roleService.GetRoleByIdAsync(id);
+            if (!roles.Any()) return Results.NotFound("No roles found.");
 
-                if (role == null) return Results.NotFound("Role was not found.");
+            return Results.Ok(roles);
+        }
 
-                return Results.Ok(role);
-            }).WithDescription("Retrieve a role by ID.");
+        public static async Task<IResult> HandleGetRoleById(long id, RoleService roleService)
+        {
+            var role = await roleService.GetRoleByIdAsync(id);
+
+            if (role == null) return Results.NotFound("Role was not found.");
+
+            return Results.Ok(role);
         }
     }
 }
