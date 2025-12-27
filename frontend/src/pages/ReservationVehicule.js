@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import vehiculeService from '../services/vehiculeService';
 import notificationService from '../services/notificationService';
 import '../style/ReservationVehicule.css';
+import '../index.css'
+
 
 function ReservationVehicule() {
     const [vehicules, setVehicules] = useState([]);
