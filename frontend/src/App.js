@@ -11,6 +11,7 @@ import Planning from './pages/Planning';
 import Pointage from './pages/Pointage';
 import Profil from './pages/Profil';
 import ReservationVehicule from './pages/ReservationVehicule';
+import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
@@ -145,6 +146,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <ReservationVehicule />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/trombinoscope"
+                    element={
+                        <RequireAuth>
+                            <Trombinoscope />
                         </RequireAuth>
                     }
                 />
