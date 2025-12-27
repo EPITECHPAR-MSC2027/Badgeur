@@ -39,22 +39,22 @@ function WeekHours() {
         return `${totalHours}h${totalMinutes > 0 ? ` ${totalMinutes}min` : ''} / ${targetHours}h`
     }, [totalWeekMs, targetMs])
     const cardStyle = {
-        backgroundColor: 'var(--color-primary)',
-        color: 'var(--color-secondary)',
+        background: 'linear-gradient(to right, color-mix(in srgb, var(--highlight2) 70%, white), var(--highlight2))',
+        color: 'var(--color-primary)',
         borderRadius: '9px',
         padding: '16px 20px',
         boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
     }
 
     const barBg = { height: 8, background: 'var(--color-background)', borderRadius: 999 }
-    const barFill = { height: 8, background: 'var(--color-third)', borderRadius: 999, width: `${Math.round((loading ? 0 : progress) * 100)}%`, transition: 'width 300ms ease' }
-    const data = { fontSize: 15, fontWeight: 500, fontFamily: 'Fustat, sans-serif', color: 'var(--color-secondary)' }
-    const label = { width: 180, color: 'var(--color-second-text)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif' }
+    const barFill = { height: 8, background: 'var(--color-secondary)', borderRadius: 999, width: `${Math.round((loading ? 0 : progress) * 100)}%`, transition: 'width 300ms ease' }
+    const data = { fontSize: 15, fontWeight: 500, fontFamily: 'Fustat, sans-serif', color: 'var(--color-primary)' }
+    const label = { width: 180, color: 'color-mix(in srgb, var(--highlight2) 70%, black)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif' }
 
 
     return (
         <div style={cardStyle}>
-            <h2 style={{ margin: 0, fontWeight: 500 }}>Cette semaine</h2>
+            <h2 style={{ margin: 0, fontWeight: 500, color: 'var(--color-primary)' }}>Cette semaine</h2>
             <div style={{ marginTop: 12, marginBottom:7, display: 'flex', justifyContent: 'space-between' }}>
                 <span style={label}>Heures travaillées</span>
                 <span style={data}>{loading ? '…' : hoursWorkedText}</span>

@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import authService from '../services/authService'
+import icons from '../icons'
+import notificationService from '../services/notificationService'
+import teamService from '../services/teamService'
 import '../style/pointage.css'
+import '../index.css'
+import '../style/theme.css'
 
 function formatTime(date) {
     const pad = (n) => String(n).padStart(2, '0')
@@ -99,6 +104,60 @@ function Pointage() {
                 setShowToast(true)
                 if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
                 toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
+                
+                // Créer une notification pour le badgeage
+                try {
+                    const roleId = Number(localStorage.getItem('roleId') || 0)
+                    
+                    // Notification pour l'utilisateur qui badge
+                    await notificationService.createNotification({
+                        userId: parseInt(userId),
+                        message: 'Vous avez badgé avec succès',
+                        type: 'badgeage',
+                        relatedId: result
+                    })
+                    
+                    // Si l'utilisateur est un employé (roleId = 0), notifier les managers
+                    if (roleId === 0) {
+                        try {
+                            const allUsers = await teamService.listUsers()
+                            const managers = allUsers.filter(u => u.roleId === 1)
+                            
+                            // Récupérer le prénom et nom de l'employé
+                            const employeeFirstName = localStorage.getItem('firstName') || ''
+                            const employeeLastName = localStorage.getItem('lastName') || ''
+                            const employeeName = `${employeeFirstName} ${employeeLastName}`.trim() || 'Un employé'
+                            
+                            // Formater la date et l'heure
+                            const dateStr = now.toLocaleDateString('fr-FR', {
+                                weekday: 'long',
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            })
+                            const timeStr = now.toLocaleTimeString('fr-FR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })
+                            
+                            const message = `${employeeName} a badgé le ${dateStr} à ${timeStr}`
+                            
+                            // Notifier tous les managers
+                            await Promise.all(managers.map(manager => 
+                                notificationService.createNotification({
+                                    userId: manager.id,
+                                    message: message,
+                                    type: 'badgeage',
+                                    relatedId: result
+                                }).catch(err => console.error(`Erreur notification manager ${manager.id}:`, err))
+                            ))
+                        } catch (managerNotifError) {
+                            console.error('Erreur lors de la création des notifications pour les managers:', managerNotifError)
+                        }
+                    }
+                } catch (notifError) {
+                    console.error('Erreur lors de la création de la notification:', notifError)
+                }
             } else {
                 const errorText = await response.text()
                 console.error('Erreur API:', response.status, errorText)
@@ -166,10 +225,10 @@ function Pointage() {
                 {/* Moments de la journée */}
                 <div className="pointage-moments">
                     {[
-                        { label: 'Arrivée Matin', time: '08h00', icon: '☀️' },
-                        { label: 'Pause déj. Midi', time: '12h00', icon: '☕' },
-                        { label: 'Reprise Après-midi', time: '13h00', icon: '🔄' },
-                        { label: 'Départ Soir', time: '17h00', icon: '🌙' }
+                        { label: 'Arrivée Matin', time: '08h00', icon: icons.morning },
+                        { label: 'Pause déj. Midi', time: '12h00', icon: icons.foodBar },
+                        { label: 'Reprise Après-midi', time: '13h00', icon: icons.repeat },
+                        { label: 'Départ Soir', time: '17h00', icon: icons.sunset }
                     ].map((moment, index) => (
                         <div
                             key={index}
@@ -177,7 +236,12 @@ function Pointage() {
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
                             <div className="pointage-moment-icon">
-                                {moment.icon}
+                                <img
+                                    width={moment.icon.width}
+                                    height={moment.icon.height}
+                                    src={moment.icon.url}
+                                    alt={moment.icon.alt}
+                                />
                             </div>
                             <div className="pointage-moment-text">
                                 <p className="pointage-moment-label">
@@ -197,7 +261,14 @@ function Pointage() {
                         onClick={onBadge} 
                         disabled={loading}
                     >
-                        <div className="pointage-badge-icon">👆</div>
+                        <div className="pointage-badge-icon">
+                            <img
+                                width={icons.badge.width}
+                                height={icons.badge.height}
+                                src={icons.badge.url}
+                                alt={icons.badge.alt}
+                            />
+                        </div>
                         <span className="pointage-badge-text">BADGER</span>
                     </button>
                 </div>
@@ -214,7 +285,14 @@ function Pointage() {
                     <div className="pointage-history-content">
                         {history.length === 0 ? (
                             <div className="pointage-empty-state">
-                                <div className="pointage-empty-icon">👆</div>
+                                <div className="pointage-empty-icon">
+                                    <img
+                                        width={icons.badge.width}
+                                        height={icons.badge.height}
+                                        src={icons.badge.url}
+                                        alt={icons.badge.alt}
+                                    />
+                                </div>
                                 <p>Effectuez votre premier badgeage</p>
                             </div>
                         ) : (

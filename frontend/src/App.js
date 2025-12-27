@@ -14,6 +14,7 @@ import ReservationVehicule from './pages/ReservationVehicule';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
 import authService from './services/authService';
+import Notifications from './pages/Notifications';
 
 function App() {
     const navigate = useNavigate();
@@ -89,6 +90,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <Calendrier />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/notification"
+                    element={
+                        <RequireAuth>
+                            <Notifications />
                         </RequireAuth>
                     }
                 />

@@ -67,9 +67,9 @@ function GererEquipe() {
             style={{
                 padding: '8px 12px',
                 borderRadius: 8,
-                border: '1px solid #ddd',
-                background: tab === key ? 'var(--color-third)' : 'var(--color-background)',
-                color: tab === key ? 'white' : 'var(--color-secondary)',
+                border: '1px solid var(--color-text)',
+                background: tab === key ? 'var(--highlight1)' : 'var(--color-primary)',
+                color: tab === key ? 'var(--color-primary)' : 'var(--color-secondary)',
                 cursor: 'pointer',
                 fontWeight: 700
             }}
@@ -92,7 +92,7 @@ function GererEquipe() {
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 700, fontSize: 20, fontFamily:'Spectral, serif'}}>{u.firstName} {u.lastName}</div>
                                 <div style={{ fontSize: 14, color: 'var(--color-second-text)', fontWeight: 600,marginTop: 7, fontFamily: 'Fustat, sans-serif'}}>{u.email}</div>
-                                <div style={{ marginTop: 8, display: 'flex', gap: 8, fontSize: 15,marginTop: 14 }}>
+                                <div style={{display: 'flex', gap: 8, fontSize: 15,marginTop: 14 }}>
                                     <span style={{ color: 'var(--color-second-text)', fontFamily: 'Fustat, sans-serif'}}>Dernier pointage:</span>
                                     <span style={{ fontWeight: 600, fontFamily: 'Fustat, sans-serif' }}>{timeText}</span>
                                     <span style={{ color: 'var(--color-second-text)' }}>•</span>

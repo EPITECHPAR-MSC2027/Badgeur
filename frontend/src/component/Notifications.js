@@ -16,13 +16,13 @@ function Notifications() {
         fontFamily: 'Alata, sans-serif'
     }
 
-    const itemStyle = { marginTop: 12, fontFamily: 'Fustat, sans-serif' }
+    const itemStyle = { marginTop: 12, fontFamily: 'Fustat, sans-serif', color: 'var(--color-secondary)' }
 
     return (
         <div style={cardStyle}>
             <div style={titleStyle}>
                 <span style={{ fontSize: 18 }}>🔔</span>
-                <h2 style={{ margin: 0, fontWeight: 500 }}>Notifications</h2>
+                <h2 style={{ margin: 0, fontWeight: 500, color: 'var(--color-secondary)' }}>Notifications</h2>
             </div>
             <div style={itemStyle}>Votre demande de congé a été approuvée.</div>
             <div style={itemStyle}>N'oubliez pas de pointer avant 9h00.</div>
