@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import vehiculeService from '../services/vehiculeService';
+import notificationService from '../services/notificationService';
 import '../style/ReservationVehicule.css';
 
 function ReservationVehicule() {
@@ -111,7 +112,7 @@ function ReservationVehicule() {
             }
 
             // Créer la réservation
-            await vehiculeService.createBooking({
+            const bookingResult = await vehiculeService.createBooking({
                 idVehicule: selectedVehicule.id,
                 userId: userId,
                 startDatetime: startDatetime.toISOString(),
@@ -120,6 +121,18 @@ function ReservationVehicule() {
             });
 
             setFeedback({ type: 'success', message: 'Réservation confirmée avec succès!' });
+            
+            // Créer une notification pour la réservation
+            try {
+                await notificationService.createNotification({
+                    userId: userId,
+                    message: `Votre réservation de véhicule pour ${destination.trim()} a été confirmée`,
+                    type: 'reservation',
+                    relatedId: bookingResult
+                })
+            } catch (notifError) {
+                console.error('Erreur lors de la création de la notification:', notifError)
+            }
             
             // Reset form
             setSelectedVehicule(null);

@@ -63,6 +63,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'notification':
+                return '/notification'
             case 'login':
                 return '/login'
             default:
@@ -141,6 +143,9 @@ function Upbar({ currentPage, onNavigate }) {
                 <button onClick={() => handleNavigate('analytics')} style={{ ...buttonStyle, ...isActive('analytics') }}>
                     Analytics
                 </button>
+
+                <button onClick={() => handleNavigate('notification')} style={{ ...buttonStyle, ...isActive('notification') }}>
+                    Notifications</button>
 
                 <button onClick={() => handleNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>
                     Profil
