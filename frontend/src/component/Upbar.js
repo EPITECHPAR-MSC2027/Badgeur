@@ -166,7 +166,12 @@ function Upbar({ currentPage, onNavigate }) {
                 )}
 
                 {roleId === 3 && (
-                    <button onClick={() => handleNavigate('trombinoscope')} style={{ ...buttonStyle, ...isActive('trombinoscope') }}>
+                    <button 
+                        onClick={() => handleNavigate('trombinoscope')} 
+                        onMouseEnter={() => setHoveredButton('trombinoscope')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('trombinoscope')}
+                    >
                         Trombinoscope
                     </button>
                 )}
@@ -238,8 +243,14 @@ function Upbar({ currentPage, onNavigate }) {
                 Profil
                 </button>
                 
-                <button onClick={() => handleNavigate('notification')} style={{ ...buttonStyle, ...isActive('notification') }}>
-                    Notifications</button>
+                <button 
+                    onClick={() => handleNavigate('notification')} 
+                    onMouseEnter={() => setHoveredButton('notification')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('notification')}
+                >
+                Notifications
+                </button>
 
                 <button 
                     style={getButtonStyle('deconnexion')}
