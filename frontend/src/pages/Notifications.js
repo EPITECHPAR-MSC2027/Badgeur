@@ -79,7 +79,12 @@ function Notifications() {
         }
     };
 
-    const getTypeIcon = (type) => {
+    const getTypeIcon = (type, message) => {
+        // Si c'est une réponse de planning refusée, afficher une croix rouge
+        if (type === 'planning_response' && message && message.toLowerCase().includes('refusée')) {
+            return '❌';
+        }
+        
         switch (type) {
             case 'badgeage':
                 return '🕐';
@@ -94,6 +99,12 @@ function Notifications() {
             default:
                 return '🔔';
         }
+    };
+
+    const isRefusedPlanning = (notification) => {
+        return notification.type === 'planning_response' && 
+               notification.message && 
+               notification.message.toLowerCase().includes('refusée');
     };
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -149,6 +160,18 @@ function Notifications() {
         opacity: 0.7
     };
 
+    const refusedStyle = {
+        ...notificationItemStyle,
+        borderLeft: '4px solid #ef4444',
+        background: 'rgba(239, 68, 68, 0.1)',
+        border: '1px solid #ef4444'
+    };
+
+    const refusedReadStyle = {
+        ...refusedStyle,
+        opacity: 0.7
+    };
+
     if (loading) {
         return (
             <div style={containerStyle}>
@@ -184,13 +207,21 @@ function Notifications() {
                 </div>
             ) : (
                 <div>
-                    {notifications.map(notification => (
+                    {notifications.map(notification => {
+                        const isRefused = isRefusedPlanning(notification);
+                        const notificationStyle = isRefused 
+                            ? (notification.isRead ? refusedReadStyle : refusedStyle)
+                            : (notification.isRead ? readStyle : unreadStyle);
+                        
+                        return (
                         <div
                             key={notification.id}
-                            style={notification.isRead ? readStyle : unreadStyle}
+                            style={notificationStyle}
                         >
                             <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                                <span style={{ fontSize: '24px' }}>{getTypeIcon(notification.type)}</span>
+                                <span style={{ fontSize: '24px', color: isRefused ? '#ef4444' : 'inherit' }}>
+                                    {getTypeIcon(notification.type, notification.message)}
+                                </span>
                                 <div style={{ flex: 1 }}>
                                     <p style={{ 
                                         margin: '0 0 8px 0', 
@@ -240,7 +271,8 @@ function Notifications() {
                                 </button>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
