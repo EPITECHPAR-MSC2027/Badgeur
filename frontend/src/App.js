@@ -13,6 +13,7 @@ import Profil from './pages/Profil';
 import ReservationVehicule from './pages/ReservationVehicule';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
+import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
 
@@ -154,6 +155,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <Trombinoscope />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/user-profile/:userId"
+                    element={
+                        <RequireAuth>
+                            <UserProfile />
                         </RequireAuth>
                     }
                 />
