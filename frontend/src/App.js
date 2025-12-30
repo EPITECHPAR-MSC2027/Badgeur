@@ -11,6 +11,8 @@ import Planning from './pages/Planning';
 import Pointage from './pages/Pointage';
 import Profil from './pages/Profil';
 import ReservationVehicule from './pages/ReservationVehicule';
+import CreateAnnouncement from './pages/CreateAnnouncement';
+import Announcements from './pages/Announcements';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
 import UserProfile from './pages/UserProfile';
@@ -151,6 +153,10 @@ function App() {
                     }
                 />
                 <Route
+                    path="/create-announcement"
+                    element={
+                        <RequireAuth>
+                            <CreateAnnouncement />
                     path="/trombinoscope"
                     element={
                         <RequireAuth>
@@ -159,6 +165,10 @@ function App() {
                     }
                 />
                 <Route
+                    path="/announcements"
+                    element={
+                        <RequireAuth>
+                            <Announcements />
                     path="/user-profile/:userId"
                     element={
                         <RequireAuth>

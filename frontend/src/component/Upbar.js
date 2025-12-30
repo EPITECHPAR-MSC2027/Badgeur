@@ -98,6 +98,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'createAnnouncement':
+                return '/create-announcement'
+            case 'announcements':
+                return '/announcements'
             case 'notification':
                 return '/notification'
             case 'trombinoscope':
@@ -166,6 +170,15 @@ function Upbar({ currentPage, onNavigate }) {
                 )}
 
                 {roleId === 3 && (
+                    <button onClick={() => handleNavigate('createAnnouncement')} style={{ ...buttonStyle, ...isActive('createAnnouncement') }}>
+                        Faire une Annonce
+                    </button>
+                )}
+
+                <button onClick={() => handleNavigate('announcements')} style={{ ...buttonStyle, ...isActive('announcements') }}>
+                    Annonces
+                </button>
+
                     <button 
                         onClick={() => handleNavigate('trombinoscope')} 
                         onMouseEnter={() => setHoveredButton('trombinoscope')}
