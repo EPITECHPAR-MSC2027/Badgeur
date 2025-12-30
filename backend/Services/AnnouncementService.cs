@@ -3,6 +3,8 @@ using badgeur_backend.Contracts.Requests.Update;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
 using Supabase;
+using Supabase.Postgrest;
+using Client = Supabase.Client;
 
 namespace badgeur_backend.Services
 {
@@ -34,7 +36,7 @@ namespace badgeur_backend.Services
         public async Task<List<AnnouncementResponse>> GetAllAnnouncementsAsync()
         {
             var response = await _client.From<Announcement>()
-                .Order(n => n.CreatedAt, Postgrest.Constants.Ordering.Descending)
+                .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                 .Get();
 
             var announcements = response.Models;

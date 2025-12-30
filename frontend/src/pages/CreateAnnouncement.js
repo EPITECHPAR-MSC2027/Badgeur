@@ -4,6 +4,22 @@ import announcementService from '../services/announcementService';
 import '../index.css';
 import '../style/theme.css';
 
+// Composant icône Megaphone simple
+const Megaphone = ({ size, color }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m3 11 18-5v12L3 14v-3z"/>
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+    </svg>
+);
+
+// Composant icône Send simple
+const Send = ({ size }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+);
+
 function CreateAnnouncement() {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
@@ -11,8 +27,7 @@ function CreateAnnouncement() {
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState(null);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setFeedback(null);
 
         if (!title.trim()) {
@@ -43,170 +58,217 @@ function CreateAnnouncement() {
             setTitle('');
             setMessage('');
             
-            // Redirect to announcements page after 1.5 seconds
             setTimeout(() => {
                 navigate('/announcements');
             }, 1500);
         } catch (error) {
-            setFeedback({ type: 'error', message: error.message || 'Erreur lors de la création de l\'annonce' });
+            console.error('Erreur création annonce:', error);
+            setFeedback({ 
+                type: 'error', 
+                message: error.message || 'Erreur lors de la création de l\'annonce' 
+            });
         } finally {
             setSubmitting(false);
         }
     };
 
-    const containerStyle = {
-        maxWidth: '800px',
-        margin: '0 auto',
-        padding: '20px'
-    };
-
-    const headerStyle = {
-        marginBottom: '24px',
-        paddingBottom: '16px',
-        borderBottom: '2px solid var(--color-primary)'
-    };
-
-    const formStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px'
-    };
-
-    const inputStyle = {
-        width: '100%',
-        padding: '12px 16px',
-        fontSize: '16px',
-        borderRadius: '8px',
-        border: '2px solid var(--color-primary)',
-        fontFamily: 'Alata, sans-serif',
-        outline: 'none',
-        boxSizing: 'border-box'
-    };
-
-    const textareaStyle = {
-        ...inputStyle,
-        minHeight: '200px',
-        resize: 'vertical',
-        fontFamily: 'inherit'
-    };
-
-    const buttonStyle = {
-        background: 'var(--color-primary)',
-        color: 'var(--color-third)',
-        border: 'none',
-        padding: '12px 24px',
-        borderRadius: '8px',
-        fontSize: '16px',
-        fontWeight: 600,
-        cursor: submitting ? 'not-allowed' : 'pointer',
-        fontFamily: 'Alata, sans-serif',
-        opacity: submitting ? 0.7 : 1,
-        transition: 'all 0.2s ease'
-    };
-
-    const feedbackStyle = {
-        padding: '12px 16px',
-        borderRadius: '8px',
-        marginBottom: '16px',
-        fontFamily: 'Alata, sans-serif'
-    };
-
-    const successStyle = {
-        ...feedbackStyle,
-        background: '#10b981',
-        color: 'white'
-    };
-
-    const errorStyle = {
-        ...feedbackStyle,
-        background: '#ef4444',
-        color: 'white'
-    };
-
     return (
-        <div style={containerStyle}>
-            <div style={headerStyle}>
-                <h1 style={{ color: 'var(--color-secondary)', fontFamily: 'Alata, sans-serif' }}>
-                    Faire une Annonce
-                </h1>
-                <p style={{ color: 'var(--color-second-text)', marginTop: '8px' }}>
-                    Créez une nouvelle annonce pour tous les employés
-                </p>
-            </div>
-
-            {feedback && (
-                <div style={feedback.type === 'success' ? successStyle : errorStyle}>
-                    {feedback.message}
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit} style={formStyle}>
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '8px', 
-                        color: 'var(--color-secondary)',
-                        fontFamily: 'Alata, sans-serif',
-                        fontWeight: 600
+        <div style={{
+            marginTop: '50px',
+            padding: '0 20px'
+        }}>
+            <div style={{
+                maxWidth: '700px',
+                margin: '0 auto',
+                background: 'white',
+                borderRadius: '16px',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+                overflow: 'hidden'
+            }}>
+                {/* En-tête avec icône */}
+                <div style={{
+                    padding: '22px',
+                    borderBottom: '1px solid #e5e7eb'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px'
                     }}>
-                        Titre *
-                    </label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Titre de l'annonce"
-                        style={inputStyle}
-                        disabled={submitting}
-                        maxLength={200}
-                    />
-                </div>
-
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '8px', 
-                        color: 'var(--color-secondary)',
-                        fontFamily: 'Alata, sans-serif',
-                        fontWeight: 600
+                        <div style={{
+                            width: '48px',
+                            height: '48px',
+                            background: '#eff6ff',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Megaphone size={24} color="#3b82f6" />
+                        </div>
+                        <h1 style={{
+                            fontSize: '24px',
+                            fontWeight: '700',
+                            color: '#111827',
+                            margin: 0,
+                            fontFamily: 'Fustat, sans-serif'
+                        }}>
+                            Nouvelle annonce
+                        </h1>
+                    </div>
+                    <p style={{
+                        color: '#6b7280',
+                        fontSize: '14px',
+                        margin: '8px 0 0 0',
+                        paddingLeft: '64px',
+                        fontFamily: 'Fustat, sans-serif'
                     }}>
-                        Message *
-                    </label>
-                    <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Contenu de l'annonce"
-                        style={textareaStyle}
-                        disabled={submitting}
-                    />
+                        Publiez une annonce visible par tous les employés
+                    </p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                {/* Formulaire */}
+                <div style={{ padding: '32px' }}>
+                    {feedback && (
+                        <div style={{
+                            padding: '12px 16px',
+                            borderRadius: '8px',
+                            marginBottom: '20px',
+                            background: feedback.type === 'success' ? '#dcfce7' : '#fee2e2',
+                            color: feedback.type === 'success' ? '#166534' : '#991b1b',
+                            fontSize: '14px',
+                            fontFamily: 'Fustat, sans-serif'
+                        }}>
+                            {feedback.message}
+                        </div>
+                    )}
+
+                    {/* Champ Titre */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#374151',
+                            marginBottom: '8px',
+                            fontFamily: 'Fustat, sans-serif'
+                        }}>
+                            Titre de l'annonce
+                        </label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Ex: Réunion d'équipe vendredi"
+                            maxLength={100}
+                            disabled={submitting}
+                            style={{
+                                width: '100%',
+                                padding: '12px 16px',
+                                fontSize: '15px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '8px',
+                                outline: 'none',
+                                transition: 'border-color 0.2s',
+                                boxSizing: 'border-box',
+                                fontFamily: 'Fustat, sans-serif'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                        />
+                        <div style={{
+                            textAlign: 'right',
+                            fontSize: '12px',
+                            color: '#9ca3af',
+                            marginTop: '6px',
+                            fontFamily: 'Fustat, sans-serif',
+                            fontWeight: '500'
+                        }}>
+                            {title.length}/100 caractères
+                        </div>
+                    </div>
+
+                    {/* Champ Message */}
+                    <div style={{ marginBottom: '24px' }}>
+                        <label style={{
+                            display: 'block',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            color: '#374151',
+                            marginBottom: '8px',
+                            fontFamily: 'Fustat, sans-serif'
+                        }}>
+                            Message
+                        </label>
+                        <textarea
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            placeholder="Écrivez votre message ici..."
+                            maxLength={1000}
+                            disabled={submitting}
+                            style={{
+                                width: '100%',
+                                padding: '12px 16px',
+                                fontSize: '15px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '8px',
+                                outline: 'none',
+                                minHeight: '180px',
+                                resize: 'vertical',
+                                transition: 'border-color 0.2s',
+                                boxSizing: 'border-box',
+                                fontFamily: 'Fustat, sans-serif'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                            onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                        />
+                        <div style={{
+                            textAlign: 'right',
+                            fontSize: '12px',
+                            color: '#9ca3af',
+                            marginTop: '6px',
+                            fontFamily: 'Fustat, sans-serif',
+                            fontWeight: '500'
+                        }}>
+                            {message.length}/1000 caractères
+                        </div>
+                    </div>
+
+                    {/* Bouton de soumission */}
                     <button
-                        type="button"
-                        onClick={() => navigate('/announcements')}
+                        onClick={handleSubmit}
+                        disabled={submitting}
                         style={{
-                            ...buttonStyle,
-                            background: 'transparent',
-                            color: 'var(--color-primary)',
-                            border: '2px solid var(--color-primary)'
+                            width: '100%',
+                            padding: '14px 24px',
+                            background: submitting ? '#9ca3af' : '#7c8fc7',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '15px',
+                            fontWeight: '600',
+                            cursor: submitting ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            transition: 'background 0.2s',
+                            fontFamily: 'Fustat, sans-serif'
                         }}
-                        disabled={submitting}
+                        onMouseEnter={(e) => {
+                            if (!submitting) e.target.style.background = '#6b7db3';
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!submitting) e.target.style.background = '#7c8fc7';
+                        }}
                     >
-                        Annuler
-                    </button>
-                    <button
-                        type="submit"
-                        style={buttonStyle}
-                        disabled={submitting}
-                    >
-                        {submitting ? 'Création...' : 'Créer l\'annonce'}
+                        <Send size={18} />
+                        {submitting ? 'Publication...' : "Publier l'annonce"}
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }
 
 export default CreateAnnouncement;
-
