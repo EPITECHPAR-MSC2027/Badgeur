@@ -98,8 +98,14 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
+            case 'createAnnouncement':
+                return '/create-announcement'
+            case 'announcements':
+                return '/announcements'
             case 'notification':
                 return '/notification'
+            case 'trombinoscope':
+                return '/trombinoscope'
             case 'login':
                 return '/login'
             default:
@@ -160,6 +166,26 @@ function Upbar({ currentPage, onNavigate }) {
                         style={getButtonStyle('admin')}
                     >
                         Admin
+                    </button>
+                )}
+
+                {roleId === 3 && (
+                    <button onClick={() => handleNavigate('createAnnouncement')} style={{ ...buttonStyle, ...isActive('createAnnouncement') }}>
+                        Faire une Annonce
+                    </button>
+                )}
+
+                <button onClick={() => handleNavigate('announcements')} style={{ ...buttonStyle, ...isActive('announcements') }}>
+                    Annonces
+                </button>
+
+                    <button 
+                        onClick={() => handleNavigate('trombinoscope')} 
+                        onMouseEnter={() => setHoveredButton('trombinoscope')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('trombinoscope')}
+                    >
+                        Trombinoscope
                     </button>
                 )}
 
@@ -230,8 +256,14 @@ function Upbar({ currentPage, onNavigate }) {
                 Profil
                 </button>
                 
-                <button onClick={() => handleNavigate('notification')} style={{ ...buttonStyle, ...isActive('notification') }}>
-                    Notifications</button>
+                <button 
+                    onClick={() => handleNavigate('notification')} 
+                    onMouseEnter={() => setHoveredButton('notification')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('notification')}
+                >
+                Notifications
+                </button>
 
                 <button 
                     style={getButtonStyle('deconnexion')}
