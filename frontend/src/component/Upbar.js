@@ -6,21 +6,56 @@ import authService from '../services/authService'
 
 function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
+    const [hoveredButton, setHoveredButton] = useState(null)
     const navigate = useNavigate()
     const roleId = parseInt(localStorage.getItem('roleId'))
-    const isActive = (page) => currentPage === page ? { textDecoration: 'underline' } : {}
-
-    const buttonStyle = {
+    
+    // Détermine la page active en fonction de l'URL si currentPage n'est pas fourni
+    const getCurrentPage = () => {
+        if (currentPage) return currentPage
+        const path = window.location.pathname
+        switch (path) {
+            case '/home':
+                return 'home'
+            case '/gerer-equipe':
+                return 'gererEquipe'
+            case '/admin':
+                return 'admin'
+            case '/pointage':
+                return 'pointage'
+            case '/planning':
+                return 'planning'
+            case '/calendrier':
+                return 'calendrier'
+            case '/profil':
+                return 'profil'
+            case '/analytics':
+                return 'analytics'
+            case '/reservation-vehicule':
+                return 'reservationVehicule'
+            default:
+                return ''
+        }
+    }
+    
+    const activePage = getCurrentPage()
+    const isActive = (page) => activePage === page
+    
+    const getButtonStyle = (page) => ({
         background: 'transparent',
         border: 'none',
-        color: 'var(--color-third)',
+        color: isActive(page) ? 'var(--highlight4)' : 'var(--color-secondary)',
         padding: '12px 18px',
         fontSize: '16px',
         borderRadius: '6px',
         cursor: 'pointer',
         fontFamily: 'Alata, sans-serif',
-        fontWeight: 600
-    }
+        fontWeight: 600,
+        textDecoration: isActive(page) ? 'underline' : 'none',
+        transition: 'color 0.2s ease, transform 0.1s ease',
+        transform: hoveredButton === page ? 'scale(1.05)' : 'scale(1)',
+        ...(hoveredButton === page && !isActive(page) ? { color: 'var(--highlight4)', opacity: 0.8 } : {})
+    })
 
     const dropdownStyle = {
         position: 'relative'
@@ -30,8 +65,8 @@ function Upbar({ currentPage, onNavigate }) {
         position: 'absolute',
         top: '100%',
         right: 0,
-        background: 'var(--color-primary)',
-        color: 'var(--color-third)',
+        backgroundColor: 'var(--color-primary)',
+        color: 'var(--color-secondary)',
         padding: 8,
         borderRadius: 6,
         display: isActionsOpen ? 'flex' : 'none',
@@ -67,6 +102,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/create-announcement'
             case 'announcements':
                 return '/announcements'
+            case 'notification':
+                return '/notification'
+            case 'trombinoscope':
+                return '/trombinoscope'
             case 'login':
                 return '/login'
             default:
@@ -88,7 +127,7 @@ function Upbar({ currentPage, onNavigate }) {
     }
 
     return (
-        <div className="header" style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', padding: '10px 20px'}}>
+        <div className="header" style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', padding: '10px 20px', backgroundColor: 'var(--color-primary)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)'}}>
             {/* Logo + Titre */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <img src={icon} alt="Logo" style={{ height: 55, width: 'auto' }} />
@@ -99,18 +138,33 @@ function Upbar({ currentPage, onNavigate }) {
 
             {/* Navigation */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <button onClick={() => handleNavigate('home')} style={{ ...buttonStyle, ...isActive('home') }}>
-                    Homepage
+                <button 
+                    onClick={() => handleNavigate('home')} 
+                    onMouseEnter={() => setHoveredButton('home')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('home')}
+                >
+                    Accueil
                 </button>
 
                 {roleId === 1 && (
-                    <button onClick={() => handleNavigate('gererEquipe')} style={{ ...buttonStyle, ...isActive('gererEquipe') }}>
+                    <button 
+                        onClick={() => handleNavigate('gererEquipe')} 
+                        onMouseEnter={() => setHoveredButton('gererEquipe')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('gererEquipe')}
+                    >
                         Gérer équipe
                     </button>
                 )}
 
                 {roleId === 2 && (
-                    <button onClick={() => handleNavigate('admin')} style={{ ...buttonStyle, ...isActive('admin') }}>
+                    <button 
+                        onClick={() => handleNavigate('admin')} 
+                        onMouseEnter={() => setHoveredButton('admin')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('admin')}
+                    >
                         Admin
                     </button>
                 )}
@@ -125,42 +179,98 @@ function Upbar({ currentPage, onNavigate }) {
                     Annonces
                 </button>
 
+                    <button 
+                        onClick={() => handleNavigate('trombinoscope')} 
+                        onMouseEnter={() => setHoveredButton('trombinoscope')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('trombinoscope')}
+                    >
+                        Trombinoscope
+                    </button>
+                )}
+
                 {/* Dropdown Actions */}
                 <div className="dropdown" style={dropdownStyle}>
                     <button
                         className="dropdown-toggle"
                         onClick={() => setIsActionsOpen(v => !v)}
-                        style={{ ...buttonStyle, ...isActive('actions') }}
+                        onMouseEnter={() => setHoveredButton('actions')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('actions')}
                     >
                         Actions <span className="caret" style={caretStyle}>▼</span>
                     </button>
 
                     <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
-                        <button style={buttonStyle} onClick={() => { handleNavigate('pointage'); setIsActionsOpen(false) }}>
+                        <button 
+                            style={getButtonStyle('pointage')}
+                            onMouseEnter={() => setHoveredButton('pointage')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            onClick={() => { handleNavigate('pointage'); setIsActionsOpen(false) }}
+                        >
                             Pointage
                         </button>
-                        <button style={buttonStyle} onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}>
+                        <button 
+                            style={getButtonStyle('planning')}
+                            onMouseEnter={() => setHoveredButton('planning')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}
+                        >
                             Planning
                         </button>
-                        <button style={buttonStyle} onClick={() => { handleNavigate('reservationVehicule'); setIsActionsOpen(false) }}>
+                        <button 
+                            style={getButtonStyle('reservationVehicule')}
+                            onMouseEnter={() => setHoveredButton('reservationVehicule')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            onClick={() => { handleNavigate('reservationVehicule'); setIsActionsOpen(false) }}
+                        >
                             Réserver un véhicule
                         </button>
                     </div>
                 </div>
 
-                <button onClick={() => handleNavigate('calendrier')} style={{ ...buttonStyle, ...isActive('calendrier') }}>
+                <button 
+                    onClick={() => handleNavigate('calendrier')} 
+                    onMouseEnter={() => setHoveredButton('calendrier')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('calendrier')}
+                >
                     Equipe
                 </button>
 
-                <button onClick={() => handleNavigate('analytics')} style={{ ...buttonStyle, ...isActive('analytics') }}>
+                <button 
+                    onClick={() => handleNavigate('analytics')} 
+                    onMouseEnter={() => setHoveredButton('analytics')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('analytics')}
+                >
                     Analytics
                 </button>
 
-                <button onClick={() => handleNavigate('profil')} style={{ ...buttonStyle, ...isActive('profil') }}>
-                    Profil
+                <button 
+                    onClick={() => handleNavigate('profil')} 
+                    onMouseEnter={() => setHoveredButton('profil')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('profil')}
+                >
+                Profil
+                </button>
+                
+                <button 
+                    onClick={() => handleNavigate('notification')} 
+                    onMouseEnter={() => setHoveredButton('notification')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('notification')}
+                >
+                Notifications
                 </button>
 
-                <button style={buttonStyle} onClick={handleLogout}>
+                <button 
+                    style={getButtonStyle('deconnexion')}
+                    onMouseEnter={() => setHoveredButton('deconnexion')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    onClick={handleLogout}
+                >
                     Déconnexion
                 </button>
             </div>

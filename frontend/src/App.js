@@ -13,8 +13,11 @@ import Profil from './pages/Profil';
 import ReservationVehicule from './pages/ReservationVehicule';
 import CreateAnnouncement from './pages/CreateAnnouncement';
 import Announcements from './pages/Announcements';
+import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
+import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
+import Notifications from './pages/Notifications';
 
 function App() {
     const navigate = useNavigate();
@@ -94,6 +97,14 @@ function App() {
                     }
                 />
                 <Route
+                    path="/notification"
+                    element={
+                        <RequireAuth>
+                            <Notifications />
+                        </RequireAuth>
+                    }
+                />
+                <Route
                     path="/profil"
                     element={
                         <RequireAuth>
@@ -146,6 +157,10 @@ function App() {
                     element={
                         <RequireAuth>
                             <CreateAnnouncement />
+                    path="/trombinoscope"
+                    element={
+                        <RequireAuth>
+                            <Trombinoscope />
                         </RequireAuth>
                     }
                 />
@@ -154,6 +169,10 @@ function App() {
                     element={
                         <RequireAuth>
                             <Announcements />
+                    path="/user-profile/:userId"
+                    element={
+                        <RequireAuth>
+                            <UserProfile />
                         </RequireAuth>
                     }
                 />

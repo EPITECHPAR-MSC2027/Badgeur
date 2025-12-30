@@ -2,7 +2,7 @@
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
-    background-color: var(--color-background);
+    background-color: var(--color-primary);
     min-height: calc(100vh - 140px);
 }
 
@@ -10,16 +10,8 @@
     margin-bottom: 30px;
 }
 
-.reservation-header h1 {
-    color: var(--color-secondary);
-    font-family: 'Alata', sans-serif;
-    font-weight: 700;
-    font-size: 32px;
-    margin: 0 0 8px 0;
-}
-
 .reservation-subtitle {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 16px;
     margin: 0;
@@ -40,7 +32,7 @@
 .no-vehicules {
     text-align: center;
     padding: 40px;
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
 }
 
@@ -104,7 +96,7 @@
 }
 
 .vehicule-type {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -121,7 +113,7 @@
 }
 
 .vehicule-plate {
-    color: var(--color-third);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -141,14 +133,15 @@
 }
 
 .vehicule-tag {
-    background-color: var(--color-highlight);
-    color: var(--color-highlight-text);
+    background-color: var(--highlight1);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 12px;
     font-weight: 500;
     padding: 6px 12px;
     border-radius: 20px;
     white-space: nowrap;
+    opacity:60%;
 }
 
 .vehicule-status {
@@ -173,7 +166,7 @@
 }
 
 .status-text {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 12px;
     font-weight: 500;
@@ -253,7 +246,7 @@
 }
 
 .form-input::placeholder {
-    color: var(--color-second-text);
+    color: var(--color-text);
 }
 
 .datetime-inputs {
@@ -319,7 +312,7 @@
 
 .selection-hint {
     text-align: center;
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-family: 'Fustat', sans-serif;
     font-size: 13px;
     margin: 8px 0 0 0;
