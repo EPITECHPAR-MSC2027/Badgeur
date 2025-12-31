@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import '../index.css'
 import icon from '../assets/icon.png'
 import authService from '../services/authService'
+import icons from '../icons'
+
 
 function Upbar({ currentPage, onNavigate }) {
     const [isActionsOpen, setIsActionsOpen] = useState(false)
@@ -55,6 +57,14 @@ function Upbar({ currentPage, onNavigate }) {
         transition: 'color 0.2s ease, transform 0.1s ease',
         transform: hoveredButton === page ? 'scale(1.05)' : 'scale(1)',
         ...(hoveredButton === page && !isActive(page) ? { color: 'var(--highlight4)', opacity: 0.8 } : {})
+    })
+
+    const iconButtonStyle = (page) => ({
+        ...getButtonStyle(page),
+        padding: '8px 12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     })
 
     const dropdownStyle = {
@@ -121,11 +131,6 @@ function Upbar({ currentPage, onNavigate }) {
         }
     }
 
-    const handleLogout = () => {
-        authService.logout()
-        handleNavigate('login')
-    }
-
     return (
         <div className="header" style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', padding: '10px 20px', backgroundColor: 'var(--color-primary)', boxShadow: '0 4px 16px rgba(0,0,0,0.08)'}}>
             {/* Logo + Titre */}
@@ -170,14 +175,15 @@ function Upbar({ currentPage, onNavigate }) {
                 )}
 
                 {roleId === 3 && (
-                    <button onClick={() => handleNavigate('createAnnouncement')} style={{ ...buttonStyle, ...isActive('createAnnouncement') }}>
+                    <button 
+                        onClick={() => handleNavigate('createAnnouncement')} 
+                        onMouseEnter={() => setHoveredButton('createAnnouncement')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('createAnnouncement')}
+                    >
                         Faire une Annonce
                     </button>
                 )}
-
-                <button onClick={() => handleNavigate('announcements')} style={{ ...buttonStyle, ...isActive('announcements') }}>
-                    Annonces
-                </button>
 
                     <button 
                         onClick={() => handleNavigate('trombinoscope')} 
@@ -187,7 +193,6 @@ function Upbar({ currentPage, onNavigate }) {
                     >
                         Trombinoscope
                     </button>
-                )}
 
                 {/* Dropdown Actions */}
                 <div className="dropdown" style={dropdownStyle}>
@@ -246,32 +251,31 @@ function Upbar({ currentPage, onNavigate }) {
                 >
                     Analytics
                 </button>
-
-                <button 
-                    onClick={() => handleNavigate('profil')} 
-                    onMouseEnter={() => setHoveredButton('profil')}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    style={getButtonStyle('profil')}
-                >
-                Profil
-                </button>
                 
                 <button 
                     onClick={() => handleNavigate('notification')} 
                     onMouseEnter={() => setHoveredButton('notification')}
                     onMouseLeave={() => setHoveredButton(null)}
-                    style={getButtonStyle('notification')}
+                    style={iconButtonStyle('notification')}
+                    title="Notifications"
                 >
-                Notifications
+                    <img 
+                        src={icons.notification.url} 
+                        alt={icons.notification.alt}
+                    />
                 </button>
 
                 <button 
-                    style={getButtonStyle('deconnexion')}
-                    onMouseEnter={() => setHoveredButton('deconnexion')}
+                    onClick={() => handleNavigate('profil')} 
+                    onMouseEnter={() => setHoveredButton('profil')}
                     onMouseLeave={() => setHoveredButton(null)}
-                    onClick={handleLogout}
+                    style={iconButtonStyle('profil')}
+                    title="Profil"
                 >
-                    Déconnexion
+                    <img 
+                        src={icons.profil.url} 
+                        alt={icons.profil.alt}
+                    />
                 </button>
             </div>
         </div>
