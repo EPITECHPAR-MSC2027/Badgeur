@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import '../style/theme.css'
 import '../index.css'
 import API_URL from '../config/api'
+import authService from '../services/authService'
+
 
 function Profil() {
     const [userData, setUserData] = useState({
@@ -18,6 +20,24 @@ function Profil() {
     const [mfaLoading, setMfaLoading] = useState(true)
 
     const navigate = useNavigate()
+
+    const routeFor = (pageKey) => {
+        switch (pageKey) {
+            case 'login':
+                return '/login'
+            default:
+                return '/'
+        }
+    }
+
+    const handleNavigate = (pageKey) => {
+        navigate(routeFor(pageKey))
+    }
+
+    const handleLogout = () => {
+        authService.logout()
+        handleNavigate('login')
+    }
 
     const themes = [
         { value: 'main', label: 'Principal' },
@@ -195,6 +215,14 @@ function Profil() {
                             {userData.roleId === 1 ? 'Manager' : 'Employé'}
                         </div>
                     </div>
+                    <button 
+                        onClick={handleLogout}
+                        style={buttonStyle}
+                        onMouseOver={(e) => e.target.style.opacity = '0.9'}
+                        onMouseOut={(e) => e.target.style.opacity = '1'}
+                    >
+                        Déconnexion
+                    </button>
                 </div>
 
                 {/* Section Paramètres */}

@@ -1,10 +1,4 @@
-/**
- * Fichier centralisé pour toutes les icônes utilisées dans l'application
- * Les icônes proviennent d'icons8.com
- */
-
 export const icons = {
-  // Icônes de pointage
   dataArrived: {
     url: 'https://img.icons8.com/officel/80/data-arrived.png',
     alt: 'data-arrived',
@@ -40,7 +34,19 @@ export const icons = {
     alt: 'badge',
     width: 110,
     height: 110
-  }
+  },
+  profil: {
+    url: 'https://img.icons8.com/fluency/24/test-account--v1.png',
+    alt: 'profil',
+    width: 24,
+    height: 24
+  },
+  notification: {
+    url: 'https://img.icons8.com/fluency/24/appointment-reminders--v1.png',
+    alt: 'notification',
+    width: 24,
+    height: 24
+  },
 }
 
 /**

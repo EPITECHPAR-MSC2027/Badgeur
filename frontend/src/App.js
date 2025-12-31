@@ -157,6 +157,10 @@ function App() {
                     element={
                         <RequireAuth>
                             <CreateAnnouncement />
+                        </RequireAuth>
+                    }
+                />
+                <Route
                     path="/trombinoscope"
                     element={
                         <RequireAuth>
@@ -169,6 +173,10 @@ function App() {
                     element={
                         <RequireAuth>
                             <Announcements />
+                        </RequireAuth>
+                    }
+                />
+                <Route
                     path="/user-profile/:userId"
                     element={
                         <RequireAuth>
