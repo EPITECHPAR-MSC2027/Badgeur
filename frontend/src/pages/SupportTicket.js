@@ -26,13 +26,15 @@ function SupportTicket() {
         setIsAuthenticated(authenticated);
 
         if (authenticated) {
-            // Si connecté : pré-remplir le prénom et le nom depuis localStorage
+            // Si connecté : pré-remplir le prénom, le nom et l'email depuis localStorage
             const firstName = localStorage.getItem('firstName') || '';
             const lastName = localStorage.getItem('lastName') || '';
+            const email = localStorage.getItem('email') || '';
             setFormData(prev => ({
                 ...prev,
                 user_name: firstName,
-                user_last_name: lastName
+                user_last_name: lastName,
+                user_email: email
             }));
         } else {
             // Si non connecté : assigner automatiquement "IT support"
@@ -100,7 +102,12 @@ function SupportTicket() {
 
             setSuccess(true);
             setTimeout(() => {
-                navigate('/login');
+                // Rediriger vers /home si connecté, sinon vers /login
+                if (isAuthenticated) {
+                    navigate('/home');
+                } else {
+                    navigate('/login');
+                }
             }, 2000);
 
         } catch (err) {
@@ -194,7 +201,7 @@ function SupportTicket() {
                                 className="support-input"
                                 placeholder="nom@banque.fr"
                                 required
-                                disabled={loading}
+                                disabled={loading || isAuthenticated}
                             />
                         </div>
 
