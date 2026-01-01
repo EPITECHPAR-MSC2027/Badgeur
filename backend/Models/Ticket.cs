@@ -31,5 +31,8 @@ public class Ticket : BaseModel
 
     [Column("description")]
     public string Description { get; set; } = default!;
+
+    [Column("status")]
+    public string Status { get; set; } = default!;
 }
 

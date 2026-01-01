@@ -24,6 +24,7 @@ namespace badgeur_backend.Services
                 UserEmail = request.UserEmail,
                 Category = request.Category,
                 Description = request.Description,
+                Status = "à traiter",
                 CreatedAt = DateTime.UtcNow
             };
 
