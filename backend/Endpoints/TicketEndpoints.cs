@@ -120,12 +120,23 @@ namespace badgeur_backend.Endpoints
                 return Results.Unauthorized();
             }
 
+            var userEmail = authenticatedUser.Email?.Trim() ?? "";
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Results.Unauthorized();
+            }
+
             // Récupérer les informations de l'utilisateur connecté depuis la base de données
-            var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email ?? "");
+            var connectedUser = await userService.GetUserByEmailAsync(userEmail);
 
             if (connectedUser == null)
             {
-                return Results.Unauthorized();
+                // L'utilisateur n'existe pas dans la table users
+                // Retourner une erreur 403 avec un message explicite
+                return Results.Json(
+                    new { error = $"L'utilisateur avec l'email {userEmail} n'existe pas dans la base de données. Veuillez contacter l'administrateur." },
+                    statusCode: 403
+                );
             }
 
             // Récupérer le rôle pour vérifier le nom du rôle
@@ -135,17 +146,8 @@ namespace badgeur_backend.Endpoints
             // Déterminer le assigned_to selon le role_id ou le nom du rôle
             string assignedTo;
             
-            // Vérifier d'abord par nom de rôle (plus fiable)
-            if (roleName.Contains("admin") || roleName.Contains("administrateur"))
-            {
-                assignedTo = "IT support";
-            }
-            else if (roleName.Contains("rh") || roleName.Contains("ressources humaines"))
-            {
-                assignedTo = "RH";
-            }
-            // Sinon vérifier par RoleId (pour compatibilité)
-            else if (connectedUser.RoleId == 2) // Admin
+            // Vérifier d'abord par RoleId (plus fiable et rapide)
+            if (connectedUser.RoleId == 2) // Admin
             {
                 assignedTo = "IT support";
             }
@@ -153,10 +155,22 @@ namespace badgeur_backend.Endpoints
             {
                 assignedTo = "RH";
             }
+            // Sinon vérifier par nom de rôle (pour compatibilité)
+            else if (roleName.Contains("admin") || roleName.Contains("administrateur"))
+            {
+                assignedTo = "IT support";
+            }
+            else if (roleName.Contains("rh") || roleName.Contains("ressources humaines"))
+            {
+                assignedTo = "RH";
+            }
             else
             {
                 // Si l'utilisateur n'est ni Admin ni RH, retourner une erreur
-                return Results.Forbid();
+                return Results.Json(
+                    new { error = $"L'utilisateur avec le RoleId {connectedUser.RoleId} (nom: {role?.RoleName ?? "inconnu"}) n'a pas accès aux tickets. Seuls les administrateurs (RoleId 2) et les RH (RoleId 3) peuvent accéder à cette ressource." },
+                    statusCode: 403
+                );
             }
 
             var tickets = await ticketService.GetTicketsByAssignedToAsync(assignedTo);
