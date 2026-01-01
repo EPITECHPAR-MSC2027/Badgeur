@@ -12,14 +12,9 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/tickets");
 
-            group.MapPost("/", async (CreateTicketRequest request, TicketService service) =>
+            group.MapPost("/", async (CreateTicketRequest request, TicketService ticketService, UserService userService, HttpContext context) =>
             {
-                var id = await service.CreateTicketAsync(request);
-
-                if (id == 0)
-                    return Results.BadRequest("Failed to create a new ticket.");
-
-                return Results.Ok(id);
+                return await HandleCreateTicket(request, ticketService, userService, context);
             }).WithDescription("Create a new ticket and return its ID.");
 
             group.MapGet("/", async (TicketService service) =>
@@ -56,6 +51,60 @@ namespace badgeur_backend.Endpoints
 
                 return Results.Ok(new { message = "Ticket status updated successfully." });
             }).WithDescription("Update the status of a ticket.");
+        }
+
+        public static async Task<IResult> HandleCreateTicket(
+            CreateTicketRequest request,
+            TicketService ticketService,
+            UserService userService,
+            HttpContext context)
+        {
+            // Récupérer l'utilisateur connecté depuis le middleware
+            var authenticatedUser = context.Items["User"] as Supabase.Gotrue.User;
+            
+            // Si l'utilisateur est connecté, utiliser ses informations
+            if (authenticatedUser != null && !string.IsNullOrEmpty(authenticatedUser.Email))
+            {
+                var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email);
+                
+                if (connectedUser != null)
+                {
+                    // Remplir automatiquement les champs avec les informations de l'utilisateur connecté
+                    request.UserName = string.IsNullOrEmpty(request.UserName) ? connectedUser.FirstName : request.UserName;
+                    request.UserLastName = string.IsNullOrEmpty(request.UserLastName) ? connectedUser.LastName : request.UserLastName;
+                    request.UserEmail = string.IsNullOrEmpty(request.UserEmail) ? connectedUser.Email : request.UserEmail;
+                    
+                    // Si assigned_to n'est pas fourni, déterminer selon la catégorie
+                    if (string.IsNullOrEmpty(request.AssignedTo))
+                    {
+                        // Catégories IT support
+                        var itCategories = new[] { "Problème de connexion", "Problème technique", "Demande d'accès", "Bug/Erreur", "Question générale", "Autre" };
+                        // Catégories RH
+                        var rhCategories = new[] { "Demande de congés", "Demande de formation", "Question sur le planning", "Problème de pointage", "Demande de changement d'équipe", "Question sur les avantages" };
+                        
+                        if (itCategories.Contains(request.Category))
+                        {
+                            request.AssignedTo = "IT support";
+                        }
+                        else if (rhCategories.Contains(request.Category))
+                        {
+                            request.AssignedTo = "RH";
+                        }
+                        else
+                        {
+                            // Par défaut, assigner à IT support
+                            request.AssignedTo = "IT support";
+                        }
+                    }
+                }
+            }
+            
+            var id = await ticketService.CreateTicketAsync(request);
+
+            if (id == 0)
+                return Results.BadRequest("Failed to create a new ticket.");
+
+            return Results.Ok(id);
         }
 
         public static async Task<IResult> HandleGetMyTickets(
