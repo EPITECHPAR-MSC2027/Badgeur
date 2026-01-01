@@ -91,11 +91,7 @@ function SupportTicket() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${API_URL}/tickets/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
+            const res = await authService.post('/tickets/', formData);
 
             if (!res.ok) {
                 const errorText = await res.text();
