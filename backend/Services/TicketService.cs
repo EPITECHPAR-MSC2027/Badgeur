@@ -46,6 +46,30 @@ namespace badgeur_backend.Services
             var response = await _client.From<Ticket>().Where(t => t.Id == id).Get();
             return response.Models.FirstOrDefault();
         }
+
+        public async Task<List<Ticket>> GetTicketsByAssignedToAsync(string assignedTo)
+        {
+            var response = await _client.From<Ticket>()
+                .Where(t => t.AssignedTo == assignedTo)
+                .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
+                .Get();
+
+            return response.Models;
+        }
+
+        public async Task<bool> UpdateTicketStatusAsync(long id, string status)
+        {
+            var query = await _client.From<Ticket>().Where(t => t.Id == id).Get();
+            var ticket = query.Models.FirstOrDefault();
+            
+            if (ticket == null)
+                return false;
+
+            ticket.Status = status;
+            await _client.From<Ticket>().Update(ticket);
+
+            return true;
+        }
     }
 }
 

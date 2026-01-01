@@ -19,6 +19,7 @@ import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
 import SupportTicket from './pages/SupportTicket';
+import TicketsManagement from './pages/TicketsManagement';
 
 function App() {
     const navigate = useNavigate();
@@ -44,6 +45,10 @@ function App() {
 
     const RequireAdmin = ({ children }) => {
         return authService.isAuthenticated() && roleId === 2 ? children : <Navigate to="/home" replace />;
+    };
+
+    const RequireAdminOrRH = ({ children }) => {
+        return authService.isAuthenticated() && (roleId === 2 || roleId === 3) ? children : <Navigate to="/home" replace />;
     };
 
     return (
@@ -185,6 +190,14 @@ function App() {
                         <RequireAuth>
                             <UserProfile />
                         </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/tickets-management"
+                    element={
+                        <RequireAdminOrRH>
+                            <TicketsManagement />
+                        </RequireAdminOrRH>
                     }
                 />
 
