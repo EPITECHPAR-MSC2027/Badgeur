@@ -90,7 +90,7 @@ namespace badgeur_backend.Endpoints
             }
             else
             {
-                return Results.Forbid("You don't have permission to access tickets.");
+                return Results.Forbid();
             }
 
             var tickets = await ticketService.GetTicketsByAssignedToAsync(assignedTo);
