@@ -18,6 +18,7 @@ import UserAnalytics from './pages/UserAnalytics';
 import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
+import SupportTicket from './pages/SupportTicket';
 
 function App() {
     const navigate = useNavigate();
@@ -49,12 +50,14 @@ function App() {
         <div className="App">
             {window.location.pathname !== '/login' &&
                 window.location.pathname !== '/login/mfa-setup' &&
-                window.location.pathname !== '/mfa-setup' && (
+                window.location.pathname !== '/mfa-setup' &&
+                window.location.pathname !== '/support' && (
                     <Upbar />
                 )}
 
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/support" element={<SupportTicket />} />
 
                 <Route
                     path="/login/mfa-setup"

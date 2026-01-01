@@ -50,6 +50,7 @@ builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<VehiculeService>();
 builder.Services.AddScoped<BookingVehiculeService>();
 builder.Services.AddScoped<AnnouncementService>();
+builder.Services.AddScoped<TicketService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
@@ -94,5 +95,6 @@ app.MapWorkspaceEndpoints();
 app.MapVehiculeEndpoints();
 app.MapBookingVehiculeEndpoints();
 app.MapAnnouncementEndpoints();
+app.MapTicketEndpoints();
 
 app.Run();
