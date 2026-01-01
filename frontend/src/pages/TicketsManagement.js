@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../style/TicketsManagement.css';
 import authService from '../services/authService';
+import notificationService from '../services/notificationService';
 
 function TicketsManagement() {
     const [tickets, setTickets] = useState([]);
@@ -68,6 +69,16 @@ function TicketsManagement() {
     const handleUpdateStatus = async (ticketId) => {
         setUpdatingStatus(ticketId);
         try {
+            // Récupérer le ticket actuel pour obtenir l'email de l'utilisateur
+            const currentTicket = tickets.find(t => {
+                const id = t.id || t.Id;
+                return id === ticketId;
+            });
+
+            if (!currentTicket) {
+                throw new Error('Ticket non trouvé');
+            }
+
             const response = await authService.put(`/tickets/${ticketId}/status`, {
                 status: 'traité'
             });
@@ -86,6 +97,37 @@ function TicketsManagement() {
                     return ticket;
                 })
             );
+
+            // Créer une notification pour l'utilisateur qui a créé le ticket
+            try {
+                const userEmail = currentTicket.userEmail || currentTicket.UserEmail;
+                if (userEmail) {
+                    // Récupérer tous les utilisateurs pour trouver l'userId par email
+                    const usersResponse = await authService.get('/users');
+                    if (usersResponse.ok) {
+                        const users = await usersResponse.json();
+                        const ticketUser = Array.isArray(users) 
+                            ? users.find(u => (u.email || u.Email)?.toLowerCase() === userEmail.toLowerCase())
+                            : null;
+
+                        if (ticketUser) {
+                            const ticketUserId = ticketUser.id || ticketUser.Id;
+                            const category = currentTicket.category || currentTicket.Category;
+                            const message = `Votre ticket "${category}" a été traité.`;
+                            
+                            await notificationService.createNotification({
+                                userId: ticketUserId,
+                                message: message,
+                                type: 'ticket_status',
+                                relatedId: ticketId
+                            });
+                        }
+                    }
+                }
+            } catch (notifError) {
+                // Ne pas faire échouer la mise à jour du status si la notification échoue
+                console.error('Erreur lors de la création de la notification:', notifError);
+            }
         } catch (err) {
             setError(err.message || 'Erreur lors de la mise à jour du status');
             console.error('Erreur:', err);
