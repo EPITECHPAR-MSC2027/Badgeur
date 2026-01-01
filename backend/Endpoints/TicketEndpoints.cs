@@ -37,9 +37,9 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(ticket);
             }).WithDescription("Retrieve a ticket by ID.");
 
-            group.MapGet("/my", async (TicketService ticketService, UserService userService, HttpContext context) =>
+            group.MapGet("/my", async (TicketService ticketService, UserService userService, RoleService roleService, HttpContext context) =>
             {
-                return await HandleGetMyTickets(ticketService, userService, context);
+                return await HandleGetMyTickets(ticketService, userService, roleService, context);
             }).WithDescription("Retrieve tickets assigned to the authenticated user based on their role (Admin: IT support, RH: RH).");
 
             group.MapPut("/{id:long}/status", async (long id, UpdateTicketStatusRequest request, TicketService service) =>
@@ -110,6 +110,7 @@ namespace badgeur_backend.Endpoints
         public static async Task<IResult> HandleGetMyTickets(
             TicketService ticketService,
             UserService userService,
+            RoleService roleService,
             HttpContext context)
         {
             // Récupérer l'utilisateur connecté depuis le middleware
@@ -127,9 +128,24 @@ namespace badgeur_backend.Endpoints
                 return Results.Unauthorized();
             }
 
-            // Déterminer le assigned_to selon le role_id
+            // Récupérer le rôle pour vérifier le nom du rôle
+            var role = await roleService.GetRoleByIdAsync(connectedUser.RoleId);
+            var roleName = role?.RoleName?.ToLower() ?? "";
+
+            // Déterminer le assigned_to selon le role_id ou le nom du rôle
             string assignedTo;
-            if (connectedUser.RoleId == 2) // Admin
+            
+            // Vérifier d'abord par nom de rôle (plus fiable)
+            if (roleName.Contains("admin") || roleName.Contains("administrateur"))
+            {
+                assignedTo = "IT support";
+            }
+            else if (roleName.Contains("rh") || roleName.Contains("ressources humaines"))
+            {
+                assignedTo = "RH";
+            }
+            // Sinon vérifier par RoleId (pour compatibilité)
+            else if (connectedUser.RoleId == 2) // Admin
             {
                 assignedTo = "IT support";
             }
@@ -139,6 +155,7 @@ namespace badgeur_backend.Endpoints
             }
             else
             {
+                // Si l'utilisateur n'est ni Admin ni RH, retourner une erreur
                 return Results.Forbid();
             }
 
