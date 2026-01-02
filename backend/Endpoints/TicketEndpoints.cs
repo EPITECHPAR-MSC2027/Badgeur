@@ -37,10 +37,10 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(ticket);
             }).WithDescription("Retrieve a ticket by ID.");
 
-            group.MapGet("/my", async (TicketService ticketService, UserService userService, RoleService roleService, HttpContext context) =>
+            group.MapGet("/my", async (TicketService ticketService, UserService userService, HttpContext context) =>
             {
-                return await HandleGetMyTickets(ticketService, userService, roleService, context);
-            }).WithDescription("Retrieve tickets assigned to the authenticated user based on their role (Admin: IT support, RH: RH).");
+                return await HandleGetMyTickets(ticketService, userService, context);
+            }).WithDescription("Retrieve all tickets. The frontend will filter based on user role_id.");
 
             group.MapPut("/{id:long}/status", async (long id, UpdateTicketStatusRequest request, TicketService service) =>
             {
@@ -110,7 +110,6 @@ namespace badgeur_backend.Endpoints
         public static async Task<IResult> HandleGetMyTickets(
             TicketService ticketService,
             UserService userService,
-            RoleService roleService,
             HttpContext context)
         {
             // Récupérer l'utilisateur connecté depuis le middleware
@@ -120,60 +119,8 @@ namespace badgeur_backend.Endpoints
                 return Results.Unauthorized();
             }
 
-            var userEmail = authenticatedUser.Email?.Trim() ?? "";
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return Results.Unauthorized();
-            }
-
-            // Récupérer les informations de l'utilisateur connecté depuis la base de données
-            var connectedUser = await userService.GetUserByEmailAsync(userEmail);
-
-            if (connectedUser == null)
-            {
-                // L'utilisateur n'existe pas dans la table users
-                // Retourner une erreur 403 avec un message explicite
-                return Results.Json(
-                    new { error = $"L'utilisateur avec l'email {userEmail} n'existe pas dans la base de données. Veuillez contacter l'administrateur." },
-                    statusCode: 403
-                );
-            }
-
-            // Récupérer le rôle pour vérifier le nom du rôle
-            var role = await roleService.GetRoleByIdAsync(connectedUser.RoleId);
-            var roleName = role?.RoleName?.ToLower() ?? "";
-
-            // Déterminer le assigned_to selon le role_id ou le nom du rôle
-            string assignedTo;
-            
-            // Vérifier d'abord par RoleId (plus fiable et rapide)
-            if (connectedUser.RoleId == 2) // Admin
-            {
-                assignedTo = "IT support";
-            }
-            else if (connectedUser.RoleId == 3) // RH
-            {
-                assignedTo = "RH";
-            }
-            // Sinon vérifier par nom de rôle (pour compatibilité)
-            else if (roleName.Contains("admin") || roleName.Contains("administrateur"))
-            {
-                assignedTo = "IT support";
-            }
-            else if (roleName.Contains("rh") || roleName.Contains("ressources humaines"))
-            {
-                assignedTo = "RH";
-            }
-            else
-            {
-                // Si l'utilisateur n'est ni Admin ni RH, retourner une erreur
-                return Results.Json(
-                    new { error = $"L'utilisateur avec le RoleId {connectedUser.RoleId} (nom: {role?.RoleName ?? "inconnu"}) n'a pas accès aux tickets. Seuls les administrateurs (RoleId 2) et les RH (RoleId 3) peuvent accéder à cette ressource." },
-                    statusCode: 403
-                );
-            }
-
-            var tickets = await ticketService.GetTicketsByAssignedToAsync(assignedTo);
+            // Retourner tous les tickets - le frontend filtrera selon le role_id
+            var tickets = await ticketService.GetAllTicketsAsync();
 
             return Results.Ok(tickets);
         }
