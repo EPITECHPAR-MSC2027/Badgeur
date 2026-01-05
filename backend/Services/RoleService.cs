@@ -14,7 +14,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateRoleAsync(CreateRoleRequest request)
+        public virtual async Task<long> CreateRoleAsync(CreateRoleRequest request)
         {
             var role = new Role
             {
@@ -26,7 +26,7 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<RoleResponse>> GetAllRolesAsync()
+        public virtual async Task<List<RoleResponse>> GetAllRolesAsync()
         {
             var response = await _client.From<Role>().Get();
 
@@ -37,7 +37,7 @@ namespace badgeur_backend.Services
             }).ToList();
         }
 
-        public async Task<RoleResponse?> GetRoleByIdAsync(long id)
+        public virtual async Task<RoleResponse?> GetRoleByIdAsync(long id)
         {
             var response = await _client.From<Role>().Where(n => n.Id == id).Get();
             var role = response.Models.FirstOrDefault();
@@ -51,7 +51,7 @@ namespace badgeur_backend.Services
             };
         }
 
-        public async Task DeleteRoleAsync(long id)
+        public virtual async Task DeleteRoleAsync(long id)
         {
             await _client.From<Role>().Where(n => n.Id == id).Delete();
         }

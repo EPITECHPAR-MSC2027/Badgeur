@@ -14,13 +14,32 @@ namespace badgeur_backend_tests.Endpoints
         private sealed class FakeAuthProvider : IAuthProvider
         {
             private readonly AuthSession? _session;
+            private readonly List<MfaFactor> _mfaFactors;
 
-            public FakeAuthProvider(AuthSession? session)
+            public FakeAuthProvider(AuthSession? session, List<MfaFactor>? mfaFactors = null)
             {
                 _session = session;
+                _mfaFactors = mfaFactors ?? new List<MfaFactor>();
             }
 
             public Task<AuthSession?> SignInWithPassword(string email, string password) => Task.FromResult(_session);
+
+            public Task<badgeur_backend.Services.Auth.MfaEnrollResponse?> EnrollMfa(string accessToken)
+                => Task.FromResult<badgeur_backend.Services.Auth.MfaEnrollResponse?>(null);
+
+            public Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken, string refreshToken)
+                => Task.FromResult<MfaVerifyResponse?>(null);
+
+            public Task<MfaVerifyResponse?> ChallengeMfa(string factorId, string accessToken, string refreshToken)
+                => Task.FromResult<MfaVerifyResponse?>(null);
+
+            public Task<MfaVerifyResponse?> VerifyMfaChallenge(string factorId, string challengeId, string code, string accessToken, string refreshToken)
+                => Task.FromResult<MfaVerifyResponse?>(null);
+
+            public Task<List<MfaFactor>> ListMfaFactors(string accessToken, string refreshToken)
+                => Task.FromResult(_mfaFactors);
+
+            public Task<bool> UnenrollMfa(string factorId) => Task.FromResult(true);
         }
 
         private sealed class FakeUserLookup : IUserLookup

@@ -1,100 +1,86 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(
+    ArcElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 function PresenceChart({ data }) {
-    const chartRef = useRef(null);
-    const chartInstance = useRef(null);
-
-    useEffect(() => {
-        if (!data || !chartRef.current) return;
-
-        // Destroy existing chart
-        if (chartInstance.current) {
-            chartInstance.current.destroy();
+    // Calculate total days with presence and absence
+    const dailyData = {};
+    data.forEach(event => {
+        const date = new Date(event.badgedAt);
+        const day = date.getDate();
+        if (!dailyData[day]) {
+            dailyData[day] = true; // Mark as present
         }
+    });
 
-        // Calculate daily presence data
-        const dailyData = {};
-        data.forEach(event => {
-            const date = new Date(event.badgedAt);
-            const day = date.getDate();
-            if (!dailyData[day]) {
-                dailyData[day] = { presence: 0, absence: 0 };
+    // Count presence and absence days
+    const presenceDays = Object.keys(dailyData).length;
+    
+    // Get total days in the current month (we need to infer month from data or context)
+    const currentDate = data.length > 0 ? new Date(data[0].badgedAt) : new Date();
+    const totalDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+    const absenceDays = totalDays - presenceDays;
+
+    const chartData = {
+        labels: ['Présence', 'Absence'],
+        datasets: [
+            {
+                label: 'Jours',
+                data: [presenceDays, absenceDays],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderColor: ['#059669', '#dc2626'],
+                borderWidth: 2,
+                hoverOffset: 4
             }
-            dailyData[day].presence += 1;
-        });
+        ]
+    };
 
-        // Convert to arrays for chart
-        const days = Object.keys(dailyData).map(Number).sort((a, b) => a - b);
-        const presenceData = days.map(day => dailyData[day].presence);
-        const absenceData = days.map(day => Math.max(0, 1 - dailyData[day].presence)); // Simplified absence calculation
-
-        // Create chart using Chart.js
-        import('chart.js').then(({ Chart, registerables }) => {
-            Chart.register(...registerables);
-            
-            chartInstance.current = new Chart(chartRef.current, {
-                type: 'bar',
-                data: {
-                    labels: days.map(day => day.toString()),
-                    datasets: [
-                        {
-                            label: 'Présence',
-                            data: presenceData,
-                            backgroundColor: '#10b981',
-                            borderColor: '#059669',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Absence',
-                            data: absenceData,
-                            backgroundColor: '#ef4444',
-                            borderColor: '#dc2626',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: false
-                        }
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        size: 14
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 1,
-                            ticks: {
-                                callback: function(value) {
-                                    return (value * 100) + '%';
-                                }
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Jours du mois'
-                            }
-                        }
+                    padding: 15
+                }
+            },
+            title: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed || 0;
+                        const percentage = ((value / totalDays) * 100).toFixed(2);
+                        return `${label}: ${value} jours (${percentage}%)`;
                     }
                 }
-            });
-        });
-
-        return () => {
-            if (chartInstance.current) {
-                chartInstance.current.destroy();
             }
-        };
-    }, [data]);
+        },
+        cutout: '60%' // Makes it a donut (inner circle)
+    };
 
     return (
         <div className="chart-wrapper">
-            <canvas ref={chartRef}></canvas>
+            <Doughnut data={chartData} options={options} />
         </div>
     );
 }

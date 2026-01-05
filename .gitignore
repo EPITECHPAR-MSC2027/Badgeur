@@ -1,13 +1,19 @@
 # Build results
 bin/
 obj/
+/backend/obj
 Debug/
 Release/
 
-# Visual Studio cache/options
+# Cache/options
 .vs/
 *.suo
 *.user
+*.idea
+
+# Coverage / SonarQube
+*.sonarqube
+TestResults/
 
 # NuGet packages
 packages/
@@ -16,7 +22,6 @@ packages/
 # User secrets and environment files (e.g., for Supabase keys)
 *.env
 secrets.json
-appsettings.json
 appsettings.Development.json
 
 # Test http requests

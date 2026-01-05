@@ -44,7 +44,7 @@
 
 - Build the Docker image
 ```bash
-docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.local.dev.yml up --build
 ```
 - Spin up the image
 ```bash

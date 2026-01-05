@@ -1,0 +1,340 @@
+.reservation-vehicule-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: var(--color-primary);
+    min-height: calc(100vh - 140px);
+}
+
+.reservation-header {
+    margin-bottom: 30px;
+}
+
+.reservation-subtitle {
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 16px;
+    margin: 0;
+}
+
+.reservation-content {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+    align-items: stretch;
+}
+
+.vehicules-section {
+    min-height: 400px;
+}
+
+.loading-message,
+.no-vehicules {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+}
+
+.vehicules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.vehicule-card {
+    background-color: var(--color-primary);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vehicule-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.vehicule-card.selected {
+    border-color: var(--color-secondary);
+    background-color: var(--color-primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.vehicule-card.unavailable {
+    opacity: 0.6;
+    cursor: default;
+    position: relative;
+}
+
+.vehicule-card.unavailable::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.vehicule-card.unavailable:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.vehicule-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.vehicule-type {
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vehicule-name {
+    color: var(--color-secondary);
+    font-family: 'Alata', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.vehicule-plate {
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.vehicule-tags {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    justify-content: center;
+}
+
+.vehicule-tag {
+    background-color: var(--highlight1);
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    opacity:60%;
+}
+
+.vehicule-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-dot.available {
+    background-color: #10b981;
+}
+
+.status-dot.unavailable {
+    background-color: #ef4444;
+}
+
+.status-text {
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.trip-details-section {
+    background-color: var(--color-primary);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    align-self: start;
+}
+
+.trip-details-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.calendar-icon {
+    font-size: 20px;
+}
+
+.trip-details-header h2 {
+    color: var(--color-secondary);
+    font-family: 'Alata', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.trip-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--color-secondary);
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.input-icon {
+    font-size: 16px;
+}
+
+.form-input {
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+    background-color: var(--color-background);
+    color: var(--color-secondary);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--color-secondary);
+}
+
+.form-input::placeholder {
+    color: var(--color-text);
+}
+
+.datetime-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.date-input,
+.time-input {
+    flex: 1;
+}
+
+.feedback-message {
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Fustat', sans-serif;
+    font-size: 14px;
+}
+
+.feedback-message.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.feedback-message.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.confirm-button {
+    padding: 14px 20px;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Alata', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 8px;
+}
+
+.confirm-button:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.confirm-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.button-icon {
+    font-size: 18px;
+}
+
+.selection-hint {
+    text-align: center;
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    font-size: 13px;
+    margin: 8px 0 0 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .reservation-content {
+        grid-template-columns: 1fr;
+    }
+
+    .trip-details-section {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .vehicules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reservation-vehicule-container {
+        padding: 16px;
+    }
+}

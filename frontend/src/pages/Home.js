@@ -5,6 +5,7 @@ import LastPunch from '../component/LastPunch'
 import WeekHours from '../component/WeekHours'
 import DayPlanning from '../component/DayPlanning'
 import Notifications from '../component/Notifications'
+
 function Home() {
     const [now, setNow] = useState(new Date())
     const [userData] = useState({
@@ -38,15 +39,18 @@ function Home() {
     const dateText = dateFormatter.format(parisNow)
 
     const timeBoxStyle = {
-        backgroundColor: 'var(--color-third)',
+        backgroundColor: 'var(--color-primary)',
         borderRadius: '9px',
         padding: '12px 20px',
-        display: 'inline-block',
         color: 'var(--color-background)',
         fontFamily: 'Alata, sans-serif',
-        margin: '12px 20px',
-        width : '94%',
-        height : '110px'
+        height: '110px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
+    }
+
+    const containerStyle = {
+        padding: '0 20px',
+        marginBottom: '20px'
     }
 
     const gridStyle = {
@@ -62,10 +66,12 @@ function Home() {
                 <h1>Tableaux de bord</h1>
                 <h2>Bienvenue {userData.firstName} {userData.lastName}</h2>
             </header>
-            <div className="time" style={timeBoxStyle}>
-                <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-primary)' }}>Heures et date actuelle</h1>
-                <div style={{ fontSize: '38px', fontWeight: 600 }}>{timeText}</div>
-                <div style={{ fontSize: '14px' }}>{dateText}</div>
+            <div style={containerStyle}>
+                <div className="time" style={timeBoxStyle}>
+                    <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-secondary)' }}>Heures et date actuelle</h1>
+                    <div style={{ fontSize: '38px', fontWeight: 600, color: 'var(--color-secondary)' }}>{timeText}</div>
+                    <div style={{ fontSize: '14px', color: 'var(--color-secondary)' }}>{dateText}</div>
+                </div>
             </div>
             <div style={gridStyle}>
                 <LastPunch />
@@ -80,5 +86,3 @@ function Home() {
 }
 
 export default Home
-
-

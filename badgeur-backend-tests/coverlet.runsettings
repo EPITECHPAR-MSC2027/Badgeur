@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>opencover</Format>
+          <Exclude>[Microsoft.*]*,[System.*]*,[xunit.*]*,[Xunit.*]*,[FluentAssertions.*]*,[*.Generated]*,[*]Microsoft.AspNetCore.Http.Generated.*,[testhost]*</Exclude>
+          <ExcludeByAttribute>ExcludeFromCodeCoverage,GeneratedCode</ExcludeByAttribute>
+          <ExcludeByFile>**/Microsoft.*.cs,**/Program.cs,**/*.Generated.cs,**/GeneratedRouteBuilderExtensions.g.cs,**/backend/Models/**,**/backend/Contracts/**,**/backend/Extensions/**,**/backend/Middleware/**</ExcludeByFile>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <SingleHit>false</SingleHit>
+          <SkipAutoProps>true</SkipAutoProps>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

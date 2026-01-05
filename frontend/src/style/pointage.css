@@ -14,7 +14,7 @@
 /* Container principal */
 .pointage-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-background) 50%, rgba(0,0,0,0.02) 100%);
+    background: linear-gradient(135deg, var(--color-highlight1) 0%, var(--color-highlight3) 50%, rgba(0,0,0,0.02) 100%);
     padding: 20px;
 }
 
@@ -33,16 +33,14 @@
 .pointage-title {
     font-size: 48px;
     font-weight: bold;
-    background: linear-gradient(135deg, var(--color-third) 0%, rgba(0,0,0,0.6) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 16px;
     animation: fadeIn 0.8s ease-out;
+    color: var(--highlight4);
 }
 
 .pointage-date {
-    color: var(--color-second-text);
+    color: var(--highlight1);
     font-size: 18px;
     margin-bottom: 24px;
 }
@@ -62,13 +60,13 @@
     text-align: center;
     font-size: 14px;
     line-height: 1.6;
-    color: var(--color-second-text);
+    color: var(--color-secondary);
     margin: 0;
 }
 
 .pointage-highlight {
     font-weight: 600;
-    color: var(--color-secondary);
+    color: var(--highlight2);
 }
 
 /* Moments de la journée */
@@ -102,8 +100,6 @@
 .pointage-moment-icon {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
-    background: rgba(28, 108, 61, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -118,12 +114,12 @@
     font-size: 14px;
     font-weight: 600;
     margin: 0 0 4px 0;
-    color: var(--color-third);
+    color: var(--color-secondary);
 }
 
 .pointage-moment-time {
     font-size: 12px;
-    color: var(--color-second-text);
+    color: var(--highlight4);
     margin: 0;
 }
 
@@ -150,9 +146,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary) 50%, var(--color-second-text) 100%);
-    color: var(--color-second-text);
+    background: var(--highlight1);
     margin: 0 auto;
     animation: scaleIn 0.6s ease-out;
 }
@@ -168,13 +162,15 @@
 }
 
 .pointage-badge-icon {
-    font-size: 96px;
     transition: transform 0.3s ease;
+    top:-15px;
 }
 
 .pointage-badge-text {
     font-size: 40px;
     letter-spacing: 2px;
+    top: -10px;
+    color: var(--color-primary);
 }
 
 /* Carte d'historique */
@@ -189,7 +185,7 @@
 
 .pointage-history-header {
     padding: 24px 24px 0;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--highlight3);
     margin-bottom: 16px;
 }
 
@@ -197,11 +193,11 @@
     font-size: 24px;
     font-weight: bold;
     margin: 0 0 8px 0;
-    color: var(--color-third);
+    color: var(--color-secondary);
 }
 
 .pointage-history-description {
-    color: var(--color-second-text);
+    color: var(--color-text);
     margin: 0 0 16px 0;
 }
 
@@ -212,7 +208,7 @@
 .pointage-empty-state {
     text-align: center;
     padding: 48px 24px;
-    color: var(--color-second-text);
+    color: var(--color-text);
 }
 
 .pointage-empty-icon {
@@ -260,7 +256,7 @@
 
 .pointage-badge-time {
     font-size: 14px;
-    color: var(--color-second-text);
+    color: var(--highlight1);
     margin: 0;
 }
 
@@ -268,8 +264,50 @@
     font-size: 15px;
     padding: 4px 8px;
     border-radius: 12px;
-    background: var(--color-second-text);
+    background: color-mix(in srgb, var(--highlight2) 70%, white);
     color: var(--color-primary);
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+/* Pagination */
+.pointage-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+.pointage-pagination-button {
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--color-third);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.pointage-pagination-button:hover:not(:disabled) {
+    background: rgba(31, 139, 76, 0.1);
+    border-color: var(--color-secondary);
+    transform: translateY(-2px);
+}
+
+.pointage-pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.pointage-pagination-info {
+    color: var(--color-text);
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -329,6 +367,15 @@
     
     .pointage-title {
         font-size: 36px;
+    }
+    
+    .pointage-pagination {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .pointage-pagination-info {
+        order: -1;
     }
 }
 

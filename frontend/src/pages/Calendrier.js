@@ -205,14 +205,14 @@ function Calendrier() {
                                         const ymd = toYMD(c)
                                         const slot0 = plansByUserDate[u.id]?.[ymd]?.['0']
                                         const slot1 = plansByUserDate[u.id]?.[ymd]?.['1']
-                                        const color0 = slot0 ? colorForType(slot0.typeId) : undefined
-                                        const color1 = slot1 ? colorForType(slot1.typeId) : undefined
+                                        const color0 = slot0 && slot0.statut !== 2 ? colorForType(slot0.typeId) : undefined
+                                        const color1 = slot1 && slot1.statut !== 2 ? colorForType(slot1.typeId) : undefined
                                         return (
                                             <div key={idx} style={{ height: 34, borderRadius: 6, border: '1px solid #e5e7eb', position: 'relative', background: '#ffffff', overflow: 'hidden' }}>
                                                 {(slot0 || slot1) && (
                                                     <>
-                                                        <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: slot0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
-                                                        <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: slot1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
+                                                        <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: color0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
+                                                        <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: color1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
                                                     </>
                                                 )}
                                             </div>

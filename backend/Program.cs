@@ -44,9 +44,16 @@ builder.Services.AddScoped<UserKPIService>();
 builder.Services.AddScoped<PlanningService>();
 builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
+builder.Services.AddScoped<FloorService>();
+builder.Services.AddScoped<RoomService>();
+builder.Services.AddScoped<WorkspaceService>();
+builder.Services.AddScoped<VehiculeService>();
+builder.Services.AddScoped<BookingVehiculeService>();
+builder.Services.AddScoped<AnnouncementService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
+builder.Services.AddScoped<IAuthRegistration, SupabaseAuthRegistration>();
 builder.Services.AddScoped<IUserLookup, UserServiceAdapter>();
 
 var app = builder.Build();
@@ -81,5 +88,11 @@ app.MapUserKPIEndpoints();
 app.MapPlanningEndpoints();
 app.MapTypeDemandeEndpoints();
 app.MapClocksEndpoints();
+app.MapFloorEndpoints();
+app.MapRoomEndpoints();
+app.MapWorkspaceEndpoints();
+app.MapVehiculeEndpoints();
+app.MapBookingVehiculeEndpoints();
+app.MapAnnouncementEndpoints();
 
 app.Run();
