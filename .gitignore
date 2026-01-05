@@ -29,3 +29,8 @@ badgeur-backend.http
 # Other common ignores
 Thumbs.db
 .DS_Store
+/backend/Endpoints/BookingRoomEndpoints.cs
+/.sonarqube
+/TestResults
+/.idea
+/backend/.sonarqube

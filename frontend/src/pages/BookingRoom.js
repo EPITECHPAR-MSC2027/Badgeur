@@ -130,9 +130,9 @@ function BookingRoom() {
             console.log('Réponse complète du backend:', bookingResponse)
             
             // Récupérer l'ID depuis la réponse
-            const bookingId = bookingResponse?.Id || bookingResponse?.id
+            const bookingId = bookingResponse; // Booking response is the ID directly
             
-            if (!bookingId || isNaN(bookingId) || bookingId === 0) {
+            if (isNaN(bookingId)) {
                 console.error('Impossible de récupérer l\'ID. Résultat reçu:', bookingResponse)
                 throw new Error('Impossible de récupérer l\'ID de la réservation.')
             }

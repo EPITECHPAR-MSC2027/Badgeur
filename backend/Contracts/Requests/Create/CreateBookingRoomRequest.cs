@@ -1,8 +1,7 @@
-using System.Text.Json.Serialization;
+using System;
 
 namespace badgeur_backend.Contracts.Requests.Create
 {
-    [JsonSerializable(typeof(CreateBookingRoomRequest))]
     public class CreateBookingRoomRequest
     {
         public long UserId { get; set; }
@@ -12,5 +11,3 @@ namespace badgeur_backend.Contracts.Requests.Create
         public DateTime EndDatetime { get; set; }
     }
 }
-
-

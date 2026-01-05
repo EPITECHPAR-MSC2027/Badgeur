@@ -8,7 +8,7 @@ namespace badgeur_backend.Models;
 [Table("booking_room")]
 public class BookingRoom : BaseModel
 {
-    [PrimaryKey("id", false)]
+    [PrimaryKey("id_booking", false)]
     public long Id { get; set; }
 
     [Column("user_id")]

@@ -46,7 +46,6 @@ builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
 builder.Services.AddScoped<FloorService>();
 builder.Services.AddScoped<RoomService>();
-builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<BookingRoomService>();
 
 // --- Interfaces/Adapters/Misc ---
@@ -87,7 +86,6 @@ app.MapTypeDemandeEndpoints();
 app.MapClocksEndpoints();
 app.MapFloorEndpoints();
 app.MapRoomEndpoints();
-app.MapWorkspaceEndpoints();
 app.MapBookingRoomEndpoints();
 
 app.Run();
