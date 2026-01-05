@@ -1,4 +1,5 @@
 using badgeur_backend.Contracts.Requests.Create;
+using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
 using Supabase;
 using Client = Supabase.Client;
@@ -32,36 +33,50 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<Ticket>> GetAllTicketsAsync()
+        public async Task<List<TicketResponse>> GetAllTicketsAsync()
         {
             var response = await _client.From<Ticket>()
                 .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                 .Get();
 
-            return response.Models;
+            return response.Models.Select(t => CreateTicketResponse(t)).ToList();
         }
 
-        public async Task<Ticket?> GetTicketByIdAsync(long id)
+        public async Task<List<TicketResponse>> GetAllTicketsByEmailAsync(string email)
+        {
+            var response = await _client.From<Ticket>()
+                .Where(t => t.UserEmail == email)
+                .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
+                .Get();
+
+            return response.Models.Select(t => CreateTicketResponse(t)).ToList();
+        }
+
+        public async Task<TicketResponse?> GetTicketByIdAsync(long id)
         {
             var response = await _client.From<Ticket>().Where(t => t.Id == id).Get();
-            return response.Models.FirstOrDefault();
+            var ticket = response.Models.FirstOrDefault();
+
+            if (ticket == null) return null;
+
+            return CreateTicketResponse(ticket);
         }
 
-        public async Task<List<Ticket>> GetTicketsByAssignedToAsync(string assignedTo)
+        public async Task<List<TicketResponse>> GetTicketsByAssignedToAsync(string assignedTo)
         {
             var response = await _client.From<Ticket>()
                 .Where(t => t.AssignedTo == assignedTo)
                 .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                 .Get();
 
-            return response.Models;
+            return response.Models.Select(t => CreateTicketResponse(t)).ToList();
         }
 
         public async Task<bool> UpdateTicketStatusAsync(long id, string status)
         {
             var query = await _client.From<Ticket>().Where(t => t.Id == id).Get();
             var ticket = query.Models.FirstOrDefault();
-            
+
             if (ticket == null)
                 return false;
 
@@ -70,6 +85,21 @@ namespace badgeur_backend.Services
 
             return true;
         }
+
+        public TicketResponse CreateTicketResponse(Ticket ticket)
+        {
+            return new TicketResponse
+            {
+                Id = ticket.Id,
+                AssignedTo = ticket.AssignedTo,
+                CreatedAt = ticket.CreatedAt,
+                UserName = ticket.UserName,
+                UserLastName = ticket.UserLastName,
+                UserEmail = ticket.UserEmail,
+                Category = ticket.Category,
+                Description = ticket.Description,
+                Status = ticket.Status
+            };
+        }
     }
 }
-

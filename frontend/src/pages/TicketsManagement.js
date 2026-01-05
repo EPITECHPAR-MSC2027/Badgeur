@@ -33,21 +33,15 @@ function TicketsManagement() {
             // Filtrer les tickets selon le role_id de l'utilisateur connecté
             const roleId = parseInt(localStorage.getItem('roleId'), 10);
             let filteredData = data;
-            
+
             if (roleId === 2) {
                 // Admin : montrer les tickets avec assigned_to = "IT support"
-                filteredData = data.filter(ticket => {
-                    const assignedTo = ticket.assigned_to || ticket.AssignedTo;
-                    return assignedTo === 'IT support';
-                });
+                filteredData = data.filter(ticket => ticket.assignedTo === 'IT support');
             } else if (roleId === 3) {
                 // RH : montrer les tickets avec assigned_to = "RH"
-                filteredData = data.filter(ticket => {
-                    const assignedTo = ticket.assigned_to || ticket.AssignedTo;
-                    return assignedTo === 'RH';
-                });
+                filteredData = data.filter(ticket => ticket.assignedTo === 'RH');
             }
-            
+
             setTickets(filteredData);
         } catch (err) {
             setError(err.message || 'Erreur lors du chargement des tickets');

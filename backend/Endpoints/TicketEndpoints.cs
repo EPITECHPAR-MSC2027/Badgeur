@@ -1,8 +1,11 @@
 using badgeur_backend.Contracts.Requests.Create;
 using badgeur_backend.Contracts.Requests.Update;
 using badgeur_backend.Services;
-using Supabase;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Supabase;
+using System;
+using System.Threading.Tasks;
+using badgeur_backend.Models;
 
 namespace badgeur_backend.Endpoints
 {
@@ -37,10 +40,8 @@ namespace badgeur_backend.Endpoints
                 return Results.Ok(ticket);
             }).WithDescription("Retrieve a ticket by ID.");
 
-            group.MapGet("/my", async (TicketService ticketService, UserService userService, HttpContext context) =>
-            {
-                return await HandleGetMyTickets(ticketService, userService, context);
-            }).WithDescription("Retrieve all tickets. The frontend will filter based on user role_id.");
+            group.MapGet("/my", HandleGetMyTickets)
+                .WithDescription("Retrieve all tickets. The frontend will filter based on user role_id.");
 
             group.MapPut("/{id:long}/status", async (long id, UpdateTicketStatusRequest request, TicketService service) =>
             {
@@ -108,19 +109,20 @@ namespace badgeur_backend.Endpoints
         }
 
         public static async Task<IResult> HandleGetMyTickets(
-            TicketService ticketService,
-            UserService userService,
-            HttpContext context)
+    TicketService ticketService,
+    UserService userService,
+    HttpContext context)
         {
-            // Récupérer l'utilisateur connecté depuis le middleware
             var authenticatedUser = context.Items["User"] as Supabase.Gotrue.User;
-            if (authenticatedUser == null)
-            {
-                return Results.Unauthorized();
-            }
+            var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email);
 
-            // Retourner tous les tickets - le frontend filtrera selon le role_id
-            var tickets = await ticketService.GetAllTicketsAsync();
+            if (connectedUser == null)
+                return Results.Unauthorized();
+
+            var tickets = await ticketService.GetAllTicketsByEmailAsync(connectedUser.Email);
+
+            if (!tickets.Any())
+                return Results.NotFound("No tickets found.");
 
             return Results.Ok(tickets);
         }
