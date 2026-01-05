@@ -21,11 +21,28 @@
 
 .kpi-title {
     margin: 0;
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 14px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: 'Alata', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+h4.kpi-title {
+    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Alata', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
 }
 
 .kpi-comparison-icon {
@@ -41,9 +58,13 @@
 }
 
 .kpi-description {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 14px;
     font-weight: 500;
+    font-family: 'Fustat', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
 }
 
 /* Chart Wrapper */
@@ -89,7 +110,7 @@
 .week-day {
     text-align: center;
     font-weight: 600;
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 10px;
     padding: 4px 2px;
     text-transform: uppercase;
@@ -141,7 +162,7 @@
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    color: var(--color-second-text);
+    color: var(--color-text);
 }
 
 .legend-color {

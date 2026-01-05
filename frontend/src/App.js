@@ -15,6 +15,7 @@ import CreateAnnouncement from './pages/CreateAnnouncement';
 import Announcements from './pages/Announcements';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
+import ManagerAnalytics from './pages/ManagerAnalytics';
 import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
@@ -141,6 +142,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <UserAnalytics />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/manager-analytics"
+                    element={
+                        <RequireAuth>
+                            <ManagerAnalytics />
                         </RequireAuth>
                     }
                 />

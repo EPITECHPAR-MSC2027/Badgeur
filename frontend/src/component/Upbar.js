@@ -33,6 +33,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return 'profil'
             case '/analytics':
                 return 'analytics'
+            case '/manager-analytics':
+                return 'managerAnalytics'
             case '/reservation-vehicule':
                 return 'reservationVehicule'
             default:
@@ -106,6 +108,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/profil'
             case 'analytics':
                 return '/analytics'
+            case 'managerAnalytics':
+                return '/manager-analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
             case 'createAnnouncement':
@@ -243,14 +247,25 @@ function Upbar({ currentPage, onNavigate }) {
                     Equipe
                 </button>
 
-                <button 
-                    onClick={() => handleNavigate('analytics')} 
-                    onMouseEnter={() => setHoveredButton('analytics')}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    style={getButtonStyle('analytics')}
-                >
-                    Analytics
-                </button>
+                {roleId === 1 ? (
+                    <button 
+                        onClick={() => handleNavigate('managerAnalytics')} 
+                        onMouseEnter={() => setHoveredButton('managerAnalytics')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('managerAnalytics')}
+                    >
+                        Analytics Équipe
+                    </button>
+                ) : (
+                    <button 
+                        onClick={() => handleNavigate('analytics')} 
+                        onMouseEnter={() => setHoveredButton('analytics')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('analytics')}
+                    >
+                        Analytics
+                    </button>
+                )}
                 
                 <button 
                     onClick={() => handleNavigate('notification')} 
