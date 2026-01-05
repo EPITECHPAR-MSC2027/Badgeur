@@ -340,7 +340,7 @@ function UserAnalytics() {
                         <KPICard 
                             title="Jours travaillés" 
                             value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
-                            description="Sur 14 jours"
+                            description="Sur un mois entier"
                         />
                         <KPICard 
                             title="Heures/jour" 
