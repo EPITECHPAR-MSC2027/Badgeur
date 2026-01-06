@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../index.css'
 import icon from '../assets/icon.png'
-import authService from '../services/authService'
 import icons from '../icons'
 
 
@@ -37,6 +36,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return 'managerAnalytics'
             case '/reservation-vehicule':
                 return 'reservationVehicule'
+            case '/support':
+                return 'supportTicket'
+            case '/tickets-management':
+                return 'ticketsManagement'
             default:
                 return ''
         }
@@ -102,6 +105,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/pointage'
             case 'planning':
                 return '/planning'
+            case 'bookingRoom':
+                return '/booking-room'
             case 'calendrier':
                 return '/calendrier'
             case 'profil':
@@ -120,6 +125,10 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/notification'
             case 'trombinoscope':
                 return '/trombinoscope'
+            case 'supportTicket':
+                return '/support'
+            case 'ticketsManagement':
+                return '/tickets-management'
             case 'login':
                 return '/login'
             default:
@@ -189,6 +198,17 @@ function Upbar({ currentPage, onNavigate }) {
                     </button>
                 )}
 
+                {(roleId === 2 || roleId === 3) && (
+                    <button 
+                        onClick={() => handleNavigate('ticketsManagement')} 
+                        onMouseEnter={() => setHoveredButton('ticketsManagement')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('ticketsManagement')}
+                    >
+                        Tickets
+                    </button>
+                )}
+
                     <button 
                         onClick={() => handleNavigate('trombinoscope')} 
                         onMouseEnter={() => setHoveredButton('trombinoscope')}
@@ -234,6 +254,19 @@ function Upbar({ currentPage, onNavigate }) {
                             onClick={() => { handleNavigate('reservationVehicule'); setIsActionsOpen(false) }}
                         >
                             Réserver un véhicule
+                        </button>
+                        <button 
+                            style={getButtonStyle('supportTicket')}
+                            onMouseEnter={() => setHoveredButton('supportTicket')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            onClick={() => { handleNavigate('supportTicket'); setIsActionsOpen(false) }}
+                        >
+                            Créer un ticket
+                        </button>
+                        <button
+                            style={getButtonStyle('supportTicket')}
+                            onClick={() => { handleNavigate('bookingRoom'); setIsActionsOpen(false) }}>
+                            Réserver une salle
                         </button>
                     </div>
                 </div>

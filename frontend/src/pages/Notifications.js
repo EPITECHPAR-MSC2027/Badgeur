@@ -96,6 +96,8 @@ function Notifications() {
                 return '✅';
             case 'planning_request':
                 return '📋';
+            case 'ticket_status':
+                return '🎫';
             default:
                 return '🔔';
         }

@@ -52,8 +52,17 @@ namespace badgeur_backend.Services
 
         public virtual async Task<UserResponse?> GetUserByEmailAsync(string email)
         {
-            var response = await _client.From<User>().Where(n => n.Email == email).Get();
-            var user = response.Models.FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+
+            // Normaliser l'email (trim et lowercase pour la comparaison)
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            
+            // Récupérer tous les utilisateurs et comparer en mémoire (car Supabase Postgrest 
+            // ne supporte pas directement les comparaisons insensibles à la casse)
+            var response = await _client.From<User>().Get();
+            var user = response.Models.FirstOrDefault(u => 
+                u.Email?.Trim().ToLowerInvariant() == normalizedEmail);
 
             if (user == null) return null;
 
