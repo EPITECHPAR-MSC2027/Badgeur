@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, useCallback } from 'react'
 import authService from '../services/authService'
 import statsService from '../services/statsService'
 import planningService from '../services/planningService'
@@ -8,7 +7,6 @@ import ValidationPlanning from './ValidationPlanning'
 import ManagerAnalytics from './ManagerAnalytics'
 
 function GererEquipe() {
-    const navigate = useNavigate()
     const roleId = parseInt(localStorage.getItem('roleId') || 0)
     const isRH = roleId === 3
     const [tab, setTab] = useState('manage') // 'manage' | 'dashboard' | 'validation' | 'all-teams'
@@ -20,7 +18,7 @@ function GererEquipe() {
     const [allUsers, setAllUsers] = useState([]) // Pour le RH
     const [userPlannings, setUserPlannings] = useState({}) // { [userId]: [plannings] } Pour le RH
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true)
         setError('')
         try {
@@ -79,13 +77,11 @@ function GererEquipe() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [isRH])
 
     useEffect(() => {
         loadData()
-    }, [])
-
-    const teamUserIds = useMemo(() => new Set(teamMembers.map(u => u.id)), [teamMembers])
+    }, [loadData])
 
     const tabButton = (key, label) => (
         <button
@@ -145,14 +141,6 @@ function GererEquipe() {
                 5: 'Formation'
             };
             return types[typeId] || 'Inconnu';
-        };
-
-        const getStatutLabel = (statut) => {
-            const s = Number(statut);
-            if (s === 0) return 'En attente';
-            if (s === 1) return 'Accepté';
-            if (s === 2) return 'Refusé';
-            return 'Inconnu';
         };
 
         const getStatutColor = (statut) => {
@@ -375,6 +363,3 @@ function GererEquipe() {
 }
 
 export default GererEquipe
-
-
-

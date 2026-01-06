@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import authService from '../services/authService';
 
 function PointagesSection() {
@@ -21,24 +21,7 @@ function PointagesSection() {
         fetchUsers();
     }, []);
 
-    useEffect(() => {
-        fetchPointages();
-    }, [filters.startDate, filters.endDate, filters.userId]);
-
-    const fetchUsers = async () => {
-        try {
-            const response = await authService.get('/users');
-            if (response.status === 404) { setUsers([]); return; }
-            if (!response.ok) throw new Error('Erreur lors du chargement des utilisateurs');
-            const data = await response.json();
-            setUsers(Array.isArray(data) ? data : []);
-        } catch (e) {
-            console.error(e);
-            alert('Impossible de charger les utilisateurs');
-        }
-    };
-
-    const fetchPointages = async () => {
+    const fetchPointages = useCallback(async () => {
         try {
             let response;
             if (filters.userId) {
@@ -62,6 +45,23 @@ function PointagesSection() {
             setPointages(filtered);
         } catch (e) {
             console.error(e);
+        }
+    }, [filters.startDate, filters.endDate, filters.userId]);
+
+    useEffect(() => {
+        fetchPointages();
+    }, [fetchPointages]);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await authService.get('/users');
+            if (response.status === 404) { setUsers([]); return; }
+            if (!response.ok) throw new Error('Erreur lors du chargement des utilisateurs');
+            const data = await response.json();
+            setUsers(Array.isArray(data) ? data : []);
+        } catch (e) {
+            console.error(e);
+            alert('Impossible de charger les utilisateurs');
         }
     };
 

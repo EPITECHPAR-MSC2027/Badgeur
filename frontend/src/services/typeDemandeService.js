@@ -1,4 +1,4 @@
-export default {
+const typeDemandeService = {
 	async list() {
 		const res = await (await import('./authService')).default.get('/type-demandes');
 		if (!res.ok) return [];
@@ -20,3 +20,5 @@ export default {
 		return true;
 	}
 };
+
+export default typeDemandeService;

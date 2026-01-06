@@ -19,8 +19,6 @@ function SeedDataPanel() {
             }
 
             const random = () => Math.random();
-            const randomInt = (min, max) => Math.floor(random() * (max - min + 1)) + min;
-            
             let eventsCreated = 0;
             
             // Calculer le nombre de jours dans le mois sélectionné

@@ -23,22 +23,23 @@ function Calendrier() {
     const [members, setMembers] = React.useState([]) // [{id, firstName, lastName}]
     // plansByUserDate[userId]?.[ymd]?.['0'|'1'] => { typeId, statut }
     const [plansByUserDate, setPlansByUserDate] = React.useState({})
-    const [loading, setLoading] = React.useState(false)
+    const [loading, setLoading] = React.useState(false) // ✅ Ajout du state loading
     const [error, setError] = React.useState('')
 
     // Helpers
-    function normalizeDateOnly(d) {
+    const normalizeDateOnly = React.useCallback((d) => {
         const n = new Date(d)
         n.setHours(0, 0, 0, 0)
         return n
-    }
-    function toYMD(d) {
+    }, [])
+
+    const toYMD = React.useCallback((d) => {
         const n = normalizeDateOnly(d)
         const y = n.getFullYear()
         const m = String(n.getMonth() + 1).padStart(2, '0')
         const day = String(n.getDate()).padStart(2, '0')
         return `${y}-${m}-${day}`
-    }
+    }, [normalizeDateOnly])
 
     // Build month grid
     const monthGrid = React.useMemo(() => {
@@ -154,6 +155,10 @@ function Calendrier() {
 
             {error && (
                 <div style={{ color: '#b91c1c' }}>{error}</div>
+            )}
+
+            {loading && (
+                <div style={{ color: '#6b7280', padding: 8 }}>Chargement...</div>
             )}
 
             <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 12 }}>

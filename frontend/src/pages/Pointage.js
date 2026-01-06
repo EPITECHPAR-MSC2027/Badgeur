@@ -189,12 +189,6 @@ function Pointage() {
         }
     }, [history.length, currentPage, totalPages])
 
-    const goToPage = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page)
-        }
-    }
-
     const goToPreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
