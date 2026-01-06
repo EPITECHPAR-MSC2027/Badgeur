@@ -3,6 +3,8 @@ import '../style/Chart.css';
 import '../style/Analytics.css';
 import authService from '../services/authService';
 import teamService from '../services/teamService';
+import vehiculeService from '../services/vehiculeService';
+import bookingRoomService from '../services/bookingRoomService';
 import KPICard from '../component/KPICard';
 import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
@@ -113,11 +115,48 @@ function ManagerAnalytics() {
 
             const allEvents = allMemberData.flatMap(data => data.events);
 
+            // Construire un set des IDs des membres de l'équipe
+            const teamUserIds = new Set(teamMembers.map(m => Number(m.id)));
+
+            // Compter les réservations de véhicules pour l'équipe sur le mois
+            let vehicleBookingsCountTeam = 0;
+            try {
+                const allVehicleBookings = await vehiculeService.getAllBookings();
+                const vehicleBookingsForTeam = (Array.isArray(allVehicleBookings) ? allVehicleBookings : []).filter(b => {
+                    const bookingUserId = Number(b.userId ?? b.UserId);
+                    if (!teamUserIds.has(bookingUserId)) return false;
+                    const start = new Date(b.startDatetime || b.StartDatetime);
+                    return start.getMonth() + 1 === selectedMonth &&
+                           start.getFullYear() === selectedYear;
+                });
+                vehicleBookingsCountTeam = vehicleBookingsForTeam.length;
+            } catch (e) {
+                console.warn('Erreur chargement réservations véhicules pour équipe', e);
+            }
+
+            // Compter les réservations de salles pour l'équipe sur le mois
+            let roomBookingsCountTeam = 0;
+            try {
+                const allRoomBookings = await bookingRoomService.list();
+                const roomBookingsForTeam = (Array.isArray(allRoomBookings) ? allRoomBookings : []).filter(b => {
+                    const bookingUserId = Number(b.UserId ?? b.userId);
+                    if (!teamUserIds.has(bookingUserId)) return false;
+                    const start = new Date(b.StartDatetime || b.startDatetime);
+                    return start.getMonth() + 1 === selectedMonth &&
+                           start.getFullYear() === selectedYear;
+                });
+                roomBookingsCountTeam = roomBookingsForTeam.length;
+            } catch (e) {
+                console.warn('Erreur chargement réservations salles pour équipe', e);
+            }
+
             setAnalyticsData({
                 memberData: allMemberData,
                 events: allEvents,
                 month: selectedMonth,
-                year: selectedYear
+                year: selectedYear,
+                vehicleBookingsCountTeam,
+                roomBookingsCountTeam
             });
         } catch (err) {
             console.error('Erreur lors du chargement des données:', err);
@@ -466,6 +505,16 @@ function ManagerAnalytics() {
                                         title="Taux de présence (moyenne)" 
                                         value={`${kpis.presenceRate || 0}%`}
                                         description={`${kpis.absenceRate || 0}% d'absence moyen`}
+                                    />
+                                    <KPICard 
+                                        title="Réservations de véhicule (équipe)" 
+                                        value={analyticsData?.vehicleBookingsCountTeam ?? 0}
+                                        description="Nombre total de réservations de véhicule sur le mois"
+                                    />
+                                    <KPICard 
+                                        title="Réservations de salle (équipe)" 
+                                        value={analyticsData?.roomBookingsCountTeam ?? 0}
+                                        description="Nombre total de réservations de salle sur le mois"
                                     />
                                 </div>
 
