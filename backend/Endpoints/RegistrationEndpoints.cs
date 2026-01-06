@@ -2,8 +2,7 @@
 using badgeur_backend.Contracts.Requests.Create;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Services;
-using Supabase.Gotrue;
-using Client = Supabase.Client;
+using badgeur_backend.Services.Auth;
 
 namespace badgeur_backend.Endpoints
 {
@@ -13,55 +12,68 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/register");
 
-            group.MapPost("/", async (RegistrationRequest registrationRequest, Client client, UserService userService) =>
+            group.MapPost("/", async (RegistrationRequest registrationRequest, IAuthRegistration authRegistration, UserService userService) =>
             {
-                var options = new SignUpOptions
-                {
-                    Data = new Dictionary<string, object>
-                    {
-                        { "first_name", registrationRequest.FirstName },
-                        { "last_name", registrationRequest.LastName },
-                    }
-                };
+                return await HandleRegistration(registrationRequest, authRegistration, userService);
+            }).WithDescription("Register a new user. Returns an access token, a refresh token, and the new user's information.");
+        }
 
-                var session = await client.Auth.SignUp(Constants.SignUpType.Email, registrationRequest.Email, registrationRequest.Password, options);
+        public static async Task<IResult> HandleRegistration(
+            RegistrationRequest registrationRequest,
+            IAuthRegistration authRegistration,
+            UserService userService)
+        {
+            Supabase.Gotrue.Session? session;
+            try
+            {
+                session = await authRegistration.SignUp(
+                    registrationRequest.Email,
+                    registrationRequest.Password,
+                    registrationRequest.FirstName,
+                    registrationRequest.LastName);
+            }
+            catch
+            {
+                return Results.BadRequest("Registration failed. (Auth)");
+            }
 
-                if (session == null || string.IsNullOrEmpty(session.AccessToken))
-                {
-                    return Results.BadRequest("Registration failed. (Role)");
-                }
+            if (session == null || string.IsNullOrEmpty(session.AccessToken))
+            {
+                return Results.BadRequest("Registration failed. (Auth)");
+            }
 
-                // Each new user has to be saved to two different databases, one for the AUTHENTICATION (auth) and another for their ROLE (public.users).
-                // This may or may not be avoidable.
+            // Each new user has to be saved to two different databases, one for the AUTHENTICATION (auth) and another for their ROLE (public.users).
+            // This may or may not be avoidable.
 
-                CreateUserRequest createUserRequest = new CreateUserRequest
-                {
-                    FirstName = registrationRequest.FirstName,
-                    LastName = registrationRequest.LastName,
-                    Email = registrationRequest.Email,
-                    Telephone = registrationRequest.Telephone
-                };
+            CreateUserRequest createUserRequest = new CreateUserRequest
+            {
+                FirstName = registrationRequest.FirstName,
+                LastName = registrationRequest.LastName,
+                Email = registrationRequest.Email,
+                Telephone = registrationRequest.Telephone
+            };
 
-                var id = await userService.CreateUserAsync(createUserRequest);
+            var id = await userService.CreateUserAsync(createUserRequest);
 
-                if (id == null)
-                    return Results.BadRequest("Registration failed. (Auth)");
+            if (id == 0)
+                return Results.BadRequest("Registration failed. (Role)");
 
-                var userResponse = await userService.GetUserByIdAsync(id);
+            var userResponse = await userService.GetUserByIdAsync(id);
 
-                var registrationResponse = new RegistrationResponse
-                {
-                    AccessToken = session.AccessToken,
-                    RefreshToken = session.RefreshToken,
-                    UserId = userResponse.Id,
-                    RoleId = userResponse.RoleId,
-                    FirstName = userResponse.FirstName,
-                    LastName = userResponse.LastName
-                };
+            if (userResponse == null)
+                return Results.BadRequest("Registration failed. (User retrieval)");
 
-                return Results.Ok(registrationResponse);
-            }).WithDescription("Register a new user. Returns an access token, a refresh token, and the new user's email.");
+            var registrationResponse = new RegistrationResponse
+            {
+                AccessToken = session.AccessToken,
+                RefreshToken = session.RefreshToken ?? string.Empty,
+                UserId = userResponse.Id,
+                RoleId = userResponse.RoleId,
+                FirstName = userResponse.FirstName,
+                LastName = userResponse.LastName
+            };
 
+            return Results.Ok(registrationResponse);
         }
     }
 }

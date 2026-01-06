@@ -10,50 +10,65 @@ namespace badgeur_backend.Endpoints
         {
             var group = app.MapGroup("/teams");
 
-            group.MapPost("/", async (CreateTeamRequest request, TeamService teamService) =>
-            {
-                var id = await teamService.CreateTeamAsync(request);
+            group.MapPost("/", HandleCreateTeam)
+                .WithDescription("Create a new team. Upon success, returns the ID of the new team.");
 
-                if (id == null)
-                    return Results.BadRequest("Failed to create a new team.");
+            group.MapGet("/", HandleGetAllTeams)
+                .WithDescription("Retrieve all the teams.");
 
-                return Results.Ok(id);
-            }).WithDescription("Create a new team. Upon success, returns the ID of the new team.");
+            group.MapGet("/{id:long}", HandleGetTeamById)
+                .WithDescription("Retrieve a team by ID.");
 
-            group.MapGet("/", async (TeamService teamService) =>
-            {
-                var teams = await teamService.GetAllTeamsAsync();
+            group.MapPut("/{id:long}", HandleUpdateTeam)
+                .WithDescription("Update the team's information.");
 
-                if (!teams.Any()) return Results.NotFound("No teams found.");
+            group.MapDelete("/{id:long}", HandleDeleteTeam)
+                .WithDescription("Deletes a team by ID.");
+        }
 
-                return Results.Ok(teams);
-            }).WithDescription("Retrieve all the teams.");
+        public static async Task<IResult> HandleCreateTeam(CreateTeamRequest request, TeamService teamService)
+        {
+            var id = await teamService.CreateTeamAsync(request);
 
-            group.MapGet("/{id:long}", async (long id, TeamService teamService) =>
-            {
-                var team = await teamService.GetTeamByIdAsync(id);
+            if (id == 0)
+                return Results.BadRequest("Failed to create a new team.");
 
-                if (team == null) return Results.NotFound("Team was not found.");
+            return Results.Ok(id);
+        }
 
-                return Results.Ok(team);
-            }).WithDescription("Retrieve a team by ID.");
+        public static async Task<IResult> HandleGetAllTeams(TeamService teamService)
+        {
+            var teams = await teamService.GetAllTeamsAsync();
 
-            group.MapPut("/{id:long}", async (long id, UpdateTeamRequest updateTeamRequest, TeamService teamService) =>
-            {
-                var updatedTeam = teamService.UpdateTeamAsync(id, updateTeamRequest);
+            if (!teams.Any()) return Results.NotFound("No teams found.");
 
-                if (updatedTeam == null)
-                    return Results.NotFound("Team not found");
+            return Results.Ok(teams);
+        }
 
-                return Results.Ok(updatedTeam);
-            }).WithDescription("Update the team's information.");
+        public static async Task<IResult> HandleGetTeamById(long id, TeamService teamService)
+        {
+            var team = await teamService.GetTeamByIdAsync(id);
 
-            group.MapDelete("/{id:long}", async (long id, TeamService teamService) =>
-            {
-                await teamService.DeleteTeamAsync(id);
+            if (team == null) return Results.NotFound("Team was not found.");
 
-                return Results.NoContent();
-            }).WithDescription("Deletes a team by ID.");
+            return Results.Ok(team);
+        }
+
+        public static async Task<IResult> HandleUpdateTeam(long id, UpdateTeamRequest updateTeamRequest, TeamService teamService)
+        {
+            var updatedTeam = await teamService.UpdateTeamAsync(id, updateTeamRequest);
+
+            if (updatedTeam == null)
+                return Results.NotFound("Team not found");
+
+            return Results.Ok(updatedTeam);
+        }
+
+        public static async Task<IResult> HandleDeleteTeam(long id, TeamService teamService)
+        {
+            await teamService.DeleteTeamAsync(id);
+
+            return Results.NoContent();
         }
     }
 }

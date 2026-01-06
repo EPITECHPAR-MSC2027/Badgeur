@@ -3,6 +3,8 @@ using badgeur_backend.Contracts.Requests.Update;
 using badgeur_backend.Contracts.Responses;
 using badgeur_backend.Models;
 using Supabase;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace badgeur_backend.Services
 {
@@ -15,7 +17,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateUserAsync(CreateUserRequest request)
+        public virtual async Task<long> CreateUserAsync(CreateUserRequest request)
         {
             var user = new User
             {
@@ -31,14 +33,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<UserResponse>> GetAllUsersAsync()
+        public virtual async Task<List<UserResponse>> GetAllUsersAsync()
         {
             var response = await _client.From<User>().Get();
 
             return response.Models.Select(u => CreateUserResponse(u)).ToList();
         }
 
-        public async Task<UserResponse?> GetUserByIdAsync(long id)
+        public virtual async Task<UserResponse?> GetUserByIdAsync(long id)
         {
             var response = await _client.From<User>().Where(n => n.Id == id).Get();
             var user = response.Models.FirstOrDefault();
@@ -48,10 +50,19 @@ namespace badgeur_backend.Services
             return CreateUserResponse(user);
         }
 
-        public async Task<UserResponse?> GetUserByEmailAsync(string email)
+        public virtual async Task<UserResponse?> GetUserByEmailAsync(string email)
         {
-            var response = await _client.From<User>().Where(n => n.Email == email).Get();
-            var user = response.Models.FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+
+            // Normaliser l'email (trim et lowercase pour la comparaison)
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            
+            // Récupérer tous les utilisateurs et comparer en mémoire (car Supabase Postgrest 
+            // ne supporte pas directement les comparaisons insensibles à la casse)
+            var response = await _client.From<User>().Get();
+            var user = response.Models.FirstOrDefault(u => 
+                u.Email?.Trim().ToLowerInvariant() == normalizedEmail);
 
             if (user == null) return null;
 
@@ -59,7 +70,7 @@ namespace badgeur_backend.Services
         }
 
         // TODO: This method needs to be scrapped as the inclusion of UpdateUserAsync renders it deprecated
-        public async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
+        public virtual async Task<UserResponse?> updateUserRoleAsync(long id, long newRoleId)
         {
             var request = await _client.From<User>().Where(n => n.Id == id).Get();
             var user = request.Models.FirstOrDefault();
@@ -73,7 +84,7 @@ namespace badgeur_backend.Services
             return CreateUserResponse(user);
         }
 
-        public async Task<UserResponse?> UpdateUserAsync(long id, UpdateUserRequest updateUserRequest)
+        public virtual async Task<UserResponse?> UpdateUserAsync(long id, UpdateUserRequest updateUserRequest)
         {
             var request = await _client.From<User>().Where(n => n.Id == id).Get();
             var user = request.Models.FirstOrDefault();
@@ -92,10 +103,16 @@ namespace badgeur_backend.Services
             return CreateUserResponse(user);
         }
 
-
-        public async Task DeleteUserAsync(long id)
+        public virtual async Task DeleteUserAsync(long id)
         {
             await _client.From<User>().Where(n => n.Id == id).Delete();
+        }
+
+        public virtual async Task<List<UserResponse>> GetUsersByTeamIdAsync(long teamId)
+        {
+            var response = await _client.From<User>().Where(n => n.TeamId == teamId).Get();
+
+            return response.Models.Select(u => CreateUserResponse(u)).ToList();
         }
 
         public UserResponse CreateUserResponse(User user)
@@ -124,14 +141,5 @@ namespace badgeur_backend.Services
 
             return false;
         }
-
-        public async Task<List<UserResponse>> GetUsersByTeamIdAsync(long teamId)
-        {
-            var response = await _client.From<User>().Where(n => n.TeamId == teamId).Get();
-
-            return response.Models.Select(u => CreateUserResponse(u)).ToList();
-        }
-
-
     }
 }

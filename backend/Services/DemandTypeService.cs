@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<long> CreateDemandTypeAsync(CreateDemandTypeRequest request)
+        public virtual async Task<long> CreateDemandTypeAsync(CreateDemandTypeRequest request)
         {
             var entity = new DemandType { Nom = request.Nom };
             var response = await _client.From<DemandType>().Insert(entity);
@@ -23,14 +23,14 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
-        public async Task<List<DemandTypeResponse>> GetAllDemandTypesAsync()
+        public virtual async Task<List<DemandTypeResponse>> GetAllDemandTypesAsync()
         {
             var response = await _client.From<DemandType>().Get();
 
             return response.Models.Select(CreateResponse).ToList();
         }
 
-        public async Task<DemandTypeResponse?> GetDemandTypeByIdAsync(long id)
+        public virtual async Task<DemandTypeResponse?> GetDemandTypeByIdAsync(long id)
         {
             var response = await _client.From<DemandType>().Where(t => t.Id == id).Get();
             var entity = response.Models.FirstOrDefault();
@@ -40,7 +40,7 @@ namespace badgeur_backend.Services
             return CreateResponse(entity);
         }
 
-        public async Task<DemandTypeResponse?> UpdateDemandTypeAsync(long id, UpdateDemandTypeRequest request)
+        public virtual async Task<DemandTypeResponse?> UpdateDemandTypeAsync(long id, UpdateDemandTypeRequest request)
         {
             var response = await _client.From<DemandType>().Where(t => t.Id == id).Get();
             var entity = response.Models.FirstOrDefault();
@@ -53,12 +53,12 @@ namespace badgeur_backend.Services
             return CreateResponse(entity);
         }
 
-        public async Task DeleteDemandTypeAsync(long id)
+        public virtual async Task DeleteDemandTypeAsync(long id)
         {
             await _client.From<DemandType>().Where(t => t.Id == id).Delete();
         }
 
-        public DemandTypeResponse CreateResponse(DemandType entity)
+        public virtual DemandTypeResponse CreateResponse(DemandType entity)
         {
             return new DemandTypeResponse
             {

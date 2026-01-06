@@ -1,6 +1,10 @@
 import React from 'react'
+import '../index.css'
+
 
 import planningService from '../services/planningService'
+import notificationService from '../services/notificationService'
+import teamService from '../services/teamService'
 
 function Planning() {
     // Calendar range selection
@@ -79,7 +83,7 @@ function Planning() {
     }
 
     // Two-column layout helpers
-    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px' }
+    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px', padding: '0px 100px' }
     const leftColStyle = { flex: '1 1 0' }
     const rightColStyle = { width: 500, display: 'grid', gap: 16 }
     const selectStyle = {
@@ -224,6 +228,36 @@ function Planning() {
             const rejected = results.filter(r => r.status === 'rejected')
             if (rejected.length === 0) {
                 setFeedback({ type: 'success', message: "Demande envoyée avec succès." })
+                
+                // Si l'utilisateur est un Employee (roleId = 0), notifier les managers
+                if (roleId === 0) {
+                    try {
+                        const allUsers = await teamService.listUsers()
+                        const managers = allUsers.filter(u => u.roleId === 1)
+                        
+                        // Récupérer le prénom et nom de l'employé
+                        const employeeFirstName = localStorage.getItem('firstName') || ''
+                        const employeeLastName = localStorage.getItem('lastName') || ''
+                        const employeeName = `${employeeFirstName} ${employeeLastName}`.trim() || 'Un employé'
+                        
+                        const typeLabel = fixedTypes.find(t => t.id === selectedTypeId)?.label || 'demande'
+                        const slotsCount = slots.length
+                        const message = `${employeeName} a fait une nouvelle demande de planning : ${typeLabel} (${slotsCount} créneau${slotsCount > 1 ? 'x' : ''})`
+                        
+                        // Notifier tous les managers
+                        await Promise.all(managers.map(manager => 
+                            notificationService.createNotification({
+                                userId: manager.id,
+                                message: message,
+                                type: 'planning_request',
+                                relatedId: userId
+                            }).catch(err => console.error(`Erreur notification manager ${manager.id}:`, err))
+                        ))
+                    } catch (notifError) {
+                        console.error('Erreur lors de la création des notifications:', notifError)
+                    }
+                }
+                
                 // reset selection but keep mode
                 setSelectedTypeId(null)
                 setRangeStart(null)

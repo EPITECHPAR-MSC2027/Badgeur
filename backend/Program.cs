@@ -35,6 +35,28 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 
+// Logging - Simple Console Format for Docker
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.SingleLine = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+    options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Disabled;
+});
+
+// Add HTTP logging with readable format
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields =
+        Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestMethod |
+        Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPath |
+        Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponseStatusCode |
+        Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.Duration;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+});
+
 // --- Scoped Services ---
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<BadgeLogEventService>();
@@ -46,15 +68,28 @@ builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
 builder.Services.AddScoped<FloorService>();
 builder.Services.AddScoped<RoomService>();
+builder.Services.AddScoped<VehiculeService>();
+builder.Services.AddScoped<BookingVehiculeService>();
+builder.Services.AddScoped<AnnouncementService>();
+builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<BookingRoomService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
+builder.Services.AddScoped<IAuthRegistration, SupabaseAuthRegistration>();
 builder.Services.AddScoped<IUserLookup, UserServiceAdapter>();
 
 var app = builder.Build();
 
 // --- Middleware ---
+// Add HTTP logging middleware (before authentication)
+app.UseHttpLogging();
+
+// Log application startup
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("🚀 Badgeur Backend starting up...");
+logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -64,7 +99,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// En production, on pourrait activer HTTPS redirection si nécessaire
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -86,6 +120,12 @@ app.MapTypeDemandeEndpoints();
 app.MapClocksEndpoints();
 app.MapFloorEndpoints();
 app.MapRoomEndpoints();
+app.MapVehiculeEndpoints();
+app.MapBookingVehiculeEndpoints();
+app.MapAnnouncementEndpoints();
+app.MapTicketEndpoints();
 app.MapBookingRoomEndpoints();
+
+logger.LogInformation("✅ Badgeur Backend started successfully");
 
 app.Run();

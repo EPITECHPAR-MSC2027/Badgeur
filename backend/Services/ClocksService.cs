@@ -15,7 +15,7 @@ namespace badgeur_backend.Services
             _client = client;
         }
 
-        public async Task<ClocksResponse> CreateClocksAsync(CreateClocksRequest request)
+        public virtual async Task<ClocksResponse> CreateClocksAsync(CreateClocksRequest request)
         {
             var clocks = new Clocks
             {
@@ -30,14 +30,14 @@ namespace badgeur_backend.Services
             return CreateClocksResponse(clocks);
         }
 
-        public async Task<List<ClocksResponse>> GetAllClocksAsync()
+        public virtual async Task<List<ClocksResponse>> GetAllClocksAsync()
         {
             var response = await _client.From<Clocks>().Get();
 
             return response.Models.Select(c => CreateClocksResponse(c)).ToList();
         }
 
-        public async Task<ClocksResponse?> GetClocksByIdAsync(long id)
+        public virtual async Task<ClocksResponse?> GetClocksByIdAsync(long id)
         {
             var response = await _client.From<Clocks>().Where(n => n.Id == id).Get();
             var clocks = response.Models.FirstOrDefault();
@@ -47,14 +47,14 @@ namespace badgeur_backend.Services
             return CreateClocksResponse(clocks);
         }
 
-        public async Task<List<ClocksResponse>> GetAllClocksByUserIdAsync(long userId)
+        public virtual async Task<List<ClocksResponse>> GetAllClocksByUserIdAsync(long userId)
         {
             var response = await _client.From<Clocks>().Where(n => n.UserId == userId).Get();
 
             return response.Models.Select(c => CreateClocksResponse(c)).ToList();
         }
 
-        public async Task<ClocksResponse> UpdateClocksAsync(long id, UpdateClocksRequest updateClocksRequest)
+        public virtual async Task<ClocksResponse> UpdateClocksAsync(long id, UpdateClocksRequest updateClocksRequest)
         {
             var request = await _client.From<Clocks>().Where(n => n.Id == id).Get();
             var clocks = request.Models.FirstOrDefault();
@@ -71,12 +71,12 @@ namespace badgeur_backend.Services
             return CreateClocksResponse(clocks);
         }
 
-        public async Task DeleteClocksAsync(long id)
+        public virtual async Task DeleteClocksAsync(long id)
         {
             await _client.From<Clocks>().Where(n => n.Id == id).Delete();
         }
 
-        public ClocksResponse CreateClocksResponse(Clocks clocks)
+        public virtual ClocksResponse CreateClocksResponse(Clocks clocks)
         {
             return new ClocksResponse
             {
