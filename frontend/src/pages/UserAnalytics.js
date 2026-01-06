@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../style/Analytics.css';
 import '../style/Chart.css';
 import authService from '../services/authService';
+import vehiculeService from '../services/vehiculeService';
+import bookingRoomService from '../services/bookingRoomService';
 import KPICard from '../component/KPICard';
 import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
@@ -103,11 +105,45 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
 
             console.log('Filtered events for', months[selectedMonth - 1], selectedYear, ':', filteredEvents);
 
+            // Récupérer les réservations de véhicule pour l'utilisateur
+            let vehicleBookingsCount = 0;
+            try {
+                const vehiculeBookings = await vehiculeService.getBookingsByUserId(Number(userId));
+                const vehiculeBookingsInMonth = (Array.isArray(vehiculeBookings) ? vehiculeBookings : []).filter(b => {
+                    const start = new Date(b.startDatetime || b.StartDatetime);
+                    return start.getMonth() + 1 === selectedMonth &&
+                           start.getFullYear() === selectedYear;
+                });
+                vehicleBookingsCount = vehiculeBookingsInMonth.length;
+            } catch (e) {
+                console.warn('Erreur chargement réservations véhicule pour user', userId, e);
+            }
+
+            // Récupérer les réservations de salle pour l'utilisateur
+            let roomBookingsCount = 0;
+            try {
+                const allRoomBookings = await bookingRoomService.list();
+                const roomBookingsForUser = (Array.isArray(allRoomBookings) ? allRoomBookings : []).filter(b => {
+                    const bookingUserId = Number(b.UserId ?? b.userId);
+                    return bookingUserId === Number(userId);
+                });
+                const roomBookingsInMonth = roomBookingsForUser.filter(b => {
+                    const start = new Date(b.StartDatetime || b.startDatetime);
+                    return start.getMonth() + 1 === selectedMonth &&
+                           start.getFullYear() === selectedYear;
+                });
+                roomBookingsCount = roomBookingsInMonth.length;
+            } catch (e) {
+                console.warn('Erreur chargement réservations salle pour user', userId, e);
+            }
+
             setAnalyticsData({
                 kpi: kpiData,
                 events: filteredEvents,
                 month: selectedMonth,
-                year: selectedYear
+                year: selectedYear,
+                vehicleBookingsCount,
+                roomBookingsCount
             });
         } catch (err) {
             console.error('Erreur lors du chargement des données:', err);
@@ -356,6 +392,16 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
                             title="Taux de présence" 
                             value={`${kpis.presenceRate || 0}%`}
                             description={`${kpis.absenceRate || 0}% d'absence`}
+                        />
+                        <KPICard 
+                            title="Réservations de véhicule" 
+                            value={analyticsData?.vehicleBookingsCount ?? 0}
+                            description="Nombre de réservations de véhicule sur le mois"
+                        />
+                        <KPICard 
+                            title="Réservations de salle" 
+                            value={analyticsData?.roomBookingsCount ?? 0}
+                            description="Nombre de réservations de salle sur le mois"
                         />
                     </div>
 
