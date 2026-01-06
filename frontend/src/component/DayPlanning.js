@@ -10,7 +10,6 @@ function DayPlanning() {
     }
     const label = { width: 180, color: 'color-mix(in srgb, var(--highlight4) 70%, black)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif', marginTop: 8 }
     const data = { fontSize: 15, fontWeight: 500, fontFamily: 'Fustat, sans-serif', color: 'var(--color-primary)' }
-    const headerStyle = { margin: 0, fontWeight: 600,fontSize: 16,fontFamily: 'Alata, sans-serif' }
 
     return (
         <div style={cardStyle}>

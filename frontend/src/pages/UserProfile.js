@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import '../index.css';
@@ -15,18 +15,7 @@ function UserProfile() {
     const [teamName, setTeamName] = useState(null);
     const [managerName, setManagerName] = useState(null);
 
-    useEffect(() => {
-        loadUserData();
-    }, [userId]);
-
-    useEffect(() => {
-        if (user) {
-            loadBadgeages();
-            loadTeamAndManager();
-        }
-    }, [selectedDate, user]);
-
-    const loadUserData = async () => {
+    const loadUserData = useCallback(async () => {
         try {
             setLoading(true);
             const response = await authService.get('/users');
@@ -50,9 +39,9 @@ function UserProfile() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, navigate]);
 
-    const loadTeamAndManager = async () => {
+    const loadTeamAndManager = useCallback(async () => {
         if (!user) return;
         try {
             const [teamsRes, usersRes] = await Promise.all([
@@ -95,9 +84,9 @@ function UserProfile() {
             setTeamName(null);
             setManagerName(null);
         }
-    };
+    }, [user]);
 
-    const loadBadgeages = async () => {
+    const loadBadgeages = useCallback(async () => {
         if (!user) return;
         try {
             setLoadingBadgeages(true);
@@ -118,7 +107,18 @@ function UserProfile() {
         } finally {
             setLoadingBadgeages(false);
         }
-    };
+    }, [user]);
+
+    useEffect(() => {
+        loadUserData();
+    }, [loadUserData]);
+
+    useEffect(() => {
+        if (user) {
+            loadBadgeages();
+            loadTeamAndManager();
+        }
+    }, [selectedDate, user, loadBadgeages, loadTeamAndManager]);
 
     const getRoleLabel = (roleId) => {
         switch (roleId) {
@@ -410,4 +410,3 @@ function UserProfile() {
 }
 
 export default UserProfile;
-

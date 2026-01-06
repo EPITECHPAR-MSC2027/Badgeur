@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../style/Login.css';
 import primeBankLogo from '../assets/primebank.png';
 import icon from '../assets/icon.png';
@@ -256,7 +256,7 @@ function Login({ onSubmit }) {
                 )}
 
                 <div className="login-support">
-                    Problème de connexion? <a href="#support">Contactez le support IT</a>
+                    Problème de connexion? <Link to="/support">Contactez le support IT</Link>
                 </div>
             </div>
         </div>

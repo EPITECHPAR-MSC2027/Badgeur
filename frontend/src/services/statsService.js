@@ -1,18 +1,5 @@
 import authService from './authService'
 
-// Utilities for date boundaries
-function toStartOfDay(date) {
-    const d = new Date(date)
-    d.setHours(0, 0, 0, 0)
-    return d
-}
-
-function toEndOfDay(date) {
-    const d = new Date(date)
-    d.setHours(23, 59, 59, 999)
-    return d
-}
-
 // Monday as first day of week (ISO-like)
 function startOfISOWeek(date) {
     const d = new Date(date)
@@ -155,7 +142,7 @@ export function formatDuration(ms) {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }
 
-export default {
+const statsService = {
     fetchUserBadgeEvents,
     computeDayDurationMs,
     getLastActionLabel,
@@ -164,5 +151,7 @@ export default {
     computeWeekStats,
     formatDuration
 }
+
+export default statsService
 
 

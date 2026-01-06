@@ -15,9 +15,14 @@ import CreateAnnouncement from './pages/CreateAnnouncement';
 import Announcements from './pages/Announcements';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
+import BookingRoom from './pages/BookingRoom';
+import ManagerAnalytics from './pages/ManagerAnalytics';
 import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
+import SupportTicket from './pages/SupportTicket';
+import TicketsManagement from './pages/TicketsManagement';
+import MyReservations from './pages/MyReservations';
 
 function App() {
     const navigate = useNavigate();
@@ -45,16 +50,22 @@ function App() {
         return authService.isAuthenticated() && roleId === 2 ? children : <Navigate to="/home" replace />;
     };
 
+    const RequireAdminOrRH = ({ children }) => {
+        return authService.isAuthenticated() && (roleId === 2 || roleId === 3) ? children : <Navigate to="/home" replace />;
+    };
+
     return (
         <div className="App">
             {window.location.pathname !== '/login' &&
                 window.location.pathname !== '/login/mfa-setup' &&
-                window.location.pathname !== '/mfa-setup' && (
+                window.location.pathname !== '/mfa-setup' &&
+                window.location.pathname !== '/support' && (
                     <Upbar />
                 )}
 
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/support" element={<SupportTicket />} />
 
                 <Route
                     path="/login/mfa-setup"
@@ -145,6 +156,14 @@ function App() {
                     }
                 />
                 <Route
+                    path="/manager-analytics"
+                    element={
+                        <RequireAuth>
+                            <ManagerAnalytics />
+                        </RequireAuth>
+                    }
+                />
+                <Route
                     path="/reservation-vehicule"
                     element={
                         <RequireAuth>
@@ -181,6 +200,30 @@ function App() {
                     element={
                         <RequireAuth>
                             <UserProfile />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/tickets-management"
+                    element={
+                        <RequireAdminOrRH>
+                            <TicketsManagement />
+                        </RequireAdminOrRH>
+                    }
+                />
+                <Route
+                    path="/booking-room"
+                    element={
+                        <RequireAuth>
+                            <BookingRoom />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/my-reservations"
+                    element={
+                        <RequireAuth>
+                            <MyReservations />
                         </RequireAuth>
                     }
                 />

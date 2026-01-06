@@ -1,0 +1,270 @@
+/* ---- Variables de couleurs ---- */
+:root {
+    --dark-bg: #1a1a1a;
+    --light-text: #e8e8e8;
+    --border-gray: #3a3a3a;
+}
+
+/* ---- En-tête de l'application ---- */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 30px 40px;
+    z-index: 1000;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-icon {
+    height: 35px;
+    width: auto;
+}
+
+.header-title {
+    font-family: 'Alata', sans-serif;
+    font-size: 28px;
+    color: #fff;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+/* ---- Arrière-plan ---- */
+.support-background {
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ---- Fond géométrique hexagonal ---- */
+.geometric-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    --s: 84px;
+    --c1: #FEFEFE;
+    --c2: #E8E8E8;
+    --c3: #EEEEEE;
+    --_g: 0 120deg, #0000 0;
+    background: conic-gradient( from 0deg at calc(500% / 6) calc(100% / 3), var(--c3) var(--_g) ), conic-gradient( from -120deg at calc(100% / 6) calc(100% / 3), var(--c2) var(--_g) ), conic-gradient( from 120deg at calc(100% / 3) calc(500% / 6), var(--c1) var(--_g) ), conic-gradient( from 120deg at calc(200% / 3) calc(500% / 6), var(--c1) var(--_g) ), conic-gradient( from -180deg at calc(100% / 3) 50%, var(--c2) 60deg, var(--c1) var(--_g) ), conic-gradient( from 60deg at calc(200% / 3) 50%, var(--c1) 60deg, var(--c3) var(--_g) ), conic-gradient( from -60deg at 50% calc(100% / 3), var(--c1) 120deg, var(--c2) 0 240deg, var(--c3) 0 );
+    background-size: calc(var(--s) * 1.732) var(--s);
+    opacity: 0.3;
+}
+
+/* ---- Conteneur principal ---- */
+.support-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 40px;
+    z-index: 1;
+}
+
+.support-content {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    padding: 50px 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+/* ---- Titre et sous-titre ---- */
+.support-title {
+    font-size: 32px;
+    font-weight: 400;
+    color: #2a2a2a;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.support-subtitle {
+    font-size: 15px;
+    color: #6a6a6a;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* ---- Formulaire ---- */
+.support-form {
+    width: 100%;
+}
+
+.support-form-group {
+    margin-bottom: 24px;
+}
+
+.support-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a4a4a;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.support-input,
+.support-select,
+.support-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #fff;
+    color: #2a2a2a;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.support-input::placeholder,
+.support-textarea::placeholder {
+    color: #999;
+}
+
+.support-input:focus,
+.support-select:focus,
+.support-textarea:focus {
+    border-color: #2a2a2a;
+    box-shadow: 0 0 0 2px rgba(42, 42, 42, 0.1);
+}
+
+.support-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232a2a2a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+.support-select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.support-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ---- Messages d'erreur et de succès ---- */
+.support-error {
+    background: #fee;
+    border: 1px solid #fcc;
+    border-radius: 4px;
+    padding: 12px 16px;
+    color: #c33;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.support-success {
+    background: #efe;
+    border: 1px solid #cfc;
+    border-radius: 4px;
+    padding: 12px 16px;
+    color: #3c3;
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ---- Boutons ---- */
+.support-submit-button {
+    width: 100%;
+    padding: 16px;
+    background: #2a2a2a;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.support-submit-button:hover:not(:disabled) {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.support-submit-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.support-back-button {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 2px solid #d0d0d0;
+    border-radius: 4px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.support-back-button:hover:not(:disabled) {
+    background: #f9f9f9;
+    border-color: #999;
+    color: #2a2a2a;
+}
+
+.support-back-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .support-container {
+        margin: 80px 20px;
+        padding: 20px;
+    }
+
+    .support-content {
+        padding: 30px 20px;
+    }
+
+    .support-title {
+        font-size: 26px;
+    }
+
+    .app-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+}
+
