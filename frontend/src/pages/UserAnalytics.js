@@ -9,7 +9,7 @@ import HeatmapCalendar from '../component/HeatmapCalendar';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-function UserAnalytics() {
+function UserAnalytics({ userId: propUserId, title, subtitle }) {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [analyticsData, setAnalyticsData] = useState(null);
@@ -33,7 +33,7 @@ function UserAnalytics() {
         setLoading(true);
         setError(null);
         try {
-            const userId = localStorage.getItem('userId');
+            const userId = propUserId || localStorage.getItem('userId');
             
             if (!userId) {
                 setError('Utilisateur non connecté');
@@ -286,8 +286,8 @@ function UserAnalytics() {
         <div className="analytics-page">
             <div className="analytics-header">
                 <div>
-                    <h1>Mes Analytics</h1>
-                    <p>Analyse de mes données personnelles</p>
+                    <h1>{title || 'Mes Analytics'}</h1>
+                    <p>{subtitle || 'Analyse de mes données personnelles'}</p>
                 </div>
                 <button 
                     className="export-btn" 
@@ -340,7 +340,7 @@ function UserAnalytics() {
                         <KPICard 
                             title="Jours travaillés" 
                             value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
-                            description="Sur 14 jours"
+                            description="Sur un mois entier"
                         />
                         <KPICard 
                             title="Heures/jour" 

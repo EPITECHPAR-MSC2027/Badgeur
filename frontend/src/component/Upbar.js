@@ -32,6 +32,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return 'profil'
             case '/analytics':
                 return 'analytics'
+            case '/manager-analytics':
+                return 'managerAnalytics'
             case '/reservation-vehicule':
                 return 'reservationVehicule'
             case '/support':
@@ -111,6 +113,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/profil'
             case 'analytics':
                 return '/analytics'
+            case 'managerAnalytics':
+                return '/manager-analytics'
             case 'reservationVehicule':
                 return '/reservation-vehicule'
             case 'createAnnouncement':
