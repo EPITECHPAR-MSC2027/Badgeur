@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import '../style/TicketsManagement.css';
 import authService from '../services/authService';
 import notificationService from '../services/notificationService';
@@ -16,9 +16,20 @@ function TicketsManagement() {
         fetchTickets();
     }, []);
 
+    const filterTickets = useCallback(() => {
+        if (selectedCategory === '') {
+            setFilteredTickets(tickets);
+        } else {
+            setFilteredTickets(tickets.filter(ticket => {
+                const category = ticket.category || ticket.Category;
+                return category === selectedCategory;
+            }));
+        }
+    }, [tickets, selectedCategory]);
+
     useEffect(() => {
         filterTickets();
-    }, [tickets, selectedCategory]);
+    }, [filterTickets]);
 
     const fetchTickets = async () => {
         setLoading(true);
@@ -48,17 +59,6 @@ function TicketsManagement() {
             console.error('Erreur:', err);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const filterTickets = () => {
-        if (selectedCategory === '') {
-            setFilteredTickets(tickets);
-        } else {
-            setFilteredTickets(tickets.filter(ticket => {
-                const category = ticket.category || ticket.Category;
-                return category === selectedCategory;
-            }));
         }
     };
 

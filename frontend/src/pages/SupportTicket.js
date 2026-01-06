@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../style/SupportTicket.css';
 import icon from '../assets/icon.png';
-import API_URL from '../config/api';
 import authService from '../services/authService';
 
 function SupportTicket() {

@@ -1,5 +1,5 @@
-﻿/* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react'
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useCallback } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -24,11 +24,7 @@ function MyReservations() {
 
     const userId = parseInt(localStorage.getItem('userId'))
 
-    useEffect(() => {
-        loadData()
-    }, [])
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true)
         try {
             const users = await teamService.listUsers()
@@ -103,7 +99,11 @@ function MyReservations() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [userId])
+
+    useEffect(() => {
+        loadData()
+    }, [loadData])
 
     const handleEventClick = async (info) => {
         const event = info.event

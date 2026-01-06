@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import notificationService from '../services/notificationService'
 
 function Notifications() {
@@ -6,15 +6,7 @@ function Notifications() {
     const [loading, setLoading] = useState(true)
     const userId = parseInt(localStorage.getItem('userId'))
 
-    useEffect(() => {
-        if (!userId) {
-            setLoading(false)
-            return
-        }
-        loadNotifications()
-    }, [userId])
-
-    const loadNotifications = async () => {
+    const loadNotifications = useCallback(async () => {
         try {
             setLoading(true)
             const data = await notificationService.getNotificationsByUserId(userId)
@@ -25,7 +17,15 @@ function Notifications() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [userId])
+
+    useEffect(() => {
+        if (!userId) {
+            setLoading(false)
+            return
+        }
+        loadNotifications()
+    }, [userId, loadNotifications])
 
     const formatDate = (dateString) => {
         try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../style/Analytics.css';
 import '../style/Chart.css';
 import authService from '../services/authService';
@@ -11,6 +11,11 @@ import HeatmapCalendar from '../component/HeatmapCalendar';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+const months = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+];
+
 function UserAnalytics({ userId: propUserId, title, subtitle }) {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -20,18 +25,9 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
     const [isExporting, setIsExporting] = useState(false);
     const dashboardRef = useRef(null);
 
-    const months = [
-        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ];
-
     const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i);
 
-    useEffect(() => {
-        fetchAnalyticsData();
-    }, [selectedMonth, selectedYear]);
-
-    const fetchAnalyticsData = async () => {
+    const fetchAnalyticsData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -157,7 +153,11 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [propUserId, selectedMonth, selectedYear]);
+
+    useEffect(() => {
+        fetchAnalyticsData();
+    }, [fetchAnalyticsData]);
 
     const handleExport = async () => {
         if (!dashboardRef.current) return;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../style/theme.css'
 import '../index.css'
@@ -52,10 +52,6 @@ function Profil() {
     ]
 
     useEffect(() => {
-        loadUserData()
-    }, [])
-
-    useEffect(() => {
         document.documentElement.setAttribute('data-theme', selectedTheme)
         localStorage.setItem('theme', selectedTheme)
     }, [selectedTheme])
@@ -69,26 +65,7 @@ function Profil() {
         localStorage.setItem('dyslexicMode', dyslexicMode.toString())
     }, [dyslexicMode])
 
-    const loadUserData = async () => {
-        try {
-            // Récupérer les données depuis localStorage (déjà stockées lors de la connexion)
-            const firstName = localStorage.getItem('firstName') || ''
-            const lastName = localStorage.getItem('lastName') || ''
-            const email = localStorage.getItem('email') || ''
-            const roleId = localStorage.getItem('roleId') || null
-
-            setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
-
-            // Check MFA status from backend
-            await checkMfaStatus()
-        } catch (error) {
-            console.error('Erreur lors du chargement des données utilisateur:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const checkMfaStatus = async () => {
+    const checkMfaStatus = useCallback(async () => {
         try {
             const accessToken = localStorage.getItem('accessToken')
             const refreshToken = localStorage.getItem('refreshToken')
@@ -115,7 +92,30 @@ function Profil() {
         } finally {
             setMfaLoading(false)
         }
-    }
+    }, [])
+
+    const loadUserData = useCallback(async () => {
+        try {
+            // Récupérer les données depuis localStorage (déjà stockées lors de la connexion)
+            const firstName = localStorage.getItem('firstName') || ''
+            const lastName = localStorage.getItem('lastName') || ''
+            const email = localStorage.getItem('email') || ''
+            const roleId = localStorage.getItem('roleId') || null
+
+            setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
+
+            // Check MFA status from backend
+            await checkMfaStatus()
+        } catch (error) {
+            console.error('Erreur lors du chargement des données utilisateur:', error)
+        } finally {
+            setLoading(false)
+        }
+    }, [checkMfaStatus])
+
+    useEffect(() => {
+        loadUserData()
+    }, [loadUserData])
 
     const handleMfaSetup = () => {
         navigate('/login/mfa-setup')

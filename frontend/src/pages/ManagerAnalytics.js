@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../style/Chart.css';
 import '../style/Analytics.css';
 import authService from '../services/authService';
@@ -34,25 +34,7 @@ function ManagerAnalytics() {
         fetchTeamMembers();
     }, []);
 
-    useEffect(() => {
-        if (teamMembers.length > 0) {
-            fetchAnalyticsData();
-        }
-    }, [selectedMonth, selectedYear, teamMembers]);
-
-    const fetchTeamMembers = async () => {
-        try {
-            const members = await teamService.listMyTeamMembers();
-            // Filtrer pour ne garder que les employés (exclure le manager lui-même si nécessaire)
-            setTeamMembers(members);
-        } catch (err) {
-            console.error('Erreur lors du chargement des membres de l\'équipe:', err);
-            setError('Erreur lors du chargement des membres de l\'équipe');
-            setTeamMembers([]);
-        }
-    };
-
-    const fetchAnalyticsData = async () => {
+    const fetchAnalyticsData = useCallback(async () => {
         if (teamMembers.length === 0) {
             setAnalyticsData({
                 kpi: null,
@@ -169,6 +151,24 @@ function ManagerAnalytics() {
             });
         } finally {
             setLoading(false);
+        }
+    }, [teamMembers, selectedMonth, selectedYear]);
+
+    useEffect(() => {
+        if (teamMembers.length > 0) {
+            fetchAnalyticsData();
+        }
+    }, [teamMembers, fetchAnalyticsData]);
+
+    const fetchTeamMembers = async () => {
+        try {
+            const members = await teamService.listMyTeamMembers();
+            // Filtrer pour ne garder que les employés (exclure le manager lui-même si nécessaire)
+            setTeamMembers(members);
+        } catch (err) {
+            console.error('Erreur lors du chargement des membres de l\'équipe:', err);
+            setError('Erreur lors du chargement des membres de l\'équipe');
+            setTeamMembers([]);
         }
     };
 
