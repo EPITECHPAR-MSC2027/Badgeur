@@ -21,6 +21,7 @@ import authService from './services/authService';
 import Notifications from './pages/Notifications';
 import SupportTicket from './pages/SupportTicket';
 import TicketsManagement from './pages/TicketsManagement';
+import MyReservations from './pages/MyReservations';
 
 function App() {
     const navigate = useNavigate();
@@ -206,6 +207,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <BookingRoom />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/my-reservations"
+                    element={
+                        <RequireAuth>
+                            <MyReservations />
                         </RequireAuth>
                     }
                 />

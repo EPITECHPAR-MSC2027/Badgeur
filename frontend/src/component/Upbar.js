@@ -38,6 +38,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return 'supportTicket'
             case '/tickets-management':
                 return 'ticketsManagement'
+            case '/my-reservations':
+                return 'myReservations'
             default:
                 return ''
         }
@@ -127,6 +129,8 @@ function Upbar({ currentPage, onNavigate }) {
                 return '/tickets-management'
             case 'login':
                 return '/login'
+            case 'myReservations':
+                return '/my-reservations'
             default:
                 return '/'
         }
@@ -242,6 +246,11 @@ function Upbar({ currentPage, onNavigate }) {
                             onClick={() => { handleNavigate('planning'); setIsActionsOpen(false) }}
                         >
                             Planning
+                        </button>
+                        <button
+                            style={getButtonStyle('myReservations')}
+                            onClick={() => { handleNavigate('myReservations'); setIsActionsOpen(false) }}>
+                            Voir mes réservations
                         </button>
                         <button 
                             style={getButtonStyle('reservationVehicule')}
