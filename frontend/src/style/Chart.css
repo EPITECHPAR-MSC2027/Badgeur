@@ -12,13 +12,6 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
-.kpi-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
 .kpi-title {
     margin: 0;
     color: var(--color-text);
@@ -90,10 +83,11 @@ h4.kpi-title {
 }
 
 .calendar-header h4 {
-    margin: 0;
+    margin: 20px 0 20px 0;
     color: var(--color-secondary);
     font-size: 16px;
     font-weight: 600;
+    font-family:'Fustat', sans-serif;
 }
 
 .calendar-grid {
@@ -115,6 +109,7 @@ h4.kpi-title {
     padding: 4px 2px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    font-family:'Fustat', sans-serif;
 }
 
 .calendar-days {
@@ -133,6 +128,7 @@ h4.kpi-title {
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 24px;
+    font-family:'Fustat', sans-serif;
 }
 
 .calendar-day:hover {
@@ -155,6 +151,7 @@ h4.kpi-title {
     justify-content: center;
     gap: 12px;
     margin-top: 12px;
+    font-family:'Fustat', sans-serif;
 }
 
 .legend-item {
