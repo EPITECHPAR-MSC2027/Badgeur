@@ -15,6 +15,7 @@ import CreateAnnouncement from './pages/CreateAnnouncement';
 import Announcements from './pages/Announcements';
 import Trombinoscope from './pages/Trombinoscope';
 import UserAnalytics from './pages/UserAnalytics';
+import BookingRoom from './pages/BookingRoom';
 import UserProfile from './pages/UserProfile';
 import authService from './services/authService';
 import Notifications from './pages/Notifications';
@@ -198,6 +199,14 @@ function App() {
                         <RequireAdminOrRH>
                             <TicketsManagement />
                         </RequireAdminOrRH>
+                    }
+                />
+                <Route
+                    path="/booking-room"
+                    element={
+                        <RequireAuth>
+                            <BookingRoom />
+                        </RequireAuth>
                     }
                 />
 

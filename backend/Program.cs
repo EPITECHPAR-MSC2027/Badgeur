@@ -68,11 +68,11 @@ builder.Services.AddScoped<DemandTypeService>();
 builder.Services.AddScoped<ClocksService>();
 builder.Services.AddScoped<FloorService>();
 builder.Services.AddScoped<RoomService>();
-builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<VehiculeService>();
 builder.Services.AddScoped<BookingVehiculeService>();
 builder.Services.AddScoped<AnnouncementService>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<BookingRoomService>();
 
 // --- Interfaces/Adapters/Misc ---
 builder.Services.AddScoped<IAuthProvider, SupabaseAuthProvider>();
@@ -120,11 +120,11 @@ app.MapTypeDemandeEndpoints();
 app.MapClocksEndpoints();
 app.MapFloorEndpoints();
 app.MapRoomEndpoints();
-app.MapWorkspaceEndpoints();
 app.MapVehiculeEndpoints();
 app.MapBookingVehiculeEndpoints();
 app.MapAnnouncementEndpoints();
 app.MapTicketEndpoints();
+app.MapBookingRoomEndpoints();
 
 logger.LogInformation("✅ Badgeur Backend started successfully");
 

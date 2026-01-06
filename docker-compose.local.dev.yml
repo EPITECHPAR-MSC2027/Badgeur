@@ -13,6 +13,14 @@ services:
       - badgeur-backend
     networks:
       - badgeur-network
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./reverse-proxy
+          target: /app
+          ignore:
+            - ./reverse-proxy/bin/
+            - ./reverse-proxy/obj/
 
   badgeur-backend:
     build:
@@ -25,9 +33,16 @@ services:
     environment:
       - 'ASPNETCORE_URLS=http://+:8080'
       - ASPNETCORE_ENVIRONMENT=Development
-
     networks:
       - badgeur-network
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /app
+          ignore:
+            - ./backend/bin/
+            - ./backend/obj/
 
   frontend:
     build:
@@ -40,7 +55,15 @@ services:
     depends_on:
       - reverse-proxy
     networks:
-      - badgeur-network 
+      - badgeur-network
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./frontend
+          target: /app
+          ignore:
+            - ./frontend/node_modules/
+            - ./frontend/build/
 
 networks:
   badgeur-network:
