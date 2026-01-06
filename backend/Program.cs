@@ -126,6 +126,6 @@ app.MapAnnouncementEndpoints();
 app.MapTicketEndpoints();
 app.MapBookingRoomEndpoints();
 
-logger.LogInformation("✅ Badgeur Backend started successfully");
+logger.LogInformation("℧ Machine spirit has been awakened");
 
 app.Run();

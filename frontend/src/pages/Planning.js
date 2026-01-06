@@ -1,13 +1,11 @@
 import React from 'react'
 import '../index.css'
 
-
 import planningService from '../services/planningService'
 import notificationService from '../services/notificationService'
 import teamService from '../services/teamService'
 
 function Planning() {
-    // Calendar range selection
     const today = new Date()
     const [currentYear, setCurrentYear] = React.useState(today.getFullYear())
     const [currentMonthIndex, setCurrentMonthIndex] = React.useState(today.getMonth()) // 0..11
@@ -16,11 +14,9 @@ function Planning() {
     const [rangeStart, setRangeStart] = React.useState(null) // Date object
     const [rangeEnd, setRangeEnd] = React.useState(null) // Date object
 
-    // Half-day selection like screenshot
     const [startHalf, setStartHalf] = React.useState('0') // '0' matin, '1' après-midi
     const [endHalf, setEndHalf] = React.useState('1')
 
-    // Fixed type list (no fetch)
     const fixedTypes = [
         { id: 1, label: 'Présence au bureau', color: '#0b5fff' },
         { id: 2, label: 'Télétravail', color: '#fbbf24' },
@@ -29,12 +25,37 @@ function Planning() {
         { id: 5, label: 'Formation', color: '#06b6d4' }
     ]
     const [selectedTypeId, setSelectedTypeId] = React.useState(null)
-
     const [submitting, setSubmitting] = React.useState(false)
     const [feedback, setFeedback] = React.useState(null)
-    const [, setSubmittedDays] = React.useState({}) // key YYYY-MM-DD -> { typeId, statut }
     const [submittedSlots, setSubmittedSlots] = React.useState({})
     const [refreshToggle, setRefreshToggle] = React.useState(false)
+
+    const normalizeDateOnly = React.useCallback((d) => {
+        const n = new Date(d)
+        n.setHours(0, 0, 0, 0)
+        return n
+    }, [])
+
+    const toYMD = React.useCallback((d) => {
+        const n = normalizeDateOnly(d)
+        const y = n.getFullYear()
+        const m = String(n.getMonth() + 1).padStart(2, '0')
+        const day = String(n.getDate()).padStart(2, '0')
+        return `${y}-${m}-${day}`
+    }, [normalizeDateOnly])
+
+    const isBetween = (d, a, b) => {
+        if (!a || !b) return false
+        const x = normalizeDateOnly(d).getTime()
+        const s = normalizeDateOnly(a).getTime()
+        const e = normalizeDateOnly(b).getTime()
+        return x >= Math.min(s, e) && x <= Math.max(s, e)
+    }
+
+    const isWeekend = (d) => {
+        const day = new Date(d).getDay()
+        return day === 0 || day === 6
+    }
 
     const appStyle = {
         padding: 16,
@@ -43,7 +64,34 @@ function Planning() {
         width: '100%',
         boxSizing: 'border-box'
     }
-    // Fetch from DB for coloring
+
+    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth: '1200px', padding: '0px 100px' }
+    const leftColStyle = { flex: '1 1 0' }
+    const rightColStyle = { width: 500, display: 'grid', gap: 16 }
+    const selectStyle = {
+        fontFamily: 'Alata, sans-serif',
+        fontWeight: 600,
+        padding: '8px 10px',
+        borderRadius: 10,
+        border: '1px solid #d1d5db',
+        background: '#f3f4f6',
+        color: '#111827',
+        outline: 'none',
+        cursor: 'pointer'
+    }
+
+    const monthGrid = React.useMemo(() => {
+        const year = currentYear
+        const monthIndex = currentMonthIndex
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
+        const jsDay = (new Date(year, monthIndex, 1).getDay() || 7)
+        const leadBlanks = jsDay - 1
+        const cells = []
+        for (let b = 0; b < leadBlanks; b++) cells.push(null)
+        for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, monthIndex, d))
+        return { year, monthIndex, cells }
+    }, [currentYear, currentMonthIndex])
+
     React.useEffect(() => {
         const userIdStr = localStorage.getItem('userId')
         const userId = userIdStr ? Number(userIdStr) : null
@@ -54,6 +102,7 @@ function Planning() {
                 const records = await planningService.listByUser(userId)
                 if (cancelled) return
                 const perSlot = {}
+
                 for (const r of records) {
                     // r.Date likely ISO; normalize to local YMD
                     const d = new Date(r.date ?? r.Date)
@@ -76,58 +125,7 @@ function Planning() {
         return () => { cancelled = true }
     }, [currentYear, currentMonthIndex, refreshToggle, toYMD])
 
-    function normalizeDateOnly(d) {
-        const n = new Date(d)
-        n.setHours(0, 0, 0, 0)
-        return n
-    }
-
-    // Two-column layout helpers
-    const formRowStyle = { display: 'flex', gap: 94, alignItems: 'flex-start', height: '100%', width: '100%', maxWidth : '1200px', padding: '0px 100px' }
-    const leftColStyle = { flex: '1 1 0' }
-    const rightColStyle = { width: 500, display: 'grid', gap: 16 }
-    const selectStyle = {
-        fontFamily: 'Alata, sans-serif',
-        fontWeight: 600,
-        padding: '8px 10px',
-        borderRadius: 10,
-        border: '1px solid #d1d5db',
-        background: '#f3f4f6',
-        color: '#111827',
-        outline: 'none',
-        cursor: 'pointer'
-    }
-
-    function toYMD(d) {
-        const n = normalizeDateOnly(d)
-        const y = n.getFullYear()
-        const m = String(n.getMonth() + 1).padStart(2, '0')
-        const day = String(n.getDate()).padStart(2, '0')
-        return `${y}-${m}-${day}`
-    }
-
-    function isBetween(d, a, b) {
-        if (!a || !b) return false
-        const x = normalizeDateOnly(d).getTime()
-        const s = normalizeDateOnly(a).getTime()
-        const e = normalizeDateOnly(b).getTime()
-        return x >= Math.min(s, e) && x <= Math.max(s, e)
-    }
-
-    // Build single month grid for current month
-    const monthGrid = React.useMemo(() => {
-        const year = currentYear
-        const monthIndex = currentMonthIndex
-        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
-        const jsDay = (new Date(year, monthIndex, 1).getDay() || 7)
-        const leadBlanks = jsDay - 1
-        const cells = []
-        for (let b = 0; b < leadBlanks; b++) cells.push(null)
-        for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, monthIndex, d))
-        return { year, monthIndex, cells }
-    }, [currentYear, currentMonthIndex])
-
-    function onDayMouseDown(dateObj) {
+    const onDayMouseDown = (dateObj) => {
         const d = normalizeDateOnly(dateObj)
         setAnchorDate(d)
         setRangeStart(d)
@@ -135,23 +133,18 @@ function Planning() {
         setHoverDate(d)
     }
 
-    function onDayMouseEnter(dateObj) {
+    const onDayMouseEnter = (dateObj) => {
         if (!anchorDate) return
         const d = normalizeDateOnly(dateObj)
         setHoverDate(d)
         setRangeEnd(d)
     }
 
-    function onGridMouseUp() {
+    const onGridMouseUp = () => {
         setAnchorDate(null)
     }
 
-    function isWeekend(d) {
-        const day = new Date(d).getDay()
-        return day === 0 || day === 6
-    }
-
-    function getSelectedDates() {
+    const getSelectedDates = () => {
         if (!rangeStart || !rangeEnd) return []
         const s = normalizeDateOnly(rangeStart)
         const e = normalizeDateOnly(rangeEnd)
@@ -166,7 +159,7 @@ function Planning() {
     }
 
     // Generate inclusive half-day slots between start/date/half and end/date/half
-    function getSelectedHalfSlots() {
+    const getSelectedHalfSlots = () => {
         if (!rangeStart || !rangeEnd) return []
         const start = normalizeDateOnly(rangeStart)
         const end = normalizeDateOnly(rangeEnd)
@@ -187,7 +180,7 @@ function Planning() {
         return slots
     }
 
-    async function handleSubmit(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         setFeedback(null)
 
@@ -228,24 +221,24 @@ function Planning() {
             const rejected = results.filter(r => r.status === 'rejected')
             if (rejected.length === 0) {
                 setFeedback({ type: 'success', message: "Demande envoyée avec succès." })
-                
+
                 // Si l'utilisateur est un Employee (roleId = 0), notifier les managers
                 if (roleId === 0) {
                     try {
                         const allUsers = await teamService.listUsers()
                         const managers = allUsers.filter(u => u.roleId === 1)
-                        
+
                         // Récupérer le prénom et nom de l'employé
                         const employeeFirstName = localStorage.getItem('firstName') || ''
                         const employeeLastName = localStorage.getItem('lastName') || ''
                         const employeeName = `${employeeFirstName} ${employeeLastName}`.trim() || 'Un employé'
-                        
+
                         const typeLabel = fixedTypes.find(t => t.id === selectedTypeId)?.label || 'demande'
                         const slotsCount = slots.length
                         const message = `${employeeName} a fait une nouvelle demande de planning : ${typeLabel} (${slotsCount} créneau${slotsCount > 1 ? 'x' : ''})`
-                        
+
                         // Notifier tous les managers
-                        await Promise.all(managers.map(manager => 
+                        await Promise.all(managers.map(manager =>
                             notificationService.createNotification({
                                 userId: manager.id,
                                 message: message,
@@ -257,7 +250,7 @@ function Planning() {
                         console.error('Erreur lors de la création des notifications:', notifError)
                     }
                 }
-                
+
                 // reset selection but keep mode
                 setSelectedTypeId(null)
                 setRangeStart(null)
@@ -283,7 +276,7 @@ function Planning() {
                 <section style={leftColStyle} onMouseUp={onGridMouseUp}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                         <div />
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center'}}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                             <select value={currentMonthIndex} onChange={(e) => setCurrentMonthIndex(Number(e.target.value))} style={selectStyle}>
                                 {Array.from({ length: 12 }).map((_, i) => (
                                     <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('fr-FR', { month: 'long' })}</option>
@@ -303,7 +296,7 @@ function Planning() {
                             {new Date(monthGrid.year, monthGrid.monthIndex).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
-                            {['L','M','M','J','V','S','D'].map((d, i) => (
+                            {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
                                 <div key={i} style={{ textAlign: 'center', color: '#6b7280', fontSize: 12 }}>{d}</div>
                             ))}
                             {monthGrid.cells.map((c, idx) => {
@@ -359,33 +352,33 @@ function Planning() {
                 <div style={rightColStyle}>
                     {/* Selection summary and half-days */}
                     <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
-                    <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div>
-                            <div style={{ color: '#6b7280', fontSize: 14,fontFamily:'Spectral, serif' }}>du</div>
-                            <div style={{ fontWeight: 700 }}>{rangeStart ? toYMD(rangeStart) : '—'}</div>
-                            <label style={{ display: 'block', marginTop: 8 }}>
-                                <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
-                            </label>
+                        <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <div>
+                                <div style={{ color: '#6b7280', fontSize: 14, fontFamily: 'Spectral, serif' }}>du</div>
+                                <div style={{ fontWeight: 700 }}>{rangeStart ? toYMD(rangeStart) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8 }}>
+                                    <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
+                                </label>
+                            </div>
+                            <div>
+                                <div style={{ color: '#6b7280', fontSize: 14, fontFamily: 'Spectral, serif' }}>au</div>
+                                <div style={{ fontWeight: 700 }}>{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8 }}>
+                                    <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
+                                </label>
+                            </div>
                         </div>
-                        <div>
-                            <div style={{ color: '#6b7280', fontSize: 14, fontFamily:'Spectral, serif' }}>au</div>
-                            <div style={{ fontWeight: 700 }}>{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
-                            <label style={{ display: 'block', marginTop: 8 }}>
-                                <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
-                            </label>
-                        </div>
-                    </div>
                     </div>
 
                     {/* Fixed type options + legend */}
                     <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <p style = {{fontFamily:'Spectral, serif', color: '#6b7280', margin: '0'}}>Type de demande</p>
+                        <p style={{ fontFamily: 'Spectral, serif', color: '#6b7280', margin: '0' }}>Type de demande</p>
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
                                 <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif' }}>
@@ -410,8 +403,6 @@ function Planning() {
                     </div>
                 </div>
             </form>
-
-            {/* No modal now; types inline */}
         </div>
     )
 }
