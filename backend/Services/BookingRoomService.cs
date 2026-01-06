@@ -108,6 +108,38 @@ namespace badgeur_backend.Services
             return response.Models.First().Id;
         }
 
+        public async Task<List<BookingRoomResponse>> GetBookingsByUserIdAsync(long userId)
+        {
+            var response = await _client.From<BookingRoom>().Where(b => b.UserId == userId).Get();
+            return response.Models.Select(CreateBookingRoomResponse).ToList();
+        }
+
+        public async Task<List<BookingRoomResponse>> GetBookingsByRoomIdAsync(long roomId)
+        {
+            var response = await _client.From<BookingRoom>().Where(b => b.RoomId == roomId).Get();
+            return response.Models.Select(CreateBookingRoomResponse).ToList();
+        }
+
+        public async Task<bool> UpdateParticipantStatusAsync(long participantId, string newStatus)
+        {
+            var query = await _client.From<BookingRoomParticipant>().Where(p => p.Id == participantId).Get();
+            var participant = query.Models.FirstOrDefault();
+            if (participant == null) return false;
+
+            participant.Status = newStatus;
+            await _client.From<BookingRoomParticipant>().Update(participant);
+            return true;
+        }
+
+        public async Task<BookingRoomParticipantResponse?> GetParticipantByBookingAndUserAsync(long bookingId, long userId)
+        {
+            var response = await _client.From<BookingRoomParticipant>()
+                .Where(p => p.BookingId == bookingId && p.UserId == userId)
+                .Get();
+            var participant = response.Models.FirstOrDefault();
+            return participant == null ? null : CreateParticipantResponse(participant);
+        }
+
         public BookingRoomResponse CreateBookingRoomResponse(BookingRoom booking)
         {
             return new BookingRoomResponse
