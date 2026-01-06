@@ -168,6 +168,30 @@ namespace badgeur_backend.Endpoints
                     );
                 }
             }).WithDescription("Créer une salle");
+
+            group.MapGet("/user/{userId:long}", async (long userId, BookingRoomService service) =>
+            {
+                var bookings = await service.GetBookingsByUserIdAsync(userId);
+                return Results.Ok(bookings);
+            }).WithDescription("Get bookings for a specific user");
+
+            group.MapGet("/room/{roomId:long}", async (long roomId, BookingRoomService service) =>
+            {
+                var bookings = await service.GetBookingsByRoomIdAsync(roomId);
+                return Results.Ok(bookings);
+            }).WithDescription("Get bookings for a specific room");
+
+            group.MapPatch("/participants/{participantId:long}/status", async (long participantId, UpdateParticipantStatusRequest request, BookingRoomService service) =>
+            {
+                var success = await service.UpdateParticipantStatusAsync(participantId, request.Status);
+                return success ? Results.Ok() : Results.NotFound();
+            }).WithDescription("Update participant status (accept/decline)");
+
+            group.MapGet("/{bookingId:long}/participant/{userId:long}", async (long bookingId, long userId, BookingRoomService service) =>
+            {
+                var participant = await service.GetParticipantByBookingAndUserAsync(bookingId, userId);
+                return participant == null ? Results.NotFound() : Results.Ok(participant);
+            }).WithDescription("Get participant status for user in booking");
         }
     }
 }

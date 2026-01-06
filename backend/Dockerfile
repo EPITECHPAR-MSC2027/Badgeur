@@ -8,7 +8,8 @@ WORKDIR /app
 COPY . .
 
 # Restore NuGet packages
-RUN dotnet restore badgeur-backend.csproj
+RUN dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org || true && \
+    dotnet restore badgeur-backend.csproj --disable-parallel
 
 # Expose port
 EXPOSE 8080
