@@ -247,25 +247,14 @@ function Upbar({ currentPage, onNavigate }) {
                     Equipe
                 </button>
 
-                {roleId === 1 ? (
-                    <button 
-                        onClick={() => handleNavigate('managerAnalytics')} 
-                        onMouseEnter={() => setHoveredButton('managerAnalytics')}
-                        onMouseLeave={() => setHoveredButton(null)}
-                        style={getButtonStyle('managerAnalytics')}
-                    >
-                        Analytics Équipe
-                    </button>
-                ) : (
-                    <button 
-                        onClick={() => handleNavigate('analytics')} 
-                        onMouseEnter={() => setHoveredButton('analytics')}
-                        onMouseLeave={() => setHoveredButton(null)}
-                        style={getButtonStyle('analytics')}
-                    >
-                        Analytics
-                    </button>
-                )}
+                <button 
+                    onClick={() => handleNavigate('analytics')} 
+                    onMouseEnter={() => setHoveredButton('analytics')}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    style={getButtonStyle('analytics')}
+                >
+                    Analytics
+                </button>
                 
                 <button 
                     onClick={() => handleNavigate('notification')} 

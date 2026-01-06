@@ -8,6 +8,7 @@ import PresenceChart from '../component/PresenceChart';
 import WeeklyHoursChart from '../component/WeeklyHoursChart';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import UserAnalytics from './UserAnalytics';
 
 function ManagerAnalytics() {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -17,6 +18,7 @@ function ManagerAnalytics() {
     const [error, setError] = useState(null);
     const [isExporting, setIsExporting] = useState(false);
     const [teamMembers, setTeamMembers] = useState([]);
+    const [selectedMemberId, setSelectedMemberId] = useState('');
     const dashboardRef = useRef(null);
 
     const months = [
@@ -323,112 +325,177 @@ function ManagerAnalytics() {
 
     const kpis = calculateKPIs();
 
+    const totalMembers = teamMembers.length;
+    const totalManagers = teamMembers.filter(m => m.roleId === 1).length;
+    const totalEmployees = Math.max(0, totalMembers - totalManagers);
+    const selectedMember = teamMembers.find(m => String(m.id) === String(selectedMemberId));
+
     return (
         <div className="analytics-page">
             <div className="analytics-header">
                 <div>
                     <h1>Analytics Équipe</h1>
-                    <p>Analyse des données moyennes de mon équipe ({teamMembers.length} membre{teamMembers.length > 1 ? 's' : ''})</p>
+                    <p>
+                        {selectedMember
+                            ? `Analytics détaillés pour ${selectedMember.firstName} ${selectedMember.lastName}`
+                            : `Analyse des données moyennes de mon équipe (${teamMembers.length} membre${teamMembers.length > 1 ? 's' : ''})`}
+                    </p>
                 </div>
-                <button 
-                    className="export-btn" 
-                    onClick={handleExport}
-                    disabled={isExporting || loading}
-                >
-                    {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
-                </button>
+                {!selectedMember && (
+                    <button 
+                        className="export-btn" 
+                        onClick={handleExport}
+                        disabled={isExporting || loading}
+                    >
+                        {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
+                    </button>
+                )}
             </div>
+
+            {!selectedMember && (
+                <div className="kpi-grid" style={{ marginTop: '12px' }}>
+                    <KPICard 
+                        title="Membres de l'équipe" 
+                        value={totalMembers}
+                        description="Nombre total de personnes dans mon équipe"
+                    />
+                    <KPICard 
+                        title="Managers" 
+                        value={totalManagers}
+                        description="Nombre de managers dans l'équipe"
+                    />
+                    <KPICard 
+                        title="Employés" 
+                        value={totalEmployees}
+                        description="Nombre d'employés (hors managers)"
+                    />
+                </div>
+            )}
 
             <div ref={dashboardRef} className="dashboard-content">
                 <div className="filters-section">
                     <div className="filter-group">
-                        <label>Mois:</label>
-                        <select 
-                            value={selectedMonth} 
-                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                        <label>Vue:</label>
+                        <select
+                            value={selectedMemberId || 'team'}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedMemberId(value === 'team' ? '' : value);
+                            }}
                         >
-                            {months.map((month, index) => (
-                                <option key={index} value={index + 1}>{month}</option>
+                            <option value="team">Équipe (tous les membres)</option>
+                            {teamMembers.map(member => (
+                                <option key={member.id} value={member.id}>
+                                    {member.firstName} {member.lastName}
+                                </option>
                             ))}
                         </select>
                     </div>
-                    <div className="filter-group">
-                        <label>Année:</label>
-                        <select 
-                            value={selectedYear} 
-                            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                        >
-                            {years.map(year => (
-                                <option key={year} value={year}>{year}</option>
-                            ))}
-                        </select>
-                    </div>
+
+                    {!selectedMember && (
+                        <>
+                            <div className="filter-group">
+                                <label>Mois:</label>
+                                <select 
+                                    value={selectedMonth} 
+                                    onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                                >
+                                    {months.map((month, index) => (
+                                        <option key={index} value={index + 1}>{month}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="filter-group">
+                                <label>Année:</label>
+                                <select 
+                                    value={selectedYear} 
+                                    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                >
+                                    {years.map(year => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </>
+                    )}
                 </div>
 
-                {loading ? (
-                    <div className="loading">Chargement des données...</div>
-                ) : error ? (
-                    <div className="error-message">
-                        <h3>⚠️ Erreur</h3>
-                        <p>{error}</p>
-                        <button onClick={fetchAnalyticsData} className="retry-btn">
-                            🔄 Réessayer
-                        </button>
-                    </div>
-                ) : teamMembers.length === 0 ? (
-                    <div className="no-data-message">
-                        <p>Aucun membre dans votre équipe</p>
+                {selectedMember ? (
+                    <div style={{ marginTop: '16px' }}>
+                        <UserAnalytics 
+                            userId={selectedMember.id}
+                            title={`Analytics de ${selectedMember.firstName} ${selectedMember.lastName}`}
+                            subtitle="Analyse détaillée de cet employé"
+                        />
                     </div>
                 ) : (
                     <>
-                        <div className="kpi-grid">
-                            <KPICard 
-                                title="Jours travaillés (moyenne)" 
-                                value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
-                                description="Moyenne par membre sur un mois entier"
-                            />
-                            <KPICard 
-                                title="Heures/jour (moyenne)" 
-                                value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
-                                description="Moyenne par jour de présence"
-                            />
-                            <KPICard 
-                                title="Heures/semaine (moyenne)" 
-                                value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
-                                description="Moyenne hebdomadaire"
-                            />
-                            <KPICard 
-                                title="Taux de présence (moyenne)" 
-                                value={`${kpis.presenceRate || 0}%`}
-                                description={`${kpis.absenceRate || 0}% d'absence moyen`}
-                            />
-                        </div>
-
-                        {analyticsData?.events && analyticsData.events.length > 0 ? (
-                            <div className="charts-section">
-                                <div className="chart-container">
-                                    <h3>Taux de présence mensuel (équipe)</h3>
-                                    <PresenceChart data={analyticsData.events} />
-                                </div>
-                                <div className="chart-container">
-                                    <h3>Heures hebdomadaires (équipe)</h3>
-                                    <WeeklyHoursChart data={analyticsData.events} />
-                                </div>
+                        {loading ? (
+                            <div className="loading">Chargement des données...</div>
+                        ) : error ? (
+                            <div className="error-message">
+                                <h3>⚠️ Erreur</h3>
+                                <p>{error}</p>
+                                <button onClick={fetchAnalyticsData} className="retry-btn">
+                                    🔄 Réessayer
+                                </button>
+                            </div>
+                        ) : teamMembers.length === 0 ? (
+                            <div className="no-data-message">
+                                <p>Aucun membre dans votre équipe</p>
                             </div>
                         ) : (
-                            <div className="no-data-message">
-                                <p>Aucune donnée disponible pour cette période</p>
-                            </div>
-                        )}
+                            <>
+                                <div className="kpi-grid">
+                                    <KPICard 
+                                        title="Jours travaillés (moyenne)" 
+                                        value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
+                                        description="Moyenne par membre sur un mois entier"
+                                    />
+                                    <KPICard 
+                                        title="Heures/jour (moyenne)" 
+                                        value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
+                                        description="Moyenne par jour de présence"
+                                    />
+                                    <KPICard 
+                                        title="Heures/semaine (moyenne)" 
+                                        value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
+                                        description="Moyenne hebdomadaire"
+                                    />
+                                    <KPICard 
+                                        title="Taux de présence (moyenne)" 
+                                        value={`${kpis.presenceRate || 0}%`}
+                                        description={`${kpis.absenceRate || 0}% d'absence moyen`}
+                                    />
+                                </div>
 
-                        <div className="calendar-section">
-                            <h3>Calendrier de présence (équipe)</h3>
-                            <TeamHeatmapCalendar 
-                                month={selectedMonth} 
-                                year={selectedYear} 
-                                memberData={analyticsData?.memberData || []} 
-                            />
-                        </div>
+                                {analyticsData?.events && analyticsData.events.length > 0 ? (
+                                    <div className="charts-section">
+                                        <div className="chart-container">
+                                            <h3>Taux de présence mensuel (équipe)</h3>
+                                            <PresenceChart data={analyticsData.events} />
+                                        </div>
+                                        <div className="chart-container">
+                                            <h3>Heures hebdomadaires (équipe)</h3>
+                                            <WeeklyHoursChart data={analyticsData.events} />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="no-data-message">
+                                        <p>Aucune donnée disponible pour cette période</p>
+                                    </div>
+                                )}
+
+                                <div className="calendar-section">
+                                    <h3>Calendrier de présence (équipe)</h3>
+                                    <TeamHeatmapCalendar 
+                                        month={selectedMonth} 
+                                        year={selectedYear} 
+                                        memberData={analyticsData?.memberData || []} 
+                                    />
+                                </div>
+                            </>
+                        )}
                     </>
                 )}
             </div>
