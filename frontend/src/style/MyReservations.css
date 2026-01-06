@@ -108,7 +108,29 @@
 .fc-event {
     cursor: pointer;
     border-radius: 4px;
+    padding: 4px 6px;
+}
+
+/* Custom event content styling */
+.custom-event-content {
     padding: 2px 4px;
+    overflow: hidden;
+}
+
+.event-time-range {
+    font-weight: 700;
+    font-size: 11px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-title {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Modal Styles */

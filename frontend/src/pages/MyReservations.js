@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react'
+﻿/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -7,6 +8,7 @@ import listPlugin from '@fullcalendar/list'
 import bookingRoomService from '../services/bookingRoomService'
 import vehiculeService from '../services/vehiculeService'
 import teamService from '../services/teamService'
+import roomService from '../services/roomService'
 import '../style/MyReservations.css'
 
 function MyReservations() {
@@ -16,6 +18,7 @@ function MyReservations() {
     const [showModal, setShowModal] = useState(false)
     const [participants, setParticipants] = useState([])
     const [allUsers, setAllUsers] = useState([])
+    const [allRooms, setAllRooms] = useState([])
     const [feedback, setFeedback] = useState(null)
     const [actionLoading, setActionLoading] = useState(false)
 
@@ -28,18 +31,17 @@ function MyReservations() {
     const loadData = async () => {
         setLoading(true)
         try {
-            // Load users for participant names
             const users = await teamService.listUsers()
             setAllUsers(users)
 
-            // Load vehicle bookings
+            const rooms = await roomService.getAllRooms()
+            setAllRooms(rooms)
+
             const vehicleBookings = await vehiculeService.getBookingsByUserId(userId)
 
-            // Load room bookings (all bookings, then filter)
             const allRoomBookings = await bookingRoomService.list()
 
             // Filter room bookings where user is creator or participant
-            const myRoomBookingIds = new Set()
             const participantChecks = await Promise.all(
                 allRoomBookings.map(async (booking) => {
                     // Check if user is participant
@@ -48,7 +50,6 @@ function MyReservations() {
                     const isCreator = booking.userId === userId
 
                     if (isCreator || isParticipant) {
-                        myRoomBookingIds.add(booking.id)
                         return { ...booking, participants }
                     }
                     return null
@@ -73,21 +74,27 @@ function MyReservations() {
                 }
             }))
 
-            const roomEvents = myRoomBookings.map(booking => ({
-                id: `room-${booking.id}`,
-                title: `📅 ${booking.title}`,
-                start: booking.startDatetime,
-                end: booking.endDatetime,
-                backgroundColor: '#8b5cf6',
-                borderColor: '#7c3aed',
-                extendedProps: {
-                    type: 'room',
-                    bookingId: booking.id,
-                    roomId: booking.roomId,
-                    creatorId: booking.userId,
-                    participants: booking.participants || []
+            const roomEvents = myRoomBookings.map(booking => {
+                const room = rooms.find(r => r.id === booking.roomId)
+                const roomName = room ? room.name : 'Salle inconnue'
+
+                return {
+                    id: `room-${booking.id}`,
+                    title: `📅 ${booking.title} - ${roomName}`,
+                    start: booking.startDatetime,
+                    end: booking.endDatetime,
+                    backgroundColor: '#8b5cf6',
+                    borderColor: '#7c3aed',
+                    extendedProps: {
+                        type: 'room',
+                        bookingId: booking.id,
+                        roomId: booking.roomId,
+                        roomName: roomName,
+                        creatorId: booking.userId,
+                        participants: booking.participants || []
+                    }
                 }
-            }))
+            })
 
             setEvents([...vehicleEvents, ...roomEvents])
         } catch (error) {
@@ -171,9 +178,50 @@ function MyReservations() {
         return user ? `${user.firstName} ${user.lastName}` : 'Utilisateur inconnu'
     }
 
-    const getMyParticipantStatus = () => {
-        const myParticipant = participants.find(p => p.userId === userId)
-        return myParticipant || null
+    const formatDateTime = (date) => {
+        return new Date(date).toLocaleString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    const formatTime = (date) => {
+        return new Date(date).toLocaleTimeString('fr-FR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    const getDuration = (start, end) => {
+        const diffMs = new Date(end) - new Date(start)
+        const diffMins = Math.floor(diffMs / 60000)
+        const hours = Math.floor(diffMins / 60)
+        const minutes = diffMins % 60
+
+        if (hours > 0 && minutes > 0) {
+            return `${hours}h${minutes.toString().padStart(2, '0')}`
+        } else if (hours > 0) {
+            return `${hours}h`
+        } else {
+            return `${minutes} min`
+        }
+    }
+
+    // Custom event content renderer to show time range
+    const renderEventContent = (eventInfo) => {
+        const startTime = formatTime(eventInfo.event.start)
+        const endTime = formatTime(eventInfo.event.end)
+
+        return (
+            <div className="custom-event-content">
+                <div className="event-time-range">{startTime} - {endTime}</div>
+                <div className="event-title">{eventInfo.event.title}</div>
+            </div>
+        )
     }
 
     return (
@@ -209,6 +257,7 @@ function MyReservations() {
                         }}
                         events={events}
                         eventClick={handleEventClick}
+                        eventContent={renderEventContent}
                         height="auto"
                         locale="fr"
                         buttonText={{
@@ -249,19 +298,12 @@ function MyReservations() {
                                     </span>
                                 </div>
 
-                                <div className="info-row">
-                                    <span className="info-label">Début:</span>
-                                    <span className="info-value">
-                                        {new Date(selectedEvent.start).toLocaleString('fr-FR')}
-                                    </span>
-                                </div>
-
-                                <div className="info-row">
-                                    <span className="info-label">Fin:</span>
-                                    <span className="info-value">
-                                        {new Date(selectedEvent.end).toLocaleString('fr-FR')}
-                                    </span>
-                                </div>
+                                {selectedEvent.type === 'room' && (
+                                    <div className="info-row">
+                                        <span className="info-label">Salle:</span>
+                                        <span className="info-value">{selectedEvent.roomName}</span>
+                                    </div>
+                                )}
 
                                 {selectedEvent.type === 'vehicle' && (
                                     <div className="info-row">
@@ -269,6 +311,27 @@ function MyReservations() {
                                         <span className="info-value">{selectedEvent.destination}</span>
                                     </div>
                                 )}
+
+                                <div className="info-row">
+                                    <span className="info-label">Début:</span>
+                                    <span className="info-value">
+                                        {formatDateTime(selectedEvent.start)}
+                                    </span>
+                                </div>
+
+                                <div className="info-row">
+                                    <span className="info-label">Fin:</span>
+                                    <span className="info-value">
+                                        {formatDateTime(selectedEvent.end)}
+                                    </span>
+                                </div>
+
+                                <div className="info-row">
+                                    <span className="info-label">Durée:</span>
+                                    <span className="info-value">
+                                        {getDuration(selectedEvent.start, selectedEvent.end)}
+                                    </span>
+                                </div>
 
                                 {selectedEvent.type === 'room' && (
                                     <>
