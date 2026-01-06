@@ -5,6 +5,7 @@ import LastPunch from '../component/LastPunch'
 import WeekHours from '../component/WeekHours'
 import DayPlanning from '../component/DayPlanning'
 import Notifications from '../component/Notifications'
+import Announcements from '../component/Announcements'
 
 function Home() {
     const [now, setNow] = useState(new Date())
@@ -78,7 +79,8 @@ function Home() {
                 <WeekHours />
                 <DayPlanning />
             </div>
-            <div style={{ padding: '20px' }}>
+            <div style={{ padding: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                <Announcements />
                 <Notifications />
             </div>
         </div>
