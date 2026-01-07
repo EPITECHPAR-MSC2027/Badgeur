@@ -81,14 +81,14 @@ function Announcements() {
     }
 
     const buttonStyle = {
-        background: 'var(--color-background)',
-        color: 'var(--color-secondary)',
+        background: 'var(--color-secondary)',
+        color: 'var(--color-primary)',
         border: '1px solid var(--color-secondary)',
         padding: '6px 12px',
         borderRadius: '6px',
         cursor: 'pointer',
         fontFamily: 'Alata, sans-serif',
-        fontWeight: 500,
+        fontWeight: 600,
         fontSize: '12px',
         transition: 'all 0.2s ease'
     }
