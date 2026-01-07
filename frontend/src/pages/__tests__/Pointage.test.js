@@ -10,18 +10,23 @@ jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
     useNavigate: () => mockNavigate,
 }));
+
 // Mock API_URL
 jest.mock('../../config/api', () => 'http://localhost:5000');
+
 // Mock authService
 jest.mock('../../services/authService');
+
 // Mock notificationService
 jest.mock('../../services/notificationService', () => ({
     createNotification: jest.fn().mockResolvedValue({}),
 }));
+
 // Mock teamService
 jest.mock('../../services/teamService', () => ({
     listUsers: jest.fn().mockResolvedValue([]),
 }));
+
 // Helper function to render with router
 const renderWithRouter = (component) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -31,6 +36,7 @@ describe('Pointage Component', () => {
     beforeEach(() => {
         mockNavigate.mockClear();
         jest.useFakeTimers();
+
         // Create proper localStorage mock with jest spies
         localStorageMock = {
             getItem: jest.fn((key) => {
@@ -51,6 +57,7 @@ describe('Pointage Component', () => {
             value: localStorageMock,
             writable: true
         });
+
         // Mock authService methods
         authService.get = jest.fn();
         authService.post = jest.fn();
@@ -60,6 +67,7 @@ describe('Pointage Component', () => {
         jest.restoreAllMocks();
         jest.useRealTimers();
     });
+
     // Test 1: Component renders correctly
     test('Renders pointage page with all elements', async () => {
         authService.get.mockResolvedValueOnce({
@@ -86,6 +94,7 @@ describe('Pointage Component', () => {
         expect(screen.getByText('13h00')).toBeInTheDocument();
         expect(screen.getByText('17h00')).toBeInTheDocument();
     });
+
     // Test 2: Loads badge history on mount
     test('Loads badge history on component mount', async () => {
         const mockHistory = [
@@ -105,6 +114,7 @@ describe('Pointage Component', () => {
             expect(historyCount.textContent).toContain('2 badgeages');
         });
     });
+
     // Test 3: Shows empty state when no history
     test('Displays empty state when no badge history', async () => {
         authService.get.mockResolvedValueOnce({
@@ -120,6 +130,7 @@ describe('Pointage Component', () => {
             expect(emptyMessage.textContent).toContain('Effectuez votre premier badgeage');
         });
     });
+
     // Test 4: Successfully creates a badge
     test('Handles successful badge creation', async () => {
         // Mock history load
@@ -131,6 +142,7 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
         });
+
         // Mock badge creation
         authService.post.mockResolvedValueOnce({
             ok: true,
@@ -147,6 +159,7 @@ describe('Pointage Component', () => {
             );
         });
     });
+
     // Test 5: Shows toast notification after badge
     test('Displays toast notification after successful badge', async () => {
         // Mock history load
@@ -158,6 +171,7 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
         });
+
         // Mock badge creation
         authService.post.mockResolvedValueOnce({
             ok: true,
@@ -168,12 +182,14 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('toast')).toBeInTheDocument();
         });
+
         // Fast forward time to hide toast
         jest.advanceTimersByTime(3000);
         await waitFor(() => {
             expect(screen.queryByTestId('toast')).not.toBeInTheDocument();
         });
     });
+
     // Test 6: Disables button during loading
     test('Disables badge button during loading', async () => {
         // Mock history load
@@ -185,6 +201,7 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
         });
+
         // Mock badge creation that takes time
         authService.post.mockImplementation(() => new Promise(() => { })); // Never resolves
         const badgeButton = screen.getByTestId('badge-button');
@@ -193,6 +210,7 @@ describe('Pointage Component', () => {
             expect(badgeButton).toBeDisabled();
         });
     });
+
     // Test 7: Handles badge creation error
     test('Displays alert on badge creation error', async () => {
         // Mock history load
@@ -205,6 +223,7 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
         });
+
         // Mock badge creation failure
         authService.post.mockResolvedValueOnce({
             ok: false,
@@ -218,6 +237,7 @@ describe('Pointage Component', () => {
         });
         alertMock.mockRestore();
     });
+
     // Test 8: Handles missing userId
     test('Handles missing userId gracefully', async () => {
         localStorageMock.getItem.mockImplementation((key) => {
@@ -237,6 +257,7 @@ describe('Pointage Component', () => {
 
         consoleErrorMock.mockRestore();
     });
+
     // Test 9: Pagination works correctly
     test('Paginates badge history correctly', async () => {
         const mockHistory = Array.from({ length: 12 }, (_, i) => ({
@@ -251,11 +272,13 @@ describe('Pointage Component', () => {
             const historyCount = screen.getByTestId('history-count');
             expect(historyCount.textContent).toContain('12 badgeages');
         });
+
         // Check pagination is visible
         await waitFor(() => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 1 sur 3');
         });
+
         // Navigate to next page
         const nextButton = screen.getByTestId('next-button');
         fireEvent.click(nextButton);
@@ -263,6 +286,7 @@ describe('Pointage Component', () => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 2 sur 3');
         });
+
         // Navigate to previous page
         const prevButton = screen.getByTestId('prev-button');
         fireEvent.click(prevButton);
@@ -271,6 +295,7 @@ describe('Pointage Component', () => {
             expect(pageInfo.textContent).toContain('Page 1 sur 3');
         });
     });
+
     // Test 10: Shows "Dernier" badge for most recent entry
     test('Displays "Dernier" label for most recent badge', async () => {
         const mockHistory = [
@@ -285,10 +310,12 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('last-badge')).toBeInTheDocument();
         });
+
         // Should only have one "Dernier" label
         const dernierLabels = screen.getAllByTestId('last-badge');
         expect(dernierLabels).toHaveLength(1);
     });
+
     // Test 11: Sorts badge history by most recent first
     test('Sorts badge history with most recent first', async () => {
         const mockHistory = [
@@ -304,9 +331,11 @@ describe('Pointage Component', () => {
         await waitFor(() => {
             expect(screen.getByTestId('history-list')).toBeInTheDocument();
         });
+
         // The most recent time should be associated with "Dernier"
         expect(screen.getByTestId('last-badge')).toBeInTheDocument();
     });
+
     // Test 12: Handles 404 response gracefully
     test('Handles 404 response when loading history', async () => {
         authService.get.mockResolvedValueOnce({
@@ -320,6 +349,7 @@ describe('Pointage Component', () => {
         });
         consoleErrorMock.mockRestore();
     });
+
     // Test 13: Displays current date
     test('Displays current date in header', async () => {
         authService.get.mockResolvedValueOnce({
@@ -334,11 +364,13 @@ describe('Pointage Component', () => {
             expect(dateElement.textContent).toBe('07/01/2026');
         });
     });
+
     // Test 14: Resets to page 1 after new badge
     test('Resets to page 1 after creating new badge', async () => {
         const mockHistory = Array.from({ length: 12 }, (_, i) => ({
             badgedAt: new Date(2026, 0, 7, 9 + i, 0, 0).toISOString(),
         }));
+
         // Initial history load
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -349,6 +381,7 @@ describe('Pointage Component', () => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 1 sur 3');
         });
+
         // Navigate to page 2
         const nextButton = screen.getByTestId('next-button');
         fireEvent.click(nextButton);
@@ -356,6 +389,7 @@ describe('Pointage Component', () => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 2 sur 3');
         });
+
         // Mock badge creation
         authService.post.mockResolvedValueOnce({
             ok: true,
@@ -368,6 +402,7 @@ describe('Pointage Component', () => {
             expect(pageInfo.textContent).toContain('Page 1 sur 3');
         });
     });
+
     // Test 15: Disables pagination buttons at boundaries
     test('Disables pagination buttons at boundaries', async () => {
         const mockHistory = Array.from({ length: 12 }, (_, i) => ({
@@ -382,9 +417,11 @@ describe('Pointage Component', () => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 1 sur 3');
         });
+
         // Previous button should be disabled on first page
         const prevButton = screen.getByTestId('prev-button');
         expect(prevButton).toBeDisabled();
+
         // Navigate to last page
         const nextButton = screen.getByTestId('next-button');
         fireEvent.click(nextButton);
@@ -393,6 +430,7 @@ describe('Pointage Component', () => {
             const pageInfo = screen.getByTestId('page-info');
             expect(pageInfo.textContent).toContain('Page 3 sur 3');
         });
+
         // Next button should be disabled on last page
         expect(nextButton).toBeDisabled();
     });
