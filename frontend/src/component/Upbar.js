@@ -8,6 +8,7 @@ import icons from '../icons'
 function Upbar({ currentPage, onNavigate }) {
     const [isPresenceOpen, setIsPresenceOpen] = useState(false)
     const [isReservationsOpen, setIsReservationsOpen] = useState(false)
+    const [isAdminOpen, setIsAdminOpen] = useState(false)
     const [hoveredButton, setHoveredButton] = useState(null)
     const navigate = useNavigate()
     const roleId = parseInt(localStorage.getItem('roleId'))
@@ -193,17 +194,39 @@ function Upbar({ currentPage, onNavigate }) {
                 )}
 
                 {roleId === 3 && (
-                    <button 
-                        onClick={() => handleNavigate('createAnnouncement')} 
-                        onMouseEnter={() => setHoveredButton('createAnnouncement')}
-                        onMouseLeave={() => setHoveredButton(null)}
-                        style={getButtonStyle('createAnnouncement')}
-                    >
-                        Faire une Annonce
-                    </button>
+                    <div className="dropdown" style={dropdownStyle}>
+                        <button
+                            className="dropdown-toggle"
+                            onClick={() => setIsAdminOpen(v => !v)}
+                            onMouseEnter={() => setHoveredButton('adminDropdown')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            style={getButtonStyle('adminDropdown')}
+                        >
+                            RH <span className="caret" style={caretStyle}>▼</span>
+                        </button>
+
+                        <div className={`dropdown-menu ${isAdminOpen ? 'open' : ''}`} style={getDropdownMenuStyle(isAdminOpen)}>
+                            <button
+                                style={getButtonStyle('createAnnouncement')}
+                                onMouseEnter={() => setHoveredButton('createAnnouncement')}
+                                onMouseLeave={() => setHoveredButton(null)}
+                                onClick={() => { handleNavigate('createAnnouncement'); setIsAdminOpen(false) }}
+                            >
+                                Faire une Annonce
+                            </button>
+                            <button
+                                style={getButtonStyle('ticketsManagement')}
+                                onMouseEnter={() => setHoveredButton('ticketsManagement')}
+                                onMouseLeave={() => setHoveredButton(null)}
+                                onClick={() => { handleNavigate('ticketsManagement'); setIsAdminOpen(false) }}
+                            >
+                                Gérer mes tickets
+                            </button>
+                        </div>
+                    </div>
                 )}
 
-                {(roleId === 2 || roleId === 3) && (
+                {roleId === 2 && (
                     <button 
                         onClick={() => handleNavigate('ticketsManagement')} 
                         onMouseEnter={() => setHoveredButton('ticketsManagement')}
