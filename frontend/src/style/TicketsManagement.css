@@ -36,11 +36,13 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    font-family: "Fustat", sans-serif;
 }
 
 .filter-label {
     font-weight: 600;
     color: var(--color-secondary);
+    font-family: "Fustat", sans-serif;
 }
 
 .filter-select {
@@ -64,6 +66,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    font-family: "Fustat", sans-serif;
 }
 
 .ticket-card {
@@ -72,6 +75,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: box-shadow 0.2s ease;
+    font-family: "Fustat", sans-serif;
 }
 
 .ticket-card:hover {
@@ -103,15 +107,16 @@
     font-weight: 600;
     color: var(--color-secondary);
     font-size: 1rem;
+    font-family: "Fustat", sans-serif;
 }
 
 .ticket-user {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 0.95rem;
 }
 
 .ticket-date {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 0.9rem;
 }
 
@@ -126,7 +131,7 @@
 }
 
 .ticket-expand-icon {
-    color: var(--color-second-text);
+    color: var(--color-text);
     font-size: 1.2rem;
     margin-left: 1rem;
     transition: transform 0.2s ease;
@@ -134,7 +139,7 @@
 
 .ticket-details {
     padding: 0 1.5rem 1.5rem 1.5rem;
-    border-top: 1px solid var(--color-third);
+    border-top: 1px solid var(--color-third-text);
     animation: slideDown 0.3s ease;
 }
 
@@ -161,7 +166,7 @@
 }
 
 .ticket-description p {
-    color: var(--color-second-text);
+    color: var(--color-third-text);
     line-height: 1.6;
     margin: 0;
     white-space: pre-wrap;

@@ -89,8 +89,7 @@ function GererEquipe() {
             style={{
                 padding: '8px 12px',
                 borderRadius: 8,
-                border: '1px solid var(--color-text)',
-                background: tab === key ? 'var(--highlight1)' : 'var(--color-primary)',
+                background: tab === key ? 'var(--color-secondary)' : 'var(--color-primary)',
                 color: tab === key ? 'var(--color-primary)' : 'var(--color-secondary)',
                 cursor: 'pointer',
                 fontWeight: 700
@@ -201,7 +200,7 @@ function GererEquipe() {
                                     const plannings = userPlannings[user.id] || [];
                                     return (
                                         <div key={user.id} style={{
-                                            background: 'var(--color-background)',
+                                            background: 'var(--color-primary)',
                                             borderRadius: '8px',
                                             padding: '16px',
                                             border: '1px solid var(--color-primary)'
@@ -226,13 +225,13 @@ function GererEquipe() {
                                                     <div style={{ 
                                                         fontWeight: 700, 
                                                         fontSize: 16,
-                                                        fontFamily: 'Spectral, serif'
+                                                        fontFamily: 'Fustat, sans-serif'
                                                     }}>
                                                         {user.firstName} {user.lastName}
                                                     </div>
                                                     <div style={{ 
                                                         fontSize: 12, 
-                                                        color: 'var(--color-second-text)',
+                                                        color: 'var(--color-third-text)',
                                                         fontFamily: 'Fustat, sans-serif'
                                                     }}>
                                                         {user.email}
