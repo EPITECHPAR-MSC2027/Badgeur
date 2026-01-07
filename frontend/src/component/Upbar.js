@@ -222,7 +222,7 @@ function Upbar({ currentPage, onNavigate }) {
                         Trombinoscope
                     </button>
 
-                {/* Dropdown Actions */}
+                {/* Dropdown Présence */}
                 <div className="dropdown" style={dropdownStyle}>
                     <button
                         className="dropdown-toggle"
@@ -231,7 +231,7 @@ function Upbar({ currentPage, onNavigate }) {
                         onMouseLeave={() => setHoveredButton(null)}
                         style={getButtonStyle('actions')}
                     >
-                        Actions <span className="caret" style={caretStyle}>▼</span>
+                        Présence <span className="caret" style={caretStyle}>▼</span>
                     </button>
 
                     <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
@@ -251,6 +251,30 @@ function Upbar({ currentPage, onNavigate }) {
                         >
                             Planning
                         </button>
+                        <button 
+                            onClick={() => handleNavigate('calendrier')} 
+                            onMouseEnter={() => setHoveredButton('calendrier')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            style={getButtonStyle('calendrier')}
+                        >
+                            Equipe
+                        </button>
+                    </div>
+                </div>
+
+                {/* Dropdown Réservations */}
+                <div className="dropdown" style={dropdownStyle}>
+                    <button
+                        className="dropdown-toggle"
+                        onClick={() => setIsActionsOpen(v => !v)}
+                        onMouseEnter={() => setHoveredButton('actions')}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        style={getButtonStyle('actions')}
+                    >
+                        Réservations <span className="caret" style={caretStyle}>▼</span>
+                    </button>
+
+                    <div className={`dropdown-menu ${isActionsOpen ? 'open' : ''}`} style={dropdownMenuStyle}>
                         <button
                             style={getButtonStyle('myReservations')}
                             onClick={() => { handleNavigate('myReservations'); setIsActionsOpen(false) }}>
@@ -262,31 +286,27 @@ function Upbar({ currentPage, onNavigate }) {
                             onMouseLeave={() => setHoveredButton(null)}
                             onClick={() => { handleNavigate('reservationVehicule'); setIsActionsOpen(false) }}
                         >
-                            Réserver un véhicule
+                            Véhicule
                         </button>
-                        <button 
-                            style={getButtonStyle('supportTicket')}
-                            onMouseEnter={() => setHoveredButton('supportTicket')}
-                            onMouseLeave={() => setHoveredButton(null)}
-                            onClick={() => { handleNavigate('supportTicket'); setIsActionsOpen(false) }}
-                        >
-                            Créer un ticket
-                        </button>
+
                         <button
                             style={getButtonStyle('supportTicket')}
-                            onClick={() => { handleNavigate('bookingRoom'); setIsActionsOpen(false) }}>
-                            Réserver une salle
+                            onMouseEnter={() => setHoveredButton('bookingRoom')}
+                            onMouseLeave={() => setHoveredButton(null)}
+                            onClick={() => { handleNavigate('bookingRoom'); setIsActionsOpen(false) }}
+                        >
+                            Salle
                         </button>
                     </div>
                 </div>
 
                 <button 
-                    onClick={() => handleNavigate('calendrier')} 
-                    onMouseEnter={() => setHoveredButton('calendrier')}
+                    style={getButtonStyle('supportTicket')}
+                    onMouseEnter={() => setHoveredButton('supportTicket')}
                     onMouseLeave={() => setHoveredButton(null)}
-                    style={getButtonStyle('calendrier')}
+                    onClick={() => { handleNavigate('supportTicket'); setIsActionsOpen(false) }}
                 >
-                    Equipe
+                    Créer un ticket
                 </button>
 
                 <button 
@@ -295,7 +315,10 @@ function Upbar({ currentPage, onNavigate }) {
                     onMouseLeave={() => setHoveredButton(null)}
                     style={getButtonStyle('analytics')}
                 >
-                    Analytics
+                    <img 
+                        src={icons.dashboard.url} 
+                        alt={icons.dashboard.alt}
+                    />
                 </button>
                 
                 <button 
