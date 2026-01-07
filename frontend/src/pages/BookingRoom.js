@@ -2,6 +2,7 @@ import React from 'react'
 import roomService from '../services/roomService'
 import bookingRoomService from '../services/bookingRoomService'
 import teamService from '../services/teamService'
+import '../index.css'
 
 const tagStyle = {
     display: 'inline-flex',
@@ -174,8 +175,8 @@ function BookingRoom() {
     return (
         <div style={{ padding: 16 }}>
             <header style={{ marginBottom: 50 }}>
-                <h1 style={{ margin: 0 }}>Réserver une salle</h1>
-                <p style={{ margin: 0, color: '#6b7280' }}>Choisissez une salle puis définissez le créneau.</p>
+                <h1>Réserver une salle</h1>
+                <p style={{ margin: 0, color: 'var(--color-third-text)' }}>Choisissez une salle puis définissez le créneau.</p>
             </header>
 
             {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
@@ -183,8 +184,8 @@ function BookingRoom() {
 
             <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '2fr 1fr' }}>
                 <div>
-                    <h3 style={{ margin: '0 0 8px 0' }}>Salles</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
+                    <h3 style={{ margin: '0 0 8px 0', color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Salles</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10, fontFamily: 'Fustat, sans-serif' }}>
                         {rooms.map(r => {
                             const id = r.id ?? r.Id
                             const isSelected = selectedRoom && (selectedRoom.id ?? selectedRoom.Id) === id
@@ -207,7 +208,6 @@ function BookingRoom() {
                                         {(r.has_board ?? r.hasBoard ?? r.HasBoard) && <FeatureTag icon="🧑‍🏫" label="Tableau" />}
                                         {(r.has_mic ?? r.hasMic ?? r.HasMic) && <FeatureTag icon="🎤" label="Micro" />}
                                     </div>
-                                    <div style={{ color: '#6b7280', fontSize: 13 }}>Étage: {r.id_floor ?? r.IdFloor}</div>
                                 </div>
                             )
                         })}
@@ -218,10 +218,10 @@ function BookingRoom() {
                 </div>
 
                 <div>
-                    <h3 style={{ margin: '0 0 8px 0' }}>Créneau</h3>
-                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 10, border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+                    <h3 style={{ margin: '0 0 8px 0', color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Créneau</h3>
+                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 10, border: '1px solid var(--color-third-text)', borderRadius: 10, padding: 12 }}>
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700 }}>Titre</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Titre</label>
                             <input
                                 type="text"
                                 value={title}
@@ -231,7 +231,7 @@ function BookingRoom() {
                             />
                         </div>
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700 }}>Début</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Début</label>
                             <input
                                 type="datetime-local"
                                 value={start}
@@ -240,7 +240,7 @@ function BookingRoom() {
                             />
                         </div>
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700 }}>Fin</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Fin</label>
                             <input
                                 type="datetime-local"
                                 value={end}
@@ -252,7 +252,7 @@ function BookingRoom() {
                         {/* Section Participants */}
                         <div style={{ display: 'grid', gap: 8, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <label style={{ fontWeight: 700 }}>Participants</label>
+                                <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Participants</label>
                                 <button
                                     type="button"
                                     onClick={() => setShowUserSearch(!showUserSearch)}
