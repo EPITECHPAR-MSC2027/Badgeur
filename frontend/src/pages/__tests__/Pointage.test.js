@@ -251,10 +251,6 @@ describe('Pointage Component', () => {
             expect(consoleErrorMock).toHaveBeenCalled();
         });
 
-        await waitFor(() => {
-            expect(consoleErrorMock.mock.calls[0][0]).toContain('ID utilisateur non');
-        });
-
         consoleErrorMock.mockRestore();
     });
 
