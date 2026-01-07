@@ -16,9 +16,18 @@ const tagStyle = {
     fontWeight: 700
 }
 
+// Helper function to normalize labels for test IDs (removes accents)
+function normalizeLabel(label) {
+    return label
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-')
+        .toLowerCase()
+}
+
 function FeatureTag({ icon, label }) {
     return (
-        <span style={tagStyle}>
+        <span style={tagStyle} data-testid={`feature-tag-${normalizeLabel(label)}`}>
             <span aria-hidden>{icon}</span>
             {label}
         </span>
@@ -35,7 +44,7 @@ function BookingRoom() {
     const [end, setEnd] = React.useState('')
     const [submitting, setSubmitting] = React.useState(false)
     const [feedback, setFeedback] = React.useState(null)
-    
+
     // Participants
     const [allUsers, setAllUsers] = React.useState([])
     const [searchQuery, setSearchQuery] = React.useState('')
@@ -127,19 +136,19 @@ function BookingRoom() {
                 StartDatetime: startDate.toISOString(),
                 EndDatetime: endDate.toISOString()
             })
-            
+
             console.log('Réponse complète du backend:', bookingResponse)
-            
+
             // Récupérer l'ID depuis la réponse
             const bookingId = bookingResponse; // Booking response is the ID directly
-            
+
             if (isNaN(bookingId)) {
                 console.error('Impossible de récupérer l\'ID. Résultat reçu:', bookingResponse)
                 throw new Error('Impossible de récupérer l\'ID de la réservation.')
             }
-            
+
             console.log('✅ ID de la réservation récupéré:', bookingId)
-            
+
             // Créer le participant organisateur (créateur)
             await bookingRoomService.addParticipant({
                 BookingId: bookingId,
@@ -147,10 +156,10 @@ function BookingRoom() {
                 Role: 'organisateur',
                 Status: 'accepté'
             })
-            
+
             // Créer les participants invités
             if (selectedParticipants.length > 0) {
-                const participantPromises = selectedParticipants.map(p => 
+                const participantPromises = selectedParticipants.map(p =>
                     bookingRoomService.addParticipant({
                         BookingId: bookingId,
                         UserId: p.userId,
@@ -160,7 +169,7 @@ function BookingRoom() {
                 )
                 await Promise.all(participantPromises)
             }
-            
+
             setFeedback({ type: 'success', message: 'Réservation créée avec succès.' })
             setTitle('')
             setSelectedParticipants([])
@@ -173,19 +182,19 @@ function BookingRoom() {
     }
 
     return (
-        <div style={{ padding: 16 }}>
+        <div style={{ padding: 16 }} data-testid="booking-room-container">
             <header style={{ marginBottom: 50 }}>
-                <h1>Réserver une salle</h1>
-                <p style={{ margin: 0, color: 'var(--color-third-text)' }}>Choisissez une salle puis définissez le créneau.</p>
+                <h1 data-testid="page-title">Réserver une salle</h1>
+                <p style={{ margin: 0, color: 'var(--color-third-text)' }} data-testid="page-description">Choisissez une salle puis définissez le créneau.</p>
             </header>
 
-            {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
-            {loading && <div style={{ color: '#6b7280', marginBottom: 12 }}>Chargement...</div>}
+            {error && <div style={{ color: '#b91c1c', marginBottom: 12 }} data-testid="error-message">{error}</div>}
+            {loading && <div style={{ color: '#6b7280', marginBottom: 12 }} data-testid="loading-message">Chargement...</div>}
 
             <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '2fr 1fr' }}>
-                <div>
+                <div data-testid="rooms-section">
                     <h3 style={{ margin: '0 0 8px 0', color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Salles</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10, fontFamily: 'Fustat, sans-serif' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10, fontFamily: 'Fustat, sans-serif' }} data-testid="rooms-grid">
                         {rooms.map(r => {
                             const id = r.id ?? r.Id
                             const isSelected = selectedRoom && (selectedRoom.id ?? selectedRoom.Id) === id
@@ -198,12 +207,14 @@ function BookingRoom() {
                                         border: isSelected ? '2px solid #2563eb' : cardStyle.border,
                                         boxShadow: isSelected ? '0 8px 18px rgba(37,99,235,0.18)' : cardStyle.boxShadow
                                     }}
+                                    data-testid={`room-card-${id}`}
+                                    data-selected={isSelected}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ fontWeight: 700 }}>{r.name ?? r.Name}</div>
-                                        <div style={{ color: '#6b7280', fontSize: 13 }}>Capacité {r.capacity ?? r.Capacity}</div>
+                                        <div style={{ fontWeight: 700 }} data-testid={`room-name-${id}`}>{r.name ?? r.Name}</div>
+                                        <div style={{ color: '#6b7280', fontSize: 13 }} data-testid={`room-capacity-${id}`}>Capacité {r.capacity ?? r.Capacity}</div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} data-testid={`room-features-${id}`}>
                                         {(r.has_largescreen ?? r.hasLargeScreen ?? r.HasLargeScreen) && <FeatureTag icon="🖥️" label="Écran" />}
                                         {(r.has_board ?? r.hasBoard ?? r.HasBoard) && <FeatureTag icon="🧑‍🏫" label="Tableau" />}
                                         {(r.has_mic ?? r.hasMic ?? r.HasMic) && <FeatureTag icon="🎤" label="Micro" />}
@@ -212,47 +223,50 @@ function BookingRoom() {
                             )
                         })}
                         {rooms.length === 0 && !loading && (
-                            <div style={{ color: '#9ca3af' }}>Aucune salle disponible.</div>
+                            <div style={{ color: '#9ca3af' }} data-testid="no-rooms-message">Aucune salle disponible.</div>
                         )}
                     </div>
                 </div>
 
-                <div>
+                <div data-testid="booking-form-section">
                     <h3 style={{ margin: '0 0 8px 0', color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Créneau</h3>
-                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 10, border: '1px solid var(--color-third-text)', borderRadius: 10, padding: 12 }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 10, border: '1px solid var(--color-third-text)', borderRadius: 10, padding: 12 }} data-testid="booking-form">
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Titre</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }} data-testid="title-label">Titre</label>
                             <input
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 placeholder="Réunion projet"
                                 style={{ padding: 10, borderRadius: 8, border: '1px solid #d1d5db' }}
+                                data-testid="title-input"
                             />
                         </div>
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Début</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }} data-testid="start-label">Début</label>
                             <input
                                 type="datetime-local"
                                 value={start}
                                 onChange={(e) => setStart(e.target.value)}
                                 style={{ padding: 10, borderRadius: 8, border: '1px solid #d1d5db' }}
+                                data-testid="start-input"
                             />
                         </div>
                         <div style={{ display: 'grid', gap: 6 }}>
-                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Fin</label>
+                            <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }} data-testid="end-label">Fin</label>
                             <input
                                 type="datetime-local"
                                 value={end}
                                 onChange={(e) => setEnd(e.target.value)}
                                 style={{ padding: 10, borderRadius: 8, border: '1px solid #d1d5db' }}
+                                data-testid="end-input"
                             />
                         </div>
-                        
+
                         {/* Section Participants */}
-                        <div style={{ display: 'grid', gap: 8, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+                        <div style={{ display: 'grid', gap: 8, borderTop: '1px solid #e5e7eb', paddingTop: 12 }} data-testid="participants-section">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>Participants</label>
+                                <label style={{ fontWeight: 700, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }} data-testid="participants-label">Participants</label>
                                 <button
                                     type="button"
                                     onClick={() => setShowUserSearch(!showUserSearch)}
@@ -264,13 +278,14 @@ function BookingRoom() {
                                         cursor: 'pointer',
                                         fontSize: 13
                                     }}
+                                    data-testid="toggle-user-search-button"
                                 >
                                     {showUserSearch ? 'Masquer' : '+ Ajouter'}
                                 </button>
                             </div>
-                            
+
                             {showUserSearch && (
-                                <div style={{ position: 'relative' }}>
+                                <div style={{ position: 'relative' }} data-testid="user-search-container">
                                     <input
                                         type="text"
                                         placeholder="Rechercher un employé..."
@@ -283,6 +298,7 @@ function BookingRoom() {
                                             border: '1px solid #d1d5db',
                                             fontSize: 14
                                         }}
+                                        data-testid="user-search-input"
                                     />
                                     {searchQuery && (
                                         <div style={{
@@ -298,14 +314,14 @@ function BookingRoom() {
                                             overflowY: 'auto',
                                             zIndex: 10,
                                             boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                        }}>
+                                        }} data-testid="user-search-results">
                                             {allUsers
                                                 .filter(u => {
                                                     const query = searchQuery.toLowerCase()
                                                     const name = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase()
                                                     const email = (u.email || '').toLowerCase()
                                                     return (name.includes(query) || email.includes(query)) &&
-                                                           !selectedParticipants.some(p => p.userId === (u.id || u.Id))
+                                                        !selectedParticipants.some(p => p.userId === (u.id || u.Id))
                                                 })
                                                 .slice(0, 10)
                                                 .map(u => (
@@ -329,6 +345,7 @@ function BookingRoom() {
                                                         }}
                                                         onMouseEnter={(e) => e.target.style.background = '#f9fafb'}
                                                         onMouseLeave={(e) => e.target.style.background = 'white'}
+                                                        data-testid={`user-result-${u.id || u.Id}`}
                                                     >
                                                         <div style={{ fontWeight: 600, fontSize: 14 }}>
                                                             {u.firstName} {u.lastName}
@@ -340,9 +357,9 @@ function BookingRoom() {
                                     )}
                                 </div>
                             )}
-                            
+
                             {selectedParticipants.length > 0 && (
-                                <div style={{ display: 'grid', gap: 6 }}>
+                                <div style={{ display: 'grid', gap: 6 }} data-testid="selected-participants-list">
                                     {selectedParticipants.map((p, idx) => (
                                         <div
                                             key={idx}
@@ -355,12 +372,13 @@ function BookingRoom() {
                                                 borderRadius: 6,
                                                 border: '1px solid #e5e7eb'
                                             }}
+                                            data-testid={`participant-item-${idx}`}
                                         >
                                             <div>
-                                                <div style={{ fontWeight: 600, fontSize: 14 }}>
+                                                <div style={{ fontWeight: 600, fontSize: 14 }} data-testid={`participant-name-${idx}`}>
                                                     {p.firstName} {p.lastName}
                                                 </div>
-                                                <div style={{ fontSize: 12, color: '#6b7280' }}>{p.email}</div>
+                                                <div style={{ fontSize: 12, color: '#6b7280' }} data-testid={`participant-email-${idx}`}>{p.email}</div>
                                             </div>
                                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                                 <select
@@ -377,6 +395,7 @@ function BookingRoom() {
                                                         fontSize: 13,
                                                         background: 'white'
                                                     }}
+                                                    data-testid={`participant-role-select-${idx}`}
                                                 >
                                                     <option value="obligatoire">Obligatoire</option>
                                                     <option value="optionnel">Optionnel</option>
@@ -395,6 +414,7 @@ function BookingRoom() {
                                                         cursor: 'pointer',
                                                         fontSize: 12
                                                     }}
+                                                    data-testid={`remove-participant-button-${idx}`}
                                                 >
                                                     ✕
                                                 </button>
@@ -404,14 +424,14 @@ function BookingRoom() {
                                 </div>
                             )}
                         </div>
-                        
+
                         {selectedRoom && (
-                            <div style={{ padding: 10, borderRadius: 8, background: '#f3f4f6', color: '#374151', fontSize: 14 }}>
+                            <div style={{ padding: 10, borderRadius: 8, background: '#f3f4f6', color: '#374151', fontSize: 14 }} data-testid="selected-room-info">
                                 Salle sélectionnée : <strong>{selectedRoom.name ?? selectedRoom.Name}</strong>
                             </div>
                         )}
                         {feedback && (
-                            <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }}>
+                            <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }} data-testid="feedback-message" data-feedback-type={feedback.type}>
                                 {feedback.message}
                             </div>
                         )}
@@ -419,6 +439,7 @@ function BookingRoom() {
                             type="submit"
                             disabled={submitting}
                             style={{ padding: '10px 16px', borderRadius: 8, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}
+                            data-testid="submit-button"
                         >
                             {submitting ? 'Réservation...' : 'Réserver'}
                         </button>
