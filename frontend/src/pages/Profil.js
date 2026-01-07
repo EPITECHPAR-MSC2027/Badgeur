@@ -25,6 +25,8 @@ function Profil() {
         switch (pageKey) {
             case 'login':
                 return '/login'
+            case 'supportTicket':
+                return '/support'
             default:
                 return '/'
         }
@@ -159,6 +161,16 @@ function Profil() {
         width: '100%',
         marginTop: 10
     }
+    
+    const supportButtonStyle = {
+        ...buttonStyle,
+        backgroundColor: 'var(--highlight1)',
+        color: 'var(--color-primary)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
+    }
 
     const handleThemeChange = (event) => {
         setSelectedTheme(event.target.value)
@@ -215,6 +227,15 @@ function Profil() {
                             {userData.roleId === 1 ? 'Manager' : 'Employé'}
                         </div>
                     </div>
+                    <button 
+                        onClick={() => handleNavigate('supportTicket')}
+                        style={supportButtonStyle}
+                        onMouseOver={(e) => e.target.style.opacity = '0.9'}
+                        onMouseOut={(e) => e.target.style.opacity = '1'}
+                    >
+                        <span>🎫</span>
+                        Créer un ticket
+                    </button>
                     <button 
                         onClick={handleLogout}
                         style={buttonStyle}

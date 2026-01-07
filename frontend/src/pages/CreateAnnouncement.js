@@ -117,7 +117,7 @@ function CreateAnnouncement() {
                         </h1>
                     </div>
                     <p style={{
-                        color: '#6b7280',
+                        color: 'var(--color-third-text)',
                         fontSize: '14px',
                         margin: '8px 0 0 0',
                         paddingLeft: '64px',
@@ -149,7 +149,7 @@ function CreateAnnouncement() {
                             display: 'block',
                             fontSize: '14px',
                             fontWeight: '600',
-                            color: '#374151',
+                            color: 'var(color-secondary)',
                             marginBottom: '8px',
                             fontFamily: 'Fustat, sans-serif'
                         }}>
@@ -179,7 +179,7 @@ function CreateAnnouncement() {
                         <div style={{
                             textAlign: 'right',
                             fontSize: '12px',
-                            color: '#9ca3af',
+                            color: 'var(color-third-text)',
                             marginTop: '6px',
                             fontFamily: 'Fustat, sans-serif',
                             fontWeight: '500'
@@ -194,7 +194,7 @@ function CreateAnnouncement() {
                             display: 'block',
                             fontSize: '14px',
                             fontWeight: '600',
-                            color: '#374151',
+                            color: 'var(--color-secondary)',
                             marginBottom: '8px',
                             fontFamily: 'Fustat, sans-serif'
                         }}>
@@ -225,7 +225,7 @@ function CreateAnnouncement() {
                         <div style={{
                             textAlign: 'right',
                             fontSize: '12px',
-                            color: '#9ca3af',
+                            color: 'var(--color-third-text)',
                             marginTop: '6px',
                             fontFamily: 'Fustat, sans-serif',
                             fontWeight: '500'
