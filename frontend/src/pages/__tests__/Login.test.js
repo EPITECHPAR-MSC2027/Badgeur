@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Login from '../Login';
@@ -45,7 +45,7 @@ describe('Login Component', () => {
     });
 
     // Test 1: Component renders correctly
-    test('renders login form with all elements', () => {
+    test('Renders login form with all elements', () => {
         renderWithRouter(<Login />);
 
         expect(screen.getByText('Connexion')).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('Login Component', () => {
     });
 
     // Test 2: Email input changes
-    test('updates email input value on change', () => {
+    test('Updates email input value on change', () => {
         renderWithRouter(<Login />);
 
         const emailInput = screen.getByPlaceholderText('nom@banque.fr');
@@ -65,7 +65,7 @@ describe('Login Component', () => {
     });
 
     // Test 3: Password input changes
-    test('updates password input value on change', () => {
+    test('Updates password input value on change', () => {
         renderWithRouter(<Login />);
 
         const passwordInput = screen.getByLabelText('Mot de passe');
@@ -75,7 +75,7 @@ describe('Login Component', () => {
     });
 
     // Test 4: Password visibility toggle
-    test('toggles password visibility', () => {
+    test('Toggles password visibility', () => {
         renderWithRouter(<Login />);
 
         const passwordInput = screen.getByLabelText('Mot de passe');
@@ -91,7 +91,7 @@ describe('Login Component', () => {
     });
 
     // Test 5: Successful login without MFA
-    test('handles successful login without MFA', async () => {
+    test('Handles successful login without MFA', async () => {
         const mockOnSubmit = jest.fn();
         const mockResponse = {
             accessToken: 'test-access-token',
@@ -148,7 +148,7 @@ describe('Login Component', () => {
     });
 
     // Test 6: Login failure shows error
-    test('displays error message on failed login', async () => {
+    test('Displays error message on failed login', async () => {
         global.fetch.mockResolvedValueOnce({
             ok: false,
             status: 401
@@ -170,7 +170,7 @@ describe('Login Component', () => {
     });
 
     // Test 7: MFA flow - shows MFA form when required
-    test('shows MFA form when MFA is required', async () => {
+    test('Shows MFA form when MFA is required', async () => {
         const mockResponse = {
             mfaRequired: true,
             factorId: 'factor-123',
@@ -248,7 +248,7 @@ describe('Login Component', () => {
     });
 
     // Test 9: Successful MFA verification
-    test('handles successful MFA verification', async () => {
+    test('Handles successful MFA verification', async () => {
         const mockOnSubmit = jest.fn();
 
         // First call for login with MFA required
@@ -318,7 +318,7 @@ describe('Login Component', () => {
     });
 
     // Test 10: Back to login from MFA
-    test('returns to login form from MFA screen', async () => {
+    test('Returns to login form from MFA screen', async () => {
         global.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({
@@ -345,7 +345,7 @@ describe('Login Component', () => {
             expect(screen.getByTestId('mfa-title')).toBeInTheDocument();
         });
 
-        const backButton = screen.getByRole('button', { name: /retour � la connexion/i });
+        const backButton = screen.getByRole('button', { name: /← Retour à la connexion/i });
         fireEvent.click(backButton);
 
         expect(screen.getByText('Connexion')).toBeInTheDocument();
@@ -353,7 +353,7 @@ describe('Login Component', () => {
     });
 
     // Test 11: Disabled state during loading
-    test('disables inputs and buttons during loading', async () => {
+    test('Disables inputs and buttons during loading', async () => {
         global.fetch.mockImplementation(() => new Promise(() => { })); // Never resolves
 
         renderWithRouter(<Login />);
