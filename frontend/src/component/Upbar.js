@@ -301,15 +301,6 @@ function Upbar({ currentPage, onNavigate }) {
                 </div>
 
                 <button 
-                    style={getButtonStyle('supportTicket')}
-                    onMouseEnter={() => setHoveredButton('supportTicket')}
-                    onMouseLeave={() => setHoveredButton(null)}
-                    onClick={() => { handleNavigate('supportTicket'); setIsActionsOpen(false) }}
-                >
-                    Créer un ticket
-                </button>
-
-                <button 
                     onClick={() => handleNavigate('analytics')} 
                     onMouseEnter={() => setHoveredButton('analytics')}
                     onMouseLeave={() => setHoveredButton(null)}
