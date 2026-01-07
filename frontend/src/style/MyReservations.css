@@ -82,6 +82,7 @@
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Fustat', sans-serif;
 }
 
 /* FullCalendar overrides */
@@ -96,13 +97,13 @@
     }
 
         .fc .fc-button:hover {
-            background-color: var(--color-third);
-            border-color: var(--color-third);
+            background-color: var(--color-third-text);
+            border-color: var(--color-third-text);
         }
 
     .fc .fc-button-active {
-        background-color: var(--color-third) !important;
-        border-color: var(--color-third) !important;
+        background-color: var(--color-third-text) !important;
+        border-color: var(--color-third-text) !important;
     }
 
 .fc-event {

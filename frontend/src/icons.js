@@ -47,6 +47,12 @@ export const icons = {
     width: 24,
     height: 24
   },
+  dashboard: {
+    url: 'https://img.icons8.com/officel/24/control-panel.png',
+    alt: 'dashboard',
+    width: 24,
+    height: 24
+  },
 }
 
 /**

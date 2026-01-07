@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import announcementService from '../services/announcementService';
 import '../index.css';
 import '../style/theme.css';
@@ -9,11 +9,7 @@ function Announcements() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        loadAnnouncements();
-    }, []);
-
-    const loadAnnouncements = async () => {
+    const loadAnnouncements = useCallback(async () => {
         try {
             setLoading(true);
             setError('');
@@ -25,7 +21,11 @@ function Announcements() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        loadAnnouncements();
+    }, [loadAnnouncements]);
 
     const formatDate = (dateString) => {
         try {
@@ -51,8 +51,9 @@ function Announcements() {
 
     const headerStyle = {
         marginBottom: '24px',
+        marginTop: '50px',
         paddingBottom: '16px',
-        borderBottom: '2px solid var(--color-primary)'
+        borderBottom: '2px solid var(--color-secondary)'
     };
 
     const listStyle = {
@@ -63,7 +64,7 @@ function Announcements() {
 
     const announcementCardStyle = {
         background: 'var(--color-background)',
-        border: '2px solid var(--color-primary)',
+        border: '2px solid var(--highlight2)',
         borderRadius: '12px',
         padding: '20px',
         cursor: 'pointer',
@@ -78,10 +79,11 @@ function Announcements() {
 
     const detailPanelStyle = {
         background: 'var(--color-background)',
-        border: '2px solid var(--color-primary)',
+        border: '2px solid var(--color-secondary)',
         borderRadius: '12px',
         padding: '24px',
-        marginTop: '24px'
+        marginTop: '12px',
+        marginBottom: '12px'
     };
 
     const titleStyle = {
@@ -94,7 +96,7 @@ function Announcements() {
 
     const metaStyle = {
         fontSize: '14px',
-        color: 'var(--color-second-text)',
+        color: 'var(--color-text)',
         marginTop: '8px'
     };
 
@@ -103,11 +105,11 @@ function Announcements() {
         padding: '16px',
         background: 'rgba(31, 139, 76, 0.05)',
         borderRadius: '8px',
-        border: '1px solid var(--color-primary)',
+        border: '1px solid var(--highlight1)',
         whiteSpace: 'pre-wrap',
         lineHeight: '1.6',
-        color: 'var(--color-third)',
-        fontFamily: 'inherit'
+        color: 'var(--color-text)',
+        fontFamily: 'Fustat, sans-serif'
     };
 
     if (loading) {
@@ -132,22 +134,23 @@ function Announcements() {
                 <h1 style={{ color: 'var(--color-secondary)', fontFamily: 'Alata, sans-serif' }}>
                     Annonces
                 </h1>
-                <p style={{ color: 'var(--color-second-text)', marginTop: '8px' }}>
+                <p style={{ color: 'var(--color-third-text)', marginTop: '8px' }}>
                     Consultez toutes les annonces de l'entreprise
                 </p>
             </div>
 
             {announcements.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-second-text)' }}>
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-third-text)' }}>
                     <p>Aucune annonce disponible</p>
                 </div>
             ) : (
-                <>
-                    <div style={listStyle}>
-                        {announcements.map(announcement => (
+                <div style={listStyle}>
+                    {announcements.map(announcement => (
+                        <React.Fragment key={announcement.id}>
                             <div
-                                key={announcement.id}
-                                onClick={() => setSelectedAnnouncement(announcement)}
+                                onClick={() => setSelectedAnnouncement(
+                                    selectedAnnouncement?.id === announcement.id ? null : announcement
+                                )}
                                 style={selectedAnnouncement?.id === announcement.id ? announcementCardHoverStyle : announcementCardStyle}
                                 onMouseEnter={(e) => {
                                     if (selectedAnnouncement?.id !== announcement.id) {
@@ -167,57 +170,59 @@ function Announcements() {
                                     Par {announcement.authorFirstName} {announcement.authorLastName} • {formatDate(announcement.createdAt)}
                                 </p>
                             </div>
-                        ))}
-                    </div>
 
-                    {selectedAnnouncement && (
-                        <div style={detailPanelStyle}>
-                            <div style={{ 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'flex-start',
-                                marginBottom: '16px',
-                                paddingBottom: '16px',
-                                borderBottom: '2px solid var(--color-primary)'
-                            }}>
-                                <div>
-                                    <h2 style={{ 
-                                        margin: '0 0 8px 0', 
-                                        color: 'var(--color-secondary)',
-                                        fontFamily: 'Alata, sans-serif'
+                            {selectedAnnouncement?.id === announcement.id && (
+                                <div style={detailPanelStyle}>
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        justifyContent: 'space-between', 
+                                        alignItems: 'flex-start',
+                                        marginBottom: '16px',
+                                        paddingBottom: '16px',
+                                        borderBottom: '2px solid var(--color-third-text)'
                                     }}>
-                                        {selectedAnnouncement.title}
-                                    </h2>
-                                    <p style={metaStyle}>
-                                        Par {selectedAnnouncement.authorFirstName} {selectedAnnouncement.authorLastName} • {formatDate(selectedAnnouncement.createdAt)}
-                                    </p>
+                                        <div>
+                                            <h2 style={{ 
+                                                margin: '0 0 8px 0', 
+                                                color: 'var(--color-secondary)',
+                                                fontFamily: 'Alata, sans-serif'
+                                            }}>
+                                                {selectedAnnouncement.title}
+                                            </h2>
+                                            <p style={metaStyle}>
+                                                Par {selectedAnnouncement.authorFirstName} {selectedAnnouncement.authorLastName} • {formatDate(selectedAnnouncement.createdAt)}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedAnnouncement(null);
+                                            }}
+                                            style={{
+                                                background: 'var(--color-primary)',
+                                                color: 'var(--color-secondary)',
+                                                border: 'none',
+                                                padding: '8px 16px',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontFamily: 'Alata, sans-serif',
+                                                fontWeight: 600
+                                            }}
+                                        >
+                                            Fermer
+                                        </button>
+                                    </div>
+                                    <div style={messageStyle}>
+                                        {selectedAnnouncement.message}
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => setSelectedAnnouncement(null)}
-                                    style={{
-                                        background: 'var(--color-primary)',
-                                        color: 'var(--color-third)',
-                                        border: 'none',
-                                        padding: '8px 16px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontFamily: 'Alata, sans-serif',
-                                        fontWeight: 600
-                                    }}
-                                >
-                                    Fermer
-                                </button>
-                            </div>
-                            <div style={messageStyle}>
-                                {selectedAnnouncement.message}
-                            </div>
-                        </div>
-                    )}
-                </>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
             )}
         </div>
     );
 }
 
 export default Announcements;
-
