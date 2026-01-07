@@ -354,7 +354,7 @@ function Planning() {
                     <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
                         <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                             <div>
-                                <div style={{ color: '#6b7280', fontSize: 14, fontFamily: 'Spectral, serif' }}>du</div>
+                                <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>du</div>
                                 <div style={{ fontWeight: 700 }}>{rangeStart ? toYMD(rangeStart) : '—'}</div>
                                 <label style={{ display: 'block', marginTop: 8 }}>
                                     <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
@@ -364,7 +364,7 @@ function Planning() {
                                 </label>
                             </div>
                             <div>
-                                <div style={{ color: '#6b7280', fontSize: 14, fontFamily: 'Spectral, serif' }}>au</div>
+                                <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>au</div>
                                 <div style={{ fontWeight: 700 }}>{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
                                 <label style={{ display: 'block', marginTop: 8 }}>
                                     <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
@@ -378,7 +378,7 @@ function Planning() {
 
                     {/* Fixed type options + legend */}
                     <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <p style={{ fontFamily: 'Spectral, serif', color: '#6b7280', margin: '0' }}>Type de demande</p>
+                        <p style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-third-text)', margin: '0' }}>Type de demande</p>
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
                                 <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif' }}>
@@ -397,7 +397,7 @@ function Planning() {
                     )}
 
                     <div>
-                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: 'var(--hightlight1)', color: '#fff', border: 'none', cursor: 'pointer' }}>
                             {submitting ? 'Envoi...' : 'Valider la demande'}
                         </button>
                     </div>

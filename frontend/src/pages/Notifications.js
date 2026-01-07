@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import notificationService from '../services/notificationService'
+import '../index.css'
 
 function Notifications() {
     const [notifications, setNotifications] = useState([])
@@ -78,7 +79,8 @@ function Notifications() {
         color: 'var(--color-secondary)',
         borderRadius: '9px',
         padding: '16px 20px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        marginTop: '50px'
     }
 
     const titleStyle = {
@@ -123,8 +125,7 @@ function Notifications() {
         return (
             <div style={cardStyle}>
                 <div style={titleStyle}>
-                    <span style={{ fontSize: 18 }}>🔔</span>
-                    <h2 style={{ margin: 0, fontWeight: 500, color: 'var(--color-secondary)' }}>Notifications</h2>
+                    <h1>Notifications</h1>
                 </div>
                 <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)' }}>
                     Chargement...
@@ -136,8 +137,7 @@ function Notifications() {
     return (
         <div style={cardStyle}>
             <div style={titleStyle}>
-                <span style={{ fontSize: 18 }}>🔔</span>
-                <h2 style={{ margin: 0, fontWeight: 500, color: 'var(--color-secondary)' }}>Notifications</h2>
+                <h1>Notifications</h1>
             </div>
             {notifications.length === 0 ? (
                 <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)', marginTop: 12 }}>

@@ -77,7 +77,7 @@ function Notifications() {
         color: 'var(--color-secondary)',
         borderRadius: '9px',
         padding: '16px 20px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
     }
 
     const titleStyle = {
