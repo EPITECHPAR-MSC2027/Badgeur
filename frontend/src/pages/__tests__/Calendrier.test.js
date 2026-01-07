@@ -524,9 +524,6 @@ describe('Calendrier', () => {
                 expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
             });
 
-            // January has 31 days
-            const dayNumbers = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-
             // Check that various day numbers are present
             expect(screen.getByText('1')).toBeInTheDocument();
             expect(screen.getByText('15')).toBeInTheDocument();
