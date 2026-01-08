@@ -55,7 +55,7 @@ namespace badgeur_backend.Endpoints
 
         public static async Task<IResult> HandleCreateUser(CreateUserRequest request, UserService userService)
         {
-            var id = await userService.CreateUserAsync(request);
+            long? id = await userService.CreateUserAsync(request);
 
             if (id == null)
                 return Results.BadRequest("Failed to create a new user.");

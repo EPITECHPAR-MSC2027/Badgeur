@@ -32,7 +32,7 @@ namespace badgeur_backend.Endpoints
                 if (hasConflict)
                     return Results.BadRequest("Vehicule is already booked for this time period.");
 
-                var id = await bookingVehiculeService.CreateBookingVehiculeAsync(request);
+                long? id = await bookingVehiculeService.CreateBookingVehiculeAsync(request);
 
                 if (id == null)
                     return Results.BadRequest("Failed to create a new booking.");
