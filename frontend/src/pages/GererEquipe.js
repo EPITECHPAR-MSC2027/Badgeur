@@ -35,7 +35,7 @@ function GererEquipe() {
             if (isRH) {
                 setAllTeams(Array.isArray(teams) ? teams : [])
                 setAllUsers(Array.isArray(users) ? users : [])
-                
+
                 // Charger les plannings de tous les utilisateurs
                 const planningEntries = await Promise.all(users.map(async (u) => {
                     try {
@@ -85,6 +85,7 @@ function GererEquipe() {
 
     const tabButton = (key, label) => (
         <button
+            data-testid={`tab-button-${key}`}
             onClick={() => setTab(key)}
             style={{
                 padding: '8px 12px',
@@ -100,31 +101,31 @@ function GererEquipe() {
     )
 
     const ManageView = () => (
-        <div>
-            <h2 style={{ marginTop: 0, fontSize: '28px', fontWeight: '700' }}>Mon équipe</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div data-testid="manage-view">
+            <h2 data-testid="team-title" style={{ marginTop: 0, fontSize: '28px', fontWeight: '700' }}>Mon équipe</h2>
+            <div data-testid="team-members-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {teamMembers.map(u => {
                     const lastPunch = lastPunchByUserId[u.id]
                     const timeText = lastPunch ? lastPunch.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'
                     const dateText = lastPunch ? lastPunch.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Aucun pointage'
                     return (
-                        <div key={u.id} style={{ background: 'var(--color-primary)', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 14, display: 'flex', gap: 30, alignItems: 'center' }}>
-                            <img src={profilImg} alt="Profil" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover' }} />
+                        <div key={u.id} data-testid={`team-member-card-${u.id}`} style={{ background: 'var(--color-primary)', borderRadius: 10, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', padding: 14, display: 'flex', gap: 30, alignItems: 'center' }}>
+                            <img data-testid={`member-avatar-${u.id}`} src={profilImg} alt="Profil" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover' }} />
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 700, fontSize: 20, fontFamily:'Spectral, serif'}}>{u.firstName} {u.lastName}</div>
-                                <div style={{ fontSize: 14, color: 'var(--color-third-text)', fontWeight: 600,marginTop: 7, fontFamily: 'Fustat, sans-serif'}}>{u.email}</div>
-                                <div style={{display: 'flex', gap: 8, fontSize: 15,marginTop: 14 }}>
-                                    <span style={{ color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif'}}>Dernier pointage:</span>
-                                    <span style={{ fontWeight: 600, fontFamily: 'Fustat, sans-serif' }}>{timeText}</span>
+                                <div data-testid={`member-name-${u.id}`} style={{ fontWeight: 700, fontSize: 20, fontFamily: 'Spectral, serif' }}>{u.firstName} {u.lastName}</div>
+                                <div data-testid={`member-email-${u.id}`} style={{ fontSize: 14, color: 'var(--color-third-text)', fontWeight: 600, marginTop: 7, fontFamily: 'Fustat, sans-serif' }}>{u.email}</div>
+                                <div data-testid={`member-last-punch-${u.id}`} style={{ display: 'flex', gap: 8, fontSize: 15, marginTop: 14 }}>
+                                    <span style={{ color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif' }}>Dernier pointage:</span>
+                                    <span data-testid={`member-punch-time-${u.id}`} style={{ fontWeight: 600, fontFamily: 'Fustat, sans-serif' }}>{timeText}</span>
                                     <span style={{ color: 'var(--color-third-text)' }}>•</span>
-                                    <span style ={{fontFamily: 'Fustat, sans-serif'}}>{dateText}</span>
+                                    <span data-testid={`member-punch-date-${u.id}`} style={{ fontFamily: 'Fustat, sans-serif' }}>{dateText}</span>
                                 </div>
                             </div>
                         </div>
                     )
                 })}
                 {teamMembers.length === 0 && (
-                    <div style={{ color: 'var(--color-second-text)' }}>Votre équipe est vide</div>
+                    <div data-testid="empty-team-message" style={{ color: 'var(--color-second-text)' }}>Votre équipe est vide</div>
                 )}
             </div>
         </div>
@@ -132,17 +133,17 @@ function GererEquipe() {
 
     const DashboardView = () => {
         return (
-            <div style={{ marginTop: 18 }}>
+            <div data-testid="dashboard-view" style={{ marginTop: 18 }}>
                 <ManagerAnalytics />
             </div>
         )
     }
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>{isRH ? 'Gestion RH' : 'Gérer équipe'}</h1>
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <div data-testid="gerer-equipe-page" className="App">
+            <header data-testid="page-header" className="App-header">
+                <h1 data-testid="page-title">{isRH ? 'Gestion RH' : 'Gérer équipe'}</h1>
+                <div data-testid="tab-buttons" style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                     {isRH ? (
                         <>
                             {tabButton('validation', 'Validation plannings')}
@@ -158,12 +159,12 @@ function GererEquipe() {
             </header>
 
             {error && (
-                <div style={{ color: '#b10000', background: '#fff5f5', border: '1px solid #f2c0c0', borderRadius: 8, padding: 10, margin: '12px 20px 0' }}>
+                <div data-testid="error-message" style={{ color: '#b10000', background: '#fff5f5', border: '1px solid #f2c0c0', borderRadius: 8, padding: 10, margin: '12px 20px 0' }}>
                     {error}
                 </div>
             )}
 
-            <div style={{ padding: 20, opacity: loading ? 0.6 : 1 }}>
+            <div data-testid="content-container" style={{ padding: 20, opacity: loading ? 0.6 : 1 }}>
                 {tab === 'manage' && <ManageView />}
                 {tab === 'validation' && <ValidationPlanning />}
                 {tab === 'dashboard' && <DashboardView />}
