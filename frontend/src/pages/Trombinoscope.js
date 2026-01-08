@@ -149,7 +149,7 @@ function Trombinoscope() {
 
     const gridStyle = {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmin(280px, 1fr))',
         gap: '20px',
         marginBottom: '24px'
     };
@@ -204,20 +204,23 @@ function Trombinoscope() {
 
     if (loading) {
         return (
-            <div style={containerStyle}>
-                <p>Chargement des utilisateurs...</p>
+            <div style={containerStyle} data-testid="trombinoscope-loading">
+                <p data-testid="loading-message">Chargement des utilisateurs...</p>
             </div>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <div style={headerStyle}>
-                <h1>
+        <div style={containerStyle} data-testid="trombinoscope-container">
+            <div style={headerStyle} data-testid="trombinoscope-header">
+                <h1 data-testid="trombinoscope-title">
                     Trombinoscope
                 </h1>
-                <p style={{ color: 'var(--color--third-text)', fontWeight:'700', marginTop: '8px', margin: '8px 0 0 0' }}>
-                    {currentUserRoleId === 3 
+                <p
+                    style={{ color: 'var(--color--third-text)', fontWeight: '700', marginTop: '8px', margin: '8px 0 0 0' }}
+                    data-testid="trombinoscope-subtitle"
+                >
+                    {currentUserRoleId === 3
                         ? 'Cliquez sur une personne pour voir son profil détaillé'
                         : 'Annuaire des employés'}
                 </p>
@@ -229,75 +232,90 @@ function Trombinoscope() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={searchStyle}
+                data-testid="search-input"
             />
 
-            <div style={gridStyle}>
-                {filteredUsers.map(user => {
-                    const teamName = getTeamName(user.teamId);
-                    return (
-                        <div
-                            key={user.id}
-                            onClick={() => handleUserClick(user)}
-                            style={userCardStyle}
-                            onMouseEnter={(e) => {
-                                if (currentUserRoleId === 3) {
-                                    e.currentTarget.style.transform = 'translateY(-4px)';
-                                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (currentUserRoleId === 3) {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-                                }
-                            }}
-                        >
-                            <div style={avatarStyle(user.roleId)}>
-                                {getInitials(user.firstName, user.lastName)}
-                            </div>
-                            
-                            <h3 style={{ 
-                                margin: '0 0 4px 0', 
-                                color: '#1a237e',
-                                fontFamily: 'Alata, sans-serif',
-                                fontSize: '18px'
-                            }}>
-                                {user.firstName} {user.lastName}
-                            </h3>
-                            
-                            <p style={{ 
-                                margin: '0 0 12px 0', 
-                                fontSize: '14px', 
-                                color: '#666',
-                                fontWeight: '500'
-                            }}>
-                                {getRoleLabel(user.roleId)}
-                            </p>
-
-                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-                                <div style={infoRowStyle}>
-                                    <span>✉️</span>
-                                    <span>{user.email}</span>
+            {filteredUsers.length === 0 ? (
+                <div data-testid="no-users-message">
+                    <p>Aucun utilisateur trouvé</p>
+                </div>
+            ) : (
+                <div style={gridStyle} data-testid="users-grid">
+                    {filteredUsers.map(user => {
+                        const teamName = getTeamName(user.teamId);
+                        return (
+                            <div
+                                key={user.id}
+                                onClick={() => handleUserClick(user)}
+                                style={userCardStyle}
+                                data-testid={`user-card-${user.id}`}
+                                data-clickable={currentUserRoleId === 3}
+                                onMouseEnter={(e) => {
+                                    if (currentUserRoleId === 3) {
+                                        e.currentTarget.style.transform = 'translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (currentUserRoleId === 3) {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                                    }
+                                }}
+                            >
+                                <div style={avatarStyle(user.roleId)} data-testid={`user-avatar-${user.id}`}>
+                                    {getInitials(user.firstName, user.lastName)}
                                 </div>
-                                
-                                {user.telephone && (
-                                    <div style={infoRowStyle}>
-                                        <span>📞</span>
-                                        <span>{user.telephone}</span>
+
+                                <h3
+                                    style={{
+                                        margin: '0 0 4px 0',
+                                        color: '#1a237e',
+                                        fontFamily: 'Alata, sans-serif',
+                                        fontSize: '18px'
+                                    }}
+                                    data-testid={`user-name-${user.id}`}
+                                >
+                                    {user.firstName} {user.lastName}
+                                </h3>
+
+                                <p
+                                    style={{
+                                        margin: '0 0 12px 0',
+                                        fontSize: '14px',
+                                        color: '#666',
+                                        fontWeight: '500'
+                                    }}
+                                    data-testid={`user-role-${user.id}`}
+                                >
+                                    {getRoleLabel(user.roleId)}
+                                </p>
+
+                                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }} data-testid={`user-info-${user.id}`}>
+                                    <div style={infoRowStyle} data-testid={`user-email-${user.id}`}>
+                                        <span>✉️</span>
+                                        <span>{user.email}</span>
                                     </div>
-                                )}
-                                
-                                {teamName && (
-                                    <div style={infoRowStyle}>
-                                        <span>👥</span>
-                                        <span>{teamName}</span>
-                                    </div>
-                                )}
+
+                                    {user.telephone && (
+                                        <div style={infoRowStyle} data-testid={`user-telephone-${user.id}`}>
+                                            <span>📞</span>
+                                            <span>{user.telephone}</span>
+                                        </div>
+                                    )}
+
+                                    {teamName && (
+                                        <div style={infoRowStyle} data-testid={`user-team-${user.id}`}>
+                                            <span>👥</span>
+                                            <span>{teamName}</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
