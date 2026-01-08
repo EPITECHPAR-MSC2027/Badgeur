@@ -26,7 +26,7 @@ jobs:
         working-directory: ./badgeur-backend-tests
         run: |
             dotnet restore
-            dotnet test --configuration Release --nologo
+            dotnet test --configuration Release --nologo /p:UseSharedCompilation=false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
