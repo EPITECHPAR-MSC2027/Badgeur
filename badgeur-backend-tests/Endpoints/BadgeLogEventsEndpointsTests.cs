@@ -80,7 +80,7 @@ namespace badgeur_backend_tests.Endpoints
             var result = await BadgeLogEventEndpoints.HandleCreateBadgeLogEvent(request, service);
 
             // Assert
-            result.Should().BeOfType<Ok<long>>();
+            result.Should().BeOfType<Ok<long?>>();
             var okResult = result as Ok<long>;
             okResult!.Value.Should().Be(123);
         }
