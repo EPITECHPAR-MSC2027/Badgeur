@@ -81,7 +81,7 @@ namespace badgeur_backend_tests.Endpoints
 
             // Assert
             result.Should().BeOfType<Ok<long?>>();
-            var okResult = result as Ok<long>;
+            var okResult = result as Ok<long?>;
             okResult!.Value.Should().Be(123);
         }
 
