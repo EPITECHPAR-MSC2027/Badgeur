@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace badgeur_backend.Contracts.Requests.Update
 {
-    [JsonSerializable(typeof(UpdateVehiculeRequest))]
     public class UpdateVehiculeRequest
     {
         public string Name { get; set; } = default!;

@@ -2,7 +2,6 @@
 
 namespace badgeur_backend.Contracts.Responses
 {
-    [JsonSerializable(typeof(UserSummaryResponse))]
     public class UserSummaryResponse
     {
         public long UserId { get; set; }

@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace badgeur_backend.Contracts.Requests.Create
 {
-    [JsonSerializable(typeof(CreateBookingVehiculeRequest))]
     public class CreateBookingVehiculeRequest
     {
         public required long IdVehicule { get; set; }

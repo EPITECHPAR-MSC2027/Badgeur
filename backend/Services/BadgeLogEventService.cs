@@ -57,7 +57,7 @@ namespace badgeur_backend.Services
             await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Delete();
         }
 
-        public virtual async Task<BadgeLogEventResponse> UpdateBadgeLogEventAsync(long id, UpdateBadgeLogEventRequest updateBadgeLogEventRequest)
+        public virtual async Task<BadgeLogEventResponse?> UpdateBadgeLogEventAsync(long id, UpdateBadgeLogEventRequest updateBadgeLogEventRequest)
         {
             var request = await _client.From<BadgeLogEvent>().Where(n => n.Id == id).Get();
             var ble = request.Models.FirstOrDefault();

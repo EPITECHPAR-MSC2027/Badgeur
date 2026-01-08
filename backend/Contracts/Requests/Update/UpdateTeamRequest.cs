@@ -2,7 +2,6 @@
 
 namespace badgeur_backend.Contracts.Requests.Update
 {
-    [JsonSerializable(typeof(UpdateTeamRequest))]
     public class UpdateTeamRequest
     {
         public long ManagerId { get; set; } = default!;
