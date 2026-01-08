@@ -101,8 +101,8 @@ namespace badgeur_backend_tests.Endpoints
 
             var result = await UserEndpoints.HandleCreateUser(request, userService);
 
-            result.Should().BeOfType<Ok<long>>();
-            var ok = (Ok<long>)result;
+            result.Should().BeOfType<Ok<long?>>();
+            var ok = (Ok<long?>)result;
             ok.Value.Should().Be(123);
         }
 

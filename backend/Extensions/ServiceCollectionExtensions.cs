@@ -1,9 +1,13 @@
 ﻿using Supabase;
+using System.Text.Json.Serialization.Metadata;
+using System.Diagnostics.CodeAnalysis;
 
 namespace badgeur_backend.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "DefaultJsonTypeInfoResolver is used for dynamic JSON serialization which is acceptable in this API context.")]
+        [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "DefaultJsonTypeInfoResolver is used for dynamic JSON serialization which is acceptable in this API context.")]
         public static IServiceCollection AddSupabase(this IServiceCollection services, IConfiguration config)
         {
             var url = config["Supabase:Url"]
@@ -19,10 +23,9 @@ namespace badgeur_backend.Extensions
                 )
             );
 
-            services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+            services.ConfigureHttpJsonOptions(options =>
             {
-                options.SerializerOptions.TypeInfoResolver =
-                    new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver();
+                options.SerializerOptions.TypeInfoResolverChain.Insert(0, new DefaultJsonTypeInfoResolver());
             });
 
             return services;

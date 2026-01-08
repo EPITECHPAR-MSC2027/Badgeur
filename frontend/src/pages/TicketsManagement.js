@@ -40,7 +40,7 @@ function TicketsManagement() {
                 throw new Error('Erreur lors du chargement des tickets');
             }
             const data = await response.json();
-            
+
             // Filtrer les tickets selon le role_id de l'utilisateur connecté
             const roleId = parseInt(localStorage.getItem('roleId'), 10);
             let filteredData = data;
@@ -119,7 +119,7 @@ function TicketsManagement() {
                     const usersResponse = await authService.get('/users');
                     if (usersResponse.ok) {
                         const users = await usersResponse.json();
-                        const ticketUser = Array.isArray(users) 
+                        const ticketUser = Array.isArray(users)
                             ? users.find(u => (u.email || u.Email)?.toLowerCase() === userEmail.toLowerCase())
                             : null;
 
@@ -127,7 +127,7 @@ function TicketsManagement() {
                             const ticketUserId = ticketUser.id || ticketUser.Id;
                             const category = currentTicket.category || currentTicket.Category;
                             const message = `Votre ticket "${category}" a été traité.`;
-                            
+
                             await notificationService.createNotification({
                                 userId: ticketUserId,
                                 message: message,
@@ -173,25 +173,25 @@ function TicketsManagement() {
 
     if (loading && tickets.length === 0) {
         return (
-            <div className="tickets-management-container">
-                <div className="tickets-loading">Chargement des tickets...</div>
+            <div className="tickets-management-container" data-testid="tickets-container">
+                <div className="tickets-loading" data-testid="loading-message">Chargement des tickets...</div>
             </div>
         );
     }
 
     return (
-        <div className="tickets-management-container">
-            <h1 className="tickets-title">Gestion des tickets</h1>
+        <div className="tickets-management-container" data-testid="tickets-container">
+            <h1 className="tickets-title" data-testid="page-title">Gestion des tickets</h1>
 
             {error && (
-                <div className="tickets-error">
-                    ⚠️ {error}
+                <div className="tickets-error" data-testid="error-message">
+                    {error}
                 </div>
             )}
 
-            <div className="tickets-controls">
+            <div className="tickets-controls" data-testid="tickets-controls">
                 <div className="tickets-filter">
-                    <label htmlFor="category-filter" className="filter-label">
+                    <label htmlFor="category-filter" className="filter-label" data-testid="filter-label">
                         Filtrer par catégorie :
                     </label>
                     <select
@@ -199,10 +199,11 @@ function TicketsManagement() {
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                         className="filter-select"
+                        data-testid="category-filter"
                     >
-                        <option value="">Toutes les catégories</option>
+                        <option value="" data-testid="category-option-all">Toutes les catégories</option>
                         {getUniqueCategories().map(category => (
-                            <option key={category} value={category}>
+                            <option key={category} value={category} data-testid={`category-option-${category}`}>
                                 {category}
                             </option>
                         ))}
@@ -211,13 +212,13 @@ function TicketsManagement() {
             </div>
 
             {filteredTickets.length === 0 ? (
-                <div className="tickets-empty">
-                    {selectedCategory === '' 
+                <div className="tickets-empty" data-testid="empty-state">
+                    {selectedCategory === ''
                         ? 'Aucun ticket disponible'
                         : `Aucun ticket pour la catégorie "${selectedCategory}"`}
                 </div>
             ) : (
-                <div className="tickets-list">
+                <div className="tickets-list" data-testid="tickets-list">
                     {filteredTickets.map(ticket => {
                         const ticketId = ticket.id || ticket.Id;
                         const category = ticket.category || ticket.Category;
@@ -227,46 +228,50 @@ function TicketsManagement() {
                         const status = ticket.status || ticket.Status;
                         const description = ticket.description || ticket.Description;
                         const isTreated = status === 'traité';
-                        
+
                         return (
-                            <div key={ticketId} className="ticket-card">
-                                <div 
+                            <div key={ticketId} className="ticket-card" data-testid={`ticket-card-${ticketId}`}>
+                                <div
                                     className="ticket-header"
                                     onClick={() => toggleTicketExpansion(ticketId)}
+                                    data-testid={`ticket-header-${ticketId}`}
                                 >
                                     <div className="ticket-header-info">
-                                        <div className="ticket-category">{category}</div>
-                                        <div className="ticket-user">
+                                        <div className="ticket-category" data-testid={`ticket-category-${ticketId}`}>{category}</div>
+                                        <div className="ticket-user" data-testid={`ticket-user-${ticketId}`}>
                                             {userName} {userLastName}
                                         </div>
-                                        <div className="ticket-date">{formatDate(createdAt)}</div>
-                                        <div 
+                                        <div className="ticket-date" data-testid={`ticket-date-${ticketId}`}>{formatDate(createdAt)}</div>
+                                        <div
                                             className="ticket-status"
                                             style={{ backgroundColor: getStatusColor(status) }}
+                                            data-testid={`ticket-status-${ticketId}`}
+                                            data-status={status}
                                         >
                                             {status}
                                         </div>
                                     </div>
-                                    <div className="ticket-expand-icon">
+                                    <div className="ticket-expand-icon" data-testid={`ticket-expand-icon-${ticketId}`}>
                                         {expandedTickets.has(ticketId) ? '▼' : '▶'}
                                     </div>
                                 </div>
 
                                 {expandedTickets.has(ticketId) && (
-                                    <div className="ticket-details">
+                                    <div className="ticket-details" data-testid={`ticket-details-${ticketId}`}>
                                         <div className="ticket-description">
                                             <strong>Description :</strong>
-                                            <p>{description}</p>
+                                            <p data-testid={`ticket-description-${ticketId}`}>{description}</p>
                                         </div>
                                         {!isTreated && (
-                                            <div className="ticket-actions">
+                                            <div className="ticket-actions" data-testid={`ticket-actions-${ticketId}`}>
                                                 <button
                                                     onClick={() => handleUpdateStatus(ticketId)}
                                                     disabled={updatingStatus === ticketId}
                                                     className="ticket-mark-done-btn"
+                                                    data-testid={`mark-done-button-${ticketId}`}
                                                 >
-                                                    {updatingStatus === ticketId 
-                                                        ? 'Mise à jour...' 
+                                                    {updatingStatus === ticketId
+                                                        ? 'Mise à jour...'
                                                         : 'Marquer comme traité'}
                                                 </button>
                                             </div>
@@ -283,4 +288,3 @@ function TicketsManagement() {
 }
 
 export default TicketsManagement;
-

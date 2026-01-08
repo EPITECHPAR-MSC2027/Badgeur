@@ -114,6 +114,9 @@ namespace badgeur_backend.Endpoints
     HttpContext context)
         {
             var authenticatedUser = context.Items["User"] as Supabase.Gotrue.User;
+            if (authenticatedUser == null || string.IsNullOrEmpty(authenticatedUser?.Email))
+                return Results.Unauthorized();
+
             var connectedUser = await userService.GetUserByEmailAsync(authenticatedUser.Email);
 
             if (connectedUser == null)

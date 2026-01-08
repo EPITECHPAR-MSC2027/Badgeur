@@ -206,7 +206,7 @@ namespace badgeur_backend.Services
         }
 
         // Calculate and store User KPIs. Return the values upon success
-        public virtual async Task<UserKPI> CalculateAllUserKPIs(long userId)
+        public virtual async Task<UserKPI?> CalculateAllUserKPIs(long userId)
         {
             UserKPI userKPIs = new UserKPI
             {

@@ -36,57 +36,68 @@ function Admin() {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Administration</h1>
+        <div className="App" data-testid="admin-container">
+            <header className="App-header" data-testid="admin-header">
+                <h1 data-testid="admin-title">Administration</h1>
                 <SeedDataPanel />
-                <div className="admin-nav">
-                    <button 
+                <div className="admin-nav" data-testid="admin-nav">
+                    <button
+                        data-testid="nav-button-users"
                         className={`nav-button ${activeSection === 'users' ? 'active' : ''}`}
                         onClick={() => setActiveSection('users')}
+                        data-active={activeSection === 'users'}
                     >
                         Utilisateurs
                     </button>
-                    <button 
+                    <button
+                        data-testid="nav-button-teams"
                         className={`nav-button ${activeSection === 'teams' ? 'active' : ''}`}
                         onClick={() => setActiveSection('teams')}
+                        data-active={activeSection === 'teams'}
                     >
                         Équipes
                     </button>
-                    <button 
+                    <button
+                        data-testid="nav-button-pointages"
                         className={`nav-button ${activeSection === 'pointages' ? 'active' : ''}`}
                         onClick={() => setActiveSection('pointages')}
+                        data-active={activeSection === 'pointages'}
                     >
                         Pointages
                     </button>
-                    <button 
+                    <button
+                        data-testid="nav-button-plannings"
                         className={`nav-button ${activeSection === 'plannings' ? 'active' : ''}`}
                         onClick={() => setActiveSection('plannings')}
+                        data-active={activeSection === 'plannings'}
                     >
                         Plannings
                     </button>
-                    <button 
+                    <button
+                        data-testid="nav-button-typeDemandes"
                         className={`nav-button ${activeSection === 'typeDemandes' ? 'active' : ''}`}
                         onClick={() => setActiveSection('typeDemandes')}
+                        data-active={activeSection === 'typeDemandes'}
                     >
                         Types de demande
                     </button>
                 </div>
             </header>
-            <div className="admin-page">
+            <div className="admin-page" data-testid="admin-page">
                 {activeSection === 'users' ? (
-                    <UsersSection />
+                    <UsersSection data-testid="users-section" />
                 ) : activeSection === 'teams' ? (
-                    <TeamsSection />
+                    <TeamsSection data-testid="teams-section" />
                 ) : activeSection === 'pointages' ? (
-                    <PointagesSection 
+                    <PointagesSection
+                        data-testid="pointages-section"
                         onEditPointage={handleEditPointage}
                         onDeletePointage={handleDeletePointage}
                     />
                 ) : activeSection === 'plannings' ? (
-                    <PlanningsSection />
+                    <PlanningsSection data-testid="plannings-section" />
                 ) : (
-                    <TypeDemandesSection />
+                    <TypeDemandesSection data-testid="typeDemandes-section" />
                 )}
             </div>
         </div>

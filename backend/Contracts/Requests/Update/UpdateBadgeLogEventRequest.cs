@@ -3,7 +3,6 @@
 namespace badgeur_backend.Contracts.Requests.Update
 {
 
-    [JsonSerializable(typeof(UpdateBadgeLogEventRequest))]
     public class UpdateBadgeLogEventRequest
     {
         public DateTime BadgedAt { get; set; }

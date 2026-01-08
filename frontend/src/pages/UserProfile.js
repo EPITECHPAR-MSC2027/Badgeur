@@ -68,7 +68,7 @@ function UserProfile() {
                     const userTeam = allTeams.find(t => t.id === user.teamId);
                     if (userTeam) {
                         setTeamName(userTeam.teamName || `Équipe ${userTeam.id}`);
-                        
+
                         if (user.roleId === 0 && userTeam.managerId) {
                             const manager = allUsers.find(u => u.id === userTeam.managerId);
                             if (manager) {
@@ -133,7 +133,7 @@ function UserProfile() {
 
     const getRoleLabel = (roleId) => {
         switch (roleId) {
-            case 0: return 'Employé';
+            case 0: return 'Employe';
             case 1: return 'Manager';
             case 2: return 'Admin';
             case 3: return 'RH';
@@ -161,7 +161,7 @@ function UserProfile() {
     const filteredBadges = badgeages.filter(badge => {
         const badgeDate = badge.time.toISOString().split('T')[0];
         return badgeDate === selectedDate;
-    }).sort((a, b) => a.time - b.time); 
+    }).sort((a, b) => a.time - b.time);
 
     const containerStyle = {
         maxWidth: '1200px',
@@ -210,7 +210,7 @@ function UserProfile() {
     };
 
     const informationStyle = {
-        margin: '0 0 4px 0', 
+        margin: '0 0 4px 0',
         color: 'var(--color-text)',
         fontSize: '14px',
         fontWeight: '800'
@@ -223,8 +223,8 @@ function UserProfile() {
 
     if (loading) {
         return (
-            <div style={containerStyle}>
-                <p>Chargement du profil...</p>
+            <div style={containerStyle} data-testid="loading-container">
+                <p data-testid="loading-text">Chargement du profil...</p>
             </div>
         );
     }
@@ -234,21 +234,27 @@ function UserProfile() {
     }
 
     return (
-        <div style={containerStyle}>
-            <div style={headerStyle}>
+        <div style={containerStyle} data-testid="profile-container">
+            <div style={headerStyle} data-testid="profile-header">
                 <div>
-                    <h1 style={{ 
-                        color: 'var(--color-secondary)', 
-                        fontFamily: 'Alata, sans-serif',
-                        marginTop: '50px'
-                    }}>
+                    <h1
+                        style={{
+                            color: 'var(--color-secondary)',
+                            fontFamily: 'Alata, sans-serif',
+                            marginTop: '50px'
+                        }}
+                        data-testid="profile-title"
+                    >
                         Profil de {user.firstName} {user.lastName}
                     </h1>
-                    <p style={{ 
-                        color: 'var(--color-text)', 
-                        marginTop: '8px',
-                        margin: '8px 0 0 0'
-                    }}>
+                    <p
+                        style={{
+                            color: 'var(--color-text)',
+                            marginTop: '8px',
+                            margin: '8px 0 0 0'
+                        }}
+                        data-testid="user-role"
+                    >
                         {getRoleLabel(user.roleId)}
                     </p>
                 </div>
@@ -265,55 +271,59 @@ function UserProfile() {
                         fontWeight: 600,
                         fontSize: '14px'
                     }}
+                    data-testid="back-button"
                 >
                     ← Retour
                 </button>
             </div>
 
-            <div style={infoCardStyle}>
-                <h2 style={{ 
-                    color: 'var(--color-secondary)', 
-                    fontFamily: 'Alata, sans-serif',
-                    marginTop: 0,
-                    marginBottom: '16px'
-                }}>
+            <div style={infoCardStyle} data-testid="info-card">
+                <h2
+                    style={{
+                        color: 'var(--color-secondary)',
+                        fontFamily: 'Alata, sans-serif',
+                        marginTop: 0,
+                        marginBottom: '16px'
+                    }}
+                    data-testid="info-section-title"
+                >
                     Informations
                 </h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
-                    <div>
+                    <div data-testid="email-field">
                         <p style={informationStyle}>
                             Email
                         </p>
-                        <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }}>
+                        <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }} data-testid="user-email">
                             {user.email}
                         </p>
                     </div>
                     {user.telephone && (
-                        <div>
+                        <div data-testid="telephone-field">
                             <p style={informationStyle}>
-                                Téléphone
+                                Telephone
                             </p>
-                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }}>
+                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }} data-testid="user-telephone">
                                 {user.telephone}
                             </p>
                         </div>
                     )}
                     {teamName && (
-                        <div>
+                        <div data-testid="team-field">
                             <p style={informationStyle}>
-                                Équipe
+                                Equipe
                             </p>
-                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }}>
+                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }} data-testid="user-team">
                                 {teamName}
                             </p>
                         </div>
                     )}
                     {managerName && user.roleId === 0 && (
-                        <div>
+                        <div data-testid="manager-field">
                             <p style={informationStyle}>
                                 Manager
                             </p>
-                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }}>
+                            <p style={{ margin: 0, color: 'var(--color-text)', fontSize: '16px' }} data-testid="user-manager">
                                 {managerName}
                             </p>
                         </div>
@@ -321,26 +331,32 @@ function UserProfile() {
                 </div>
             </div>
 
-            <div style={infoCardStyle}>
-                <h2 style={{ 
-                    color: 'var(--color-secondary)', 
-                    fontFamily: 'Alata, sans-serif',
-                    marginTop: 0,
-                    marginBottom: '16px'
-                }}>
+            <div style={infoCardStyle} data-testid="history-card">
+                <h2
+                    style={{
+                        color: 'var(--color-secondary)',
+                        fontFamily: 'Alata, sans-serif',
+                        marginTop: 0,
+                        marginBottom: '16px'
+                    }}
+                    data-testid="history-section-title"
+                >
                     Historique de pointage
                 </h2>
-                
+
                 <div style={{ marginBottom: '20px' }}>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '8px',
-                        color: 'var(--color-text)',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        fontFamily:'Fustat, sans-serif'
-                    }}>
-                        Sélectionner un jour
+                    <label
+                        style={{
+                            display: 'block',
+                            marginBottom: '8px',
+                            color: 'var(--color-text)',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            fontFamily: 'Fustat, sans-serif'
+                        }}
+                        data-testid="date-label"
+                    >
+                        Selectionner un jour
                     </label>
                     <input
                         type="date"
@@ -356,32 +372,37 @@ function UserProfile() {
                             background: 'var(--color-background)',
                             color: 'var(--color-text)'
                         }}
+                        data-testid="date-picker"
                     />
                 </div>
 
                 {loadingBadgeages ? (
-                    <p style={{ color: 'var(--color-text)' }}>Chargement des pointages...</p>
+                    <p style={{ color: 'var(--color-text)' }} data-testid="loading-badges">Chargement des pointages...</p>
                 ) : filteredBadges.length === 0 ? (
-                    <div style={informationStyle}>
-                        <p style={{ fontSize: '18px', margin: 0 }}>
-                            Aucun pointage enregistré pour le {formatDate(new Date(selectedDate))}
+                    <div style={informationStyle} data-testid="empty-badges-state">
+                        <p style={{ fontSize: '18px', margin: 0 }} data-testid="empty-badges-message">
+                            Aucun pointage enregistre pour le {formatDate(new Date(selectedDate))}
                         </p>
                     </div>
                 ) : (
-                    <div>
-                        <p style={{ 
-                            color: 'var(--color-text)', 
-                            marginBottom: '16px',
-                            fontSize: '16px',
-                            fontWeight: 600
-                        }}>
+                    <div data-testid="badges-list-container">
+                        <p
+                            style={{
+                                color: 'var(--color-text)',
+                                marginBottom: '16px',
+                                fontSize: '16px',
+                                fontWeight: 600
+                            }}
+                            data-testid="badges-count"
+                        >
                             {filteredBadges.length} pointage{filteredBadges.length > 1 ? 's' : ''} le {formatDate(new Date(selectedDate))}
                         </p>
-                        <div>
+                        <div data-testid="badges-list">
                             {filteredBadges.map((badge, index) => (
-                                <div 
-                                    key={badge.id || index} 
+                                <div
+                                    key={badge.id || index}
                                     style={badgeCardStyle}
+                                    data-testid={`badge-card-${index}`}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.transform = 'translateX(4px)';
                                         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
@@ -391,25 +412,31 @@ function UserProfile() {
                                         e.currentTarget.style.boxShadow = 'none';
                                     }}
                                 >
-                                    <div style={timeBadgeStyle}>
+                                    <div style={timeBadgeStyle} data-testid={`badge-time-${index}`}>
                                         {formatTime(badge.time)}
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <p style={{ 
-                                            margin: 0, 
-                                            color: 'var(--color-text)',
-                                            fontSize: '16px',
-                                            fontWeight: 600
-                                        }}>
+                                        <p
+                                            style={{
+                                                margin: 0,
+                                                color: 'var(--color-text)',
+                                                fontSize: '16px',
+                                                fontWeight: 600
+                                            }}
+                                            data-testid={`badge-label-${index}`}
+                                        >
                                             Pointage #{index + 1}
                                         </p>
-                                        <p style={{ 
-                                            margin: '4px 0 0 0', 
-                                            color: 'var(--color-text)',
-                                            fontSize: '14px'
-                                        }}>
-                                            {badge.time.toLocaleTimeString('fr-FR', { 
-                                                hour: '2-digit', 
+                                        <p
+                                            style={{
+                                                margin: '4px 0 0 0',
+                                                color: 'var(--color-text)',
+                                                fontSize: '14px'
+                                            }}
+                                            data-testid={`badge-full-time-${index}`}
+                                        >
+                                            {badge.time.toLocaleTimeString('fr-FR', {
+                                                hour: '2-digit',
                                                 minute: '2-digit',
                                                 second: '2-digit'
                                             })}

@@ -43,7 +43,7 @@ namespace badgeur_backend.Endpoints
 
         public static async Task<IResult> HandleCreateBadgeLogEvent(CreateBadgeLogEventRequest request, BadgeLogEventService badgeLogEventService)
         {
-            var id = await badgeLogEventService.CreateBadgeLogEventAsync(request);
+            long? id = await badgeLogEventService.CreateBadgeLogEventAsync(request);
 
             if (id == null || id == 0)
                 return Results.BadRequest("Failed to create a new badge log event.");
