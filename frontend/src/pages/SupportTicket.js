@@ -65,7 +65,7 @@ function SupportTicket() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
+
         if (name === 'assigned_to') {
             setFormData(prev => ({
                 ...prev,
@@ -252,32 +252,32 @@ function SupportTicket() {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <div style={styles.iconContainer}>
+        <div style={styles.container} data-testid="support-ticket-container">
+            <div style={styles.card} data-testid="support-ticket-card">
+                <div style={styles.iconContainer} data-testid="ticket-icon">
                     🎫
                 </div>
-                
-                <h1 style={styles.title}>Nouveau ticket</h1>
-                <p style={styles.subtitle}>
+
+                <h1 style={styles.title} data-testid="ticket-title">Nouveau ticket</h1>
+                <p style={styles.subtitle} data-testid="ticket-subtitle">
                     Soumettez une demande ou signalez un problème à l'administration
                 </p>
 
                 {error && (
-                    <div style={{...styles.alert, ...styles.error}}>
+                    <div style={{ ...styles.alert, ...styles.error }} data-testid="error-message">
                         ⚠️ {error}
                     </div>
                 )}
 
                 {success && (
-                    <div style={{...styles.alert, ...styles.success}}>
+                    <div style={{ ...styles.alert, ...styles.success }} data-testid="success-message">
                         ✅ Votre ticket a été créé avec succès ! Redirection en cours...
                     </div>
                 )}
 
-                <form style={{padding: '0px 100px'}} onSubmit={handleSubmit}>
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                <form style={{ padding: '0px 100px' }} onSubmit={handleSubmit} data-testid="ticket-form">
+                    <div style={styles.formGroup} data-testid="assigned-to-group">
+                        <label style={styles.label} data-testid="assigned-to-label">
                             Assigné à<span style={styles.required}>*</span>
                         </label>
                         <select
@@ -287,6 +287,7 @@ function SupportTicket() {
                             style={styles.select}
                             required
                             disabled={loading || !isAuthenticated}
+                            data-testid="assigned-to-select"
                         >
                             <option value="">Sélectionnez un service</option>
                             <option value="IT support">IT support</option>
@@ -294,8 +295,8 @@ function SupportTicket() {
                         </select>
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                    <div style={styles.formGroup} data-testid="first-name-group">
+                        <label style={styles.label} data-testid="first-name-label">
                             Prénom<span style={styles.required}>*</span>
                         </label>
                         <input
@@ -307,11 +308,12 @@ function SupportTicket() {
                             placeholder="Votre prénom"
                             required
                             disabled={loading || isAuthenticated}
+                            data-testid="first-name-input"
                         />
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                    <div style={styles.formGroup} data-testid="last-name-group">
+                        <label style={styles.label} data-testid="last-name-label">
                             Nom<span style={styles.required}>*</span>
                         </label>
                         <input
@@ -323,11 +325,12 @@ function SupportTicket() {
                             placeholder="Votre nom"
                             required
                             disabled={loading || isAuthenticated}
+                            data-testid="last-name-input"
                         />
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                    <div style={styles.formGroup} data-testid="email-group">
+                        <label style={styles.label} data-testid="email-label">
                             Email<span style={styles.required}>*</span>
                         </label>
                         <input
@@ -339,11 +342,12 @@ function SupportTicket() {
                             placeholder="nom@banque.fr"
                             required
                             disabled={loading || isAuthenticated}
+                            data-testid="email-input"
                         />
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                    <div style={styles.formGroup} data-testid="category-group">
+                        <label style={styles.label} data-testid="category-label">
                             Catégorie<span style={styles.required}>*</span>
                         </label>
                         <select
@@ -353,22 +357,23 @@ function SupportTicket() {
                             style={styles.select}
                             required
                             disabled={loading || !formData.assigned_to}
+                            data-testid="category-select"
                         >
                             <option value="">
-                                {formData.assigned_to 
-                                    ? 'Sélectionnez une catégorie' 
+                                {formData.assigned_to
+                                    ? 'Sélectionnez une catégorie'
                                     : 'Sélectionnez d\'abord un service'}
                             </option>
                             {getCategories().map((cat) => (
-                                <option key={cat} value={cat}>
+                                <option key={cat} value={cat} data-testid={`category-option-${cat}`}>
                                     {cat}
                                 </option>
                             ))}
                         </select>
                     </div>
 
-                    <div style={styles.formGroup}>
-                        <label style={styles.label}>
+                    <div style={styles.formGroup} data-testid="description-group">
+                        <label style={styles.label} data-testid="description-label">
                             Description<span style={styles.required}>*</span>
                         </label>
                         <textarea
@@ -380,6 +385,7 @@ function SupportTicket() {
                             rows="5"
                             required
                             disabled={loading}
+                            data-testid="description-textarea"
                         />
                     </div>
 
@@ -402,6 +408,7 @@ function SupportTicket() {
                                 e.target.style.backgroundColor = '#2c5282';
                             }
                         }}
+                        data-testid="submit-button"
                     >
                         <span>✈️</span>
                         {loading ? 'Création en cours...' : success ? 'Ticket créé !' : 'Envoyer le ticket'}

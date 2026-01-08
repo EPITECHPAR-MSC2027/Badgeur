@@ -225,29 +225,30 @@ function MyReservations() {
     }
 
     return (
-        <div className="my-reservations-container">
-            <header className="reservations-header">
-                <h1>Mes Réservations</h1>
-                <p className="reservations-subtitle">
+        <div className="my-reservations-container" data-testid="reservations-container">
+            <header className="reservations-header" data-testid="reservations-header">
+                <h1 data-testid="page-title">Mes Réservations</h1>
+                <p className="reservations-subtitle" data-testid="page-subtitle">
                     Calendrier unifié de vos véhicules et salles de réunion
                 </p>
             </header>
 
             {feedback && (
-                <div className={`feedback-banner ${feedback.type}`}>
-                    {feedback.message}
-                    <button onClick={() => setFeedback(null)}>✕</button>
+                <div className={`feedback-banner ${feedback.type}`} data-testid="feedback-banner" data-feedback-type={feedback.type}>
+                    <span data-testid="feedback-message">{feedback.message}</span>
+                    <button onClick={() => setFeedback(null)} data-testid="feedback-close-button">✕</button>
                 </div>
             )}
 
             {loading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p>Chargement du calendrier...</p>
+                <div className="loading-container" data-testid="loading-container">
+                    <div className="loading-spinner" data-testid="loading-spinner"></div>
+                    <p data-testid="loading-text">Chargement du calendrier...</p>
                 </div>
             ) : (
-                <div className="calendar-wrapper">
+                <div className="calendar-wrapper" data-testid="calendar-wrapper">
                     <FullCalendar
+                        data-testid="fullcalendar"
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
                         initialView="dayGridMonth"
                         headerToolbar={{
@@ -282,72 +283,72 @@ function MyReservations() {
 
             {/* Event Details Modal */}
             {showModal && selectedEvent && (
-                <div className="modal-overlay" onClick={() => setShowModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>{selectedEvent.title}</h2>
-                            <button onClick={() => setShowModal(false)} className="modal-close">✕</button>
+                <div className="modal-overlay" onClick={() => setShowModal(false)} data-testid="modal-overlay">
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} data-testid="modal-content">
+                        <div className="modal-header" data-testid="modal-header">
+                            <h2 data-testid="modal-title">{selectedEvent.title}</h2>
+                            <button onClick={() => setShowModal(false)} className="modal-close" data-testid="modal-close-button">✕</button>
                         </div>
 
-                        <div className="modal-body">
-                            <div className="event-info">
-                                <div className="info-row">
-                                    <span className="info-label">Type:</span>
-                                    <span className="info-value">
+                        <div className="modal-body" data-testid="modal-body">
+                            <div className="event-info" data-testid="event-info">
+                                <div className="info-row" data-testid="event-type-row">
+                                    <span className="info-label" data-testid="type-label">Type:</span>
+                                    <span className="info-value" data-testid="type-value">
                                         {selectedEvent.type === 'vehicle' ? '🚗 Véhicule' : '📅 Salle de réunion'}
                                     </span>
                                 </div>
 
                                 {selectedEvent.type === 'room' && (
-                                    <div className="info-row">
-                                        <span className="info-label">Salle:</span>
-                                        <span className="info-value">{selectedEvent.roomName}</span>
+                                    <div className="info-row" data-testid="room-name-row">
+                                        <span className="info-label" data-testid="room-label">Salle:</span>
+                                        <span className="info-value" data-testid="room-name-value">{selectedEvent.roomName}</span>
                                     </div>
                                 )}
 
                                 {selectedEvent.type === 'vehicle' && (
-                                    <div className="info-row">
-                                        <span className="info-label">Destination:</span>
-                                        <span className="info-value">{selectedEvent.destination}</span>
+                                    <div className="info-row" data-testid="destination-row">
+                                        <span className="info-label" data-testid="destination-label">Destination:</span>
+                                        <span className="info-value" data-testid="destination-value">{selectedEvent.destination}</span>
                                     </div>
                                 )}
 
-                                <div className="info-row">
-                                    <span className="info-label">Début:</span>
-                                    <span className="info-value">
+                                <div className="info-row" data-testid="start-datetime-row">
+                                    <span className="info-label" data-testid="start-label">Début:</span>
+                                    <span className="info-value" data-testid="start-datetime-value">
                                         {formatDateTime(selectedEvent.start)}
                                     </span>
                                 </div>
 
-                                <div className="info-row">
-                                    <span className="info-label">Fin:</span>
-                                    <span className="info-value">
+                                <div className="info-row" data-testid="end-datetime-row">
+                                    <span className="info-label" data-testid="end-label">Fin:</span>
+                                    <span className="info-value" data-testid="end-datetime-value">
                                         {formatDateTime(selectedEvent.end)}
                                     </span>
                                 </div>
 
-                                <div className="info-row">
-                                    <span className="info-label">Durée:</span>
-                                    <span className="info-value">
+                                <div className="info-row" data-testid="duration-row">
+                                    <span className="info-label" data-testid="duration-label">Durée:</span>
+                                    <span className="info-value" data-testid="duration-value">
                                         {getDuration(selectedEvent.start, selectedEvent.end)}
                                     </span>
                                 </div>
 
                                 {selectedEvent.type === 'room' && (
                                     <>
-                                        <div className="info-row">
-                                            <span className="info-label">Organisateur:</span>
-                                            <span className="info-value">{getUserName(selectedEvent.creatorId)}</span>
+                                        <div className="info-row" data-testid="organizer-row">
+                                            <span className="info-label" data-testid="organizer-label">Organisateur:</span>
+                                            <span className="info-value" data-testid="organizer-name">{getUserName(selectedEvent.creatorId)}</span>
                                         </div>
 
-                                        <div className="participants-section">
-                                            <h3>Participants ({participants.length})</h3>
-                                            <div className="participants-list">
-                                                {participants.map(p => (
-                                                    <div key={p.id} className="participant-item">
-                                                        <div className="participant-info">
-                                                            <span className="participant-name">{getUserName(p.userId)}</span>
-                                                            <span className={`participant-status ${p.status}`}>
+                                        <div className="participants-section" data-testid="participants-section">
+                                            <h3 data-testid="participants-heading">Participants ({participants.length})</h3>
+                                            <div className="participants-list" data-testid="participants-list">
+                                                {participants.map((p, index) => (
+                                                    <div key={p.id} className="participant-item" data-testid={`participant-item-${index}`}>
+                                                        <div className="participant-info" data-testid={`participant-info-${index}`}>
+                                                            <span className="participant-name" data-testid={`participant-name-${index}`}>{getUserName(p.userId)}</span>
+                                                            <span className={`participant-status ${p.status}`} data-testid={`participant-status-${index}`} data-status={p.status}>
                                                                 {p.status === 'accepted' && '✅ Accepté'}
                                                                 {p.status === 'declined' && '❌ Refusé'}
                                                                 {p.status === 'pending' && '⏳ En attente'}
@@ -355,11 +356,12 @@ function MyReservations() {
                                                         </div>
 
                                                         {p.userId === userId && p.status === 'pending' && (
-                                                            <div className="participant-actions">
+                                                            <div className="participant-actions" data-testid={`participant-actions-${index}`}>
                                                                 <button
                                                                     onClick={() => handleParticipantResponse(p.id, 'accepted')}
                                                                     disabled={actionLoading}
                                                                     className="btn-accept"
+                                                                    data-testid={`accept-button-${index}`}
                                                                 >
                                                                     ✓ Accepter
                                                                 </button>
@@ -367,6 +369,7 @@ function MyReservations() {
                                                                     onClick={() => handleParticipantResponse(p.id, 'declined')}
                                                                     disabled={actionLoading}
                                                                     className="btn-decline"
+                                                                    data-testid={`decline-button-${index}`}
                                                                 >
                                                                     ✕ Refuser
                                                                 </button>
@@ -381,17 +384,18 @@ function MyReservations() {
                             </div>
                         </div>
 
-                        <div className="modal-footer">
+                        <div className="modal-footer" data-testid="modal-footer">
                             {(selectedEvent.type === 'vehicle' || selectedEvent.creatorId === userId) && (
                                 <button
                                     onClick={handleDeleteEvent}
                                     disabled={actionLoading}
                                     className="btn-delete-reservation"
+                                    data-testid="delete-button"
                                 >
                                     🗑️ Supprimer la réservation
                                 </button>
                             )}
-                            <button onClick={() => setShowModal(false)} className="btn-close-modal">
+                            <button onClick={() => setShowModal(false)} className="btn-close-modal" data-testid="close-modal-button">
                                 Fermer
                             </button>
                         </div>

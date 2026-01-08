@@ -80,14 +80,14 @@ function ValidationPlanning() {
                 Statut: String(newStatut),
                 TypeDemandeId: plan.raw?.demandTypeId ?? plan.raw?.DemandTypeId ?? plan.raw?.typeDemandeId ?? plan.raw?.TypeDemandeId ?? plan.typeId
             })
-            
+
             // Trouver l'utilisateur concerné par cette demande
             // D'abord essayer depuis plan.raw, sinon chercher dans pendingByUser
-            const planUserId = plan.raw?.userId ?? plan.raw?.UserId ?? 
-                Object.keys(pendingByUser).find(uid => 
+            const planUserId = plan.raw?.userId ?? plan.raw?.UserId ??
+                Object.keys(pendingByUser).find(uid =>
                     pendingByUser[uid].some(p => p.id === plan.id)
                 )
-            
+
             // Créer une notification pour l'employé (seulement si roleId = 0)
             if (planUserId) {
                 const userIdNum = Number(planUserId)
@@ -97,10 +97,10 @@ function ValidationPlanning() {
                         const typeLabel = fixedTypes.find(t => t.id === plan.typeId)?.label || 'demande'
                         const periodLabel = plan.period === '0' ? 'matin' : 'après-midi'
                         const dateStr = formatDateFr(plan.date)
-                        const message = newStatut === 1 
+                        const message = newStatut === 1
                             ? `Votre demande de planning (${typeLabel}, ${dateStr} ${periodLabel}) a été validée`
                             : `Votre demande de planning (${typeLabel}, ${dateStr} ${periodLabel}) a été refusée`
-                        
+
                         await notificationService.createNotification({
                             userId: userIdNum,
                             message: message,
@@ -112,7 +112,7 @@ function ValidationPlanning() {
                     }
                 }
             }
-            
+
             // retrait immédiat de la liste locale
             setPendingByUser(prev => {
                 const clone = { ...prev }
@@ -128,59 +128,60 @@ function ValidationPlanning() {
         }
     }
 
-    function renderBadge(period) {
+    function renderBadge(period, planId) {
         return period === '0'
-            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: '#FFE1AA', fontSize: 12, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
-            : <span style={{ padding: '2px 8px', borderRadius: 6, background: '#C4C6F0', fontSize: 12, fontFamily: 'Fustat, sans-serif' }}>Après-midi</span>
+            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: '#FFE1AA', fontSize: 12, fontFamily: 'Fustat, sans-serif' }} data-testid={`badge-morning-${planId}`}>Matin</span>
+            : <span style={{ padding: '2px 8px', borderRadius: 6, background: '#C4C6F0', fontSize: 12, fontFamily: 'Fustat, sans-serif' }} data-testid={`badge-afternoon-${planId}`}>Après-midi</span>
     }
 
     return (
-        <div style={{ padding: 16 }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ padding: 16 }} data-testid="validation-planning-container">
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }} data-testid="validation-planning-header">
                 <div>
-                    <h2 style={{ margin: 0, fontSize:'28px', fontFamily: 'Spectral, serif', fontWeight: '700' }}>Validation des plannings</h2>
-                    <p style={{ margin: 0, color: 'var(--color-third-text)', fontWeight:'700', fontSize:'15px' }}>Validez ou refusez les demandes de vos collaborateurs</p>
+                    <h2 style={{ margin: 0, fontSize: '28px', fontFamily: 'Spectral, serif', fontWeight: '700' }} data-testid="validation-planning-title">Validation des plannings</h2>
+                    <p style={{ margin: 0, color: 'var(--color-third-text)', fontWeight: '700', fontSize: '15px' }} data-testid="validation-planning-subtitle">Validez ou refusez les demandes de vos collaborateurs</p>
                 </div>
             </header>
 
-            {error && <div style={{ color: '#b91c1c', marginBottom: 12 }}>{error}</div>}
-            {loading && <div style={{ color: 'var(--highlight3)' }}>Chargement...</div>}
+            {error && <div style={{ color: '#b91c1c', marginBottom: 12 }} data-testid="error-message">{error}</div>}
+            {loading && <div style={{ color: 'var(--highlight3)' }} data-testid="loading-message">Chargement...</div>}
 
             {!loading && members.map(user => {
                 const requests = pendingByUser[user.id] || []
                 return (
-                    <div key={user.id} style={{ backgroundColor: 'var(--color-primary)', borderRadius: 10, padding: 12, marginBottom: 12 }}>
+                    <div key={user.id} style={{ backgroundColor: 'var(--color-primary)', borderRadius: 10, padding: 12, marginBottom: 12 }} data-testid={`user-section-${user.id}`}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                             <div>
-                                <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>{user.firstName} {user.lastName}</div>
-                                <div style={{ color: 'var(--color-third-text)', fontSize: 13, fontFamily: 'Fustat, sans-serif' }}>{requests.length} en attente</div>
+                                <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }} data-testid={`user-name-${user.id}`}>{user.firstName} {user.lastName}</div>
+                                <div style={{ color: 'var(--color-third-text)', fontSize: 13, fontFamily: 'Fustat, sans-serif' }} data-testid={`user-pending-count-${user.id}`}>{requests.length} en attente</div>
                             </div>
                         </div>
 
                         {requests.length === 0 && (
-                            <div style={{ color: 'var(--highlight4)' }}>Aucune demande en attente</div>
+                            <div style={{ color: 'var(--highlight4)' }} data-testid={`no-requests-${user.id}`}>Aucune demande en attente</div>
                         )}
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }} data-testid={`requests-grid-${user.id}`}>
                             {requests.map(plan => {
                                 const typeLabel = fixedTypes.find(t => t.id === plan.typeId)?.label || 'Type inconnu'
                                 const typeColor = colorForType(plan.typeId)
                                 return (
-                                    <div key={plan.id} style={{ backgroundColor: 'var(--color-background)', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }}>
+                                    <div key={plan.id} style={{ backgroundColor: 'var(--color-background)', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }} data-testid={`request-card-${plan.id}`}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>{formatDateFr(plan.date)}</div>
-                                            {renderBadge(plan.period)}
+                                            <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }} data-testid={`request-date-${plan.id}`}>{formatDateFr(plan.date)}</div>
+                                            {renderBadge(plan.period, plan.id)}
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ width: 10, height: 10, borderRadius: 9999, fontSize: 12, fontWeight: 700 ,fontFamily: 'Fustat, sans-serif', background: typeColor }} />
-                                            <span style={{ fontFamily: 'Fustat, sans-serif', fontSize: '14px' }}>{typeLabel}</span>
+                                            <span style={{ width: 10, height: 10, borderRadius: 9999, fontSize: 12, fontWeight: 700, fontFamily: 'Fustat, sans-serif', background: typeColor }} data-testid={`request-type-indicator-${plan.id}`} />
+                                            <span style={{ fontFamily: 'Fustat, sans-serif', fontSize: '14px' }} data-testid={`request-type-label-${plan.id}`}>{typeLabel}</span>
                                         </div>
-                                        <div style={{ display: 'flex', gap: 8 }}>
+                                        <div style={{ display: 'flex', gap: 8 }} data-testid={`request-actions-${plan.id}`}>
                                             <button
                                                 type="button"
                                                 onClick={() => updateStatut(plan, 2)}
                                                 disabled={savingId === plan.id}
                                                 style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid #ef4444', background: '#fef2f2', color: '#b91c1c', cursor: 'pointer' }}
+                                                data-testid={`reject-button-${plan.id}`}
                                             >
                                                 Refuser
                                             </button>
@@ -189,6 +190,7 @@ function ValidationPlanning() {
                                                 onClick={() => updateStatut(plan, 1)}
                                                 disabled={savingId === plan.id}
                                                 style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid #22c55e', background: '#ecfdf3', color: '#15803d', cursor: 'pointer' }}
+                                                data-testid={`approve-button-${plan.id}`}
                                             >
                                                 Valider
                                             </button>
@@ -205,4 +207,3 @@ function ValidationPlanning() {
 }
 
 export default ValidationPlanning
-

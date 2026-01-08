@@ -161,7 +161,7 @@ function Profil() {
         width: '100%',
         marginTop: 10
     }
-    
+
     const supportButtonStyle = {
         ...buttonStyle,
         backgroundColor: 'var(--highlight1)',
@@ -182,9 +182,9 @@ function Profil() {
 
     if (loading) {
         return (
-            <div>
-                <h1>Profil</h1>
-                <div style={cardStyle}>
+            <div data-testid="profil-container">
+                <h1 data-testid="profil-title">Profil</h1>
+                <div style={cardStyle} data-testid="loading-message">
                     <p>Chargement des données...</p>
                 </div>
             </div>
@@ -192,8 +192,8 @@ function Profil() {
     }
 
     return (
-        <div>
-            <h1 style={{ marginTop: '1.5em' }}>Profil</h1>
+        <div data-testid="profil-container">
+            <h1 style={{ marginTop: '1.5em' }} data-testid="profil-title">Profil</h1>
 
             {/* Container flex pour afficher les sections côte à côte */}
             <div style={{
@@ -201,58 +201,60 @@ function Profil() {
                 gap: 24,
                 marginTop: 16,
                 flexWrap: 'wrap'
-            }}>
+            }} data-testid="profil-sections-container">
                 {/* Section Informations personnelles */}
-                <div style={{ ...cardStyle, flex: '1', minWidth: 300 }}>
-                    <h2 style={{ marginTop: 0, marginBottom: 20 }}>Informations personnelles</h2>
+                <div style={{ ...cardStyle, flex: '1', minWidth: 300 }} data-testid="personal-info-section">
+                    <h2 style={{ marginTop: 0, marginBottom: 20 }} data-testid="personal-info-title">Informations personnelles</h2>
 
                     <div>
-                        <div style={labelStyle}>Prénom</div>
-                        <div style={valueStyle}>{userData.firstName}</div>
+                        <div style={labelStyle} data-testid="firstname-label">Prénom</div>
+                        <div style={valueStyle} data-testid="firstname-value">{userData.firstName}</div>
                     </div>
 
                     <div>
-                        <div style={labelStyle}>Nom</div>
-                        <div style={valueStyle}>{userData.lastName}</div>
+                        <div style={labelStyle} data-testid="lastname-label">Nom</div>
+                        <div style={valueStyle} data-testid="lastname-value">{userData.lastName}</div>
                     </div>
 
                     <div>
-                        <div style={labelStyle}>Email</div>
-                        <div style={valueStyle}>{userData.email}</div>
+                        <div style={labelStyle} data-testid="email-label">Email</div>
+                        <div style={valueStyle} data-testid="email-value">{userData.email}</div>
                     </div>
 
                     <div>
-                        <div style={labelStyle}>Rôle</div>
-                        <div style={valueStyle}>
+                        <div style={labelStyle} data-testid="role-label">Rôle</div>
+                        <div style={valueStyle} data-testid="role-value">
                             {userData.roleId === 1 ? 'Manager' : 'Employé'}
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={() => handleNavigate('supportTicket')}
                         style={supportButtonStyle}
                         onMouseOver={(e) => e.target.style.opacity = '0.9'}
                         onMouseOut={(e) => e.target.style.opacity = '1'}
+                        data-testid="support-ticket-button"
                     >
                         <span>🎫</span>
                         Créer un ticket
                     </button>
-                    <button 
+                    <button
                         onClick={handleLogout}
                         style={buttonStyle}
                         onMouseOver={(e) => e.target.style.opacity = '0.9'}
                         onMouseOut={(e) => e.target.style.opacity = '1'}
+                        data-testid="logout-button"
                     >
                         Déconnexion
                     </button>
                 </div>
 
                 {/* Section Paramètres */}
-                <div style={{ ...cardStyle, flex: '1', minWidth: 300 }}>
-                    <h2 style={{ marginTop: 0, marginBottom: 20 }}>Paramètres</h2>
+                <div style={{ ...cardStyle, flex: '1', minWidth: 300 }} data-testid="settings-section">
+                    <h2 style={{ marginTop: 0, marginBottom: 20 }} data-testid="settings-title">Paramètres</h2>
 
-                    <div style={{ marginBottom: 30 }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Thème</h3>
-                        <p style={{ marginBottom: 12, color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif'}}>
+                    <div style={{ marginBottom: 30 }} data-testid="theme-section">
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }} data-testid="theme-heading">Thème</h3>
+                        <p style={{ marginBottom: 12, color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }} data-testid="theme-description">
                             Choisissez votre thème préféré :
                         </p>
                         <select
@@ -268,17 +270,18 @@ function Profil() {
                                 width: '100%',
                                 maxWidth: 300
                             }}
+                            data-testid="theme-select"
                         >
                             {themes.map(theme => (
-                                <option key={theme.value} value={theme.value}>
+                                <option key={theme.value} value={theme.value} data-testid={`theme-option-${theme.value}`}>
                                     {theme.label}
                                 </option>
                             ))}
                         </select>
                     </div>
 
-                    <div style={{ marginBottom: 30 }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Accessibilité</h3>
+                    <div style={{ marginBottom: 30 }} data-testid="accessibility-section">
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }} data-testid="accessibility-heading">Accessibilité</h3>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -289,7 +292,7 @@ function Profil() {
                             border: '1px solid var(--color-third)',
                             marginBottom: 10,
                             fontFamily: 'Fustat, sans-serif'
-                        }}>
+                        }} data-testid="dyslexic-mode-container">
                             <input
                                 type="checkbox"
                                 id="dyslexicMode"
@@ -301,6 +304,7 @@ function Profil() {
                                     cursor: 'pointer',
                                     accentColor: 'var(--color-secondary)'
                                 }}
+                                data-testid="dyslexic-mode-checkbox"
                             />
                             <label
                                 htmlFor="dyslexicMode"
@@ -311,24 +315,25 @@ function Profil() {
                                     margin: 0,
                                     fontFamily: 'Fustat, sans-serif'
                                 }}
+                                data-testid="dyslexic-mode-label"
                             >
                                 Mode dyslexique (police adaptée)
                             </label>
                         </div>
-                        <p style={{ marginTop: 0, fontSize: '14px', color: 'var(--color-third-text)' }}>
+                        <p style={{ marginTop: 0, fontSize: '14px', color: 'var(--color-third-text)' }} data-testid="dyslexic-mode-description">
                             Active une police spécialement conçue pour faciliter la lecture aux personnes dyslexiques
                         </p>
                     </div>
 
                     {/* Section Sécurité / MFA */}
-                    <div>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Sécurité</h3>
+                    <div data-testid="security-section">
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }} data-testid="security-heading">Sécurité</h3>
                         <div style={{
                             padding: '15px',
                             backgroundColor: 'var(--color-background)',
                             borderRadius: '8px',
                             marginBottom: 10
-                        }}>
+                        }} data-testid="mfa-container">
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -336,10 +341,10 @@ function Profil() {
                                 marginBottom: 10
                             }}>
                                 <div>
-                                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>
+                                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }} data-testid="mfa-title">
                                         🔐 Authentification à deux facteurs
                                     </div>
-                                    <div style={{ fontSize: '14px', color: 'var(--color-third-text)', marginTop: 5, fontFamily: 'Fustat, sans-serif' }}>
+                                    <div style={{ fontSize: '14px', color: 'var(--color-third-text)', marginTop: 5, fontFamily: 'Fustat, sans-serif' }} data-testid="mfa-status">
                                         {mfaLoading ? 'Chargement...' : (mfaEnabled ? 'Activée' : 'Désactivée')}
                                     </div>
                                 </div>
@@ -351,12 +356,12 @@ function Profil() {
                                         color: mfaEnabled ? '#155724' : '#721c24',
                                         fontSize: '12px',
                                         fontWeight: 600
-                                    }}>
+                                    }} data-testid="mfa-badge">
                                         {mfaEnabled ? '✓ Active' : '○ Inactive'}
                                     </div>
                                 )}
                             </div>
-                            <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-third-text)',fontFamily: 'Fustat, sans-serif' }}>
+                            <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif' }} data-testid="mfa-description">
                                 Ajoutez une couche de sécurité supplémentaire à votre compte avec un code de vérification temporaire.
                             </p>
                             <button
@@ -365,6 +370,7 @@ function Profil() {
                                 disabled={mfaLoading}
                                 onMouseOver={(e) => e.target.style.opacity = '0.9'}
                                 onMouseOut={(e) => e.target.style.opacity = '1'}
+                                data-testid="mfa-setup-button"
                             >
                                 {mfaLoading ? 'Chargement...' : (mfaEnabled ? 'Gérer MFA' : 'Configurer MFA')}
                             </button>
