@@ -1,5 +1,6 @@
 ﻿using Supabase;
 using Supabase.Gotrue;
+using Supabase.Gotrue.Exceptions;
 using Supabase.Gotrue.Mfa;
 
 namespace badgeur_backend.Services.Auth
@@ -15,21 +16,41 @@ namespace badgeur_backend.Services.Auth
 
         public async Task<AuthSession?> SignInWithPassword(string email, string password)
         {
-            var session = await _client.Auth.SignInWithPassword(email, password);
-
-            if (session == null || string.IsNullOrEmpty(session.AccessToken))
+            try
             {
+                var session = await _client.Auth.SignInWithPassword(email, password);
+
+                if (session == null || string.IsNullOrEmpty(session.AccessToken))
+                {
+                    Console.WriteLine("SignIn: Session or access token is null");
+                    return null;
+                }
+
+                var userEmail = session.User?.Email ?? string.Empty;
+
+                return new AuthSession
+                (
+                    AccessToken: session.AccessToken,
+                    RefreshToken: session.RefreshToken ?? string.Empty,
+                    Email: userEmail
+                );
+            }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"SignIn Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
                 return null;
             }
-
-            var userEmail = session.User?.Email ?? string.Empty;
-
-            return new AuthSession
-            (
-                AccessToken: session.AccessToken,
-                RefreshToken: session.RefreshToken ?? string.Empty,
-                Email: userEmail
-            );
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"SignIn network error: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SignIn unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
+            }
         }
 
         public async Task<MfaEnrollResponse?> EnrollMfa(string accessToken)
@@ -57,11 +78,22 @@ namespace badgeur_backend.Services.Auth
                     Uri: enrollResponse.Totp?.Uri ?? string.Empty
                 );
             }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA Enroll Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA Enroll network error: {ex.Message}");
+                return null;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA Enroll error: {ex.Message}");
+                Console.WriteLine($"MFA Enroll unexpected error: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw;
+                return null;
             }
         }
 
@@ -78,7 +110,7 @@ namespace badgeur_backend.Services.Auth
 
                 if (challenge?.Id == null)
                 {
-                    Console.WriteLine("MFA Verify: challenge is null");
+                    Console.WriteLine("MFA Verify: challenge is null or missing ID");
                     return null;
                 }
 
@@ -91,7 +123,7 @@ namespace badgeur_backend.Services.Auth
 
                 if (verifyResponse?.AccessToken == null)
                 {
-                    Console.WriteLine("MFA Verify: verifyResponse is null");
+                    Console.WriteLine("MFA Verify: verifyResponse or access token is null");
                     return null;
                 }
 
@@ -100,10 +132,21 @@ namespace badgeur_backend.Services.Auth
                     RefreshToken: verifyResponse.RefreshToken ?? string.Empty
                 );
             }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA Verify Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA Verify network error: {ex.Message}");
+                return null;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA Verify error: {ex.Message}");
-                throw;
+                Console.WriteLine($"MFA Verify unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
             }
         }
 
@@ -120,6 +163,7 @@ namespace badgeur_backend.Services.Auth
 
                 if (challenge?.Id == null)
                 {
+                    Console.WriteLine("MFA Challenge: challenge is null or missing ID");
                     return null;
                 }
 
@@ -128,10 +172,21 @@ namespace badgeur_backend.Services.Auth
                     RefreshToken: string.Empty
                 );
             }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA Challenge Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA Challenge network error: {ex.Message}");
+                return null;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA Challenge error: {ex.Message}");
-                throw;
+                Console.WriteLine($"MFA Challenge unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
             }
         }
 
@@ -150,6 +205,7 @@ namespace badgeur_backend.Services.Auth
 
                 if (verifyResponse?.AccessToken == null)
                 {
+                    Console.WriteLine("MFA VerifyChallenge: verifyResponse or access token is null");
                     return null;
                 }
 
@@ -158,10 +214,21 @@ namespace badgeur_backend.Services.Auth
                     RefreshToken: verifyResponse.RefreshToken ?? string.Empty
                 );
             }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA VerifyChallenge Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                return null;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA VerifyChallenge network error: {ex.Message}");
+                return null;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA VerifyChallenge error: {ex.Message}");
-                throw;
+                Console.WriteLine($"MFA VerifyChallenge unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
             }
         }
 
@@ -175,6 +242,7 @@ namespace badgeur_backend.Services.Auth
 
                 if (factors?.All == null)
                 {
+                    Console.WriteLine("MFA ListFactors: factors or factors.All is null");
                     return new List<MfaFactor>();
                 }
 
@@ -185,9 +253,20 @@ namespace badgeur_backend.Services.Auth
                     CreatedAt: f.CreatedAt
                 )).ToList();
             }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA ListFactors Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                return new List<MfaFactor>();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA ListFactors network error: {ex.Message}");
+                return new List<MfaFactor>();
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA ListFactors error: {ex.Message}");
+                Console.WriteLine($"MFA ListFactors unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return new List<MfaFactor>();
             }
         }
@@ -200,11 +279,29 @@ namespace badgeur_backend.Services.Auth
                 {
                     FactorId = factorId
                 });
-                return response?.Id != null;
+
+                if (response?.Id == null)
+                {
+                    Console.WriteLine("MFA Unenroll: response or response.Id is null");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (GotrueException ex)
+            {
+                Console.WriteLine($"MFA Unenroll Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
+                return false;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"MFA Unenroll network error: {ex.Message}");
+                return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"MFA Unenroll error: {ex.Message}");
+                Console.WriteLine($"MFA Unenroll unexpected error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }

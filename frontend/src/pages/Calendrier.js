@@ -23,22 +23,27 @@ function Calendrier() {
     const [members, setMembers] = React.useState([]) // [{id, firstName, lastName}]
     // plansByUserDate[userId]?.[ymd]?.['0'|'1'] => { typeId, statut }
     const [plansByUserDate, setPlansByUserDate] = React.useState({})
-    const [loading, setLoading] = React.useState(false)
+    const [loadingTeam, setLoadingTeam] = React.useState(false)
+    const [loadingPlanning, setLoadingPlanning] = React.useState(false)
     const [error, setError] = React.useState('')
 
+    // Combined loading state
+    const loading = loadingTeam || loadingPlanning
+
     // Helpers
-    function normalizeDateOnly(d) {
+    const normalizeDateOnly = React.useCallback((d) => {
         const n = new Date(d)
         n.setHours(0, 0, 0, 0)
         return n
-    }
-    function toYMD(d) {
+    }, [])
+
+    const toYMD = React.useCallback((d) => {
         const n = normalizeDateOnly(d)
         const y = n.getFullYear()
         const m = String(n.getMonth() + 1).padStart(2, '0')
         const day = String(n.getDate()).padStart(2, '0')
         return `${y}-${m}-${day}`
-    }
+    }, [normalizeDateOnly])
 
     // Build month grid
     const monthGrid = React.useMemo(() => {
@@ -57,7 +62,7 @@ function Calendrier() {
     React.useEffect(() => {
         let cancelled = false
         async function loadTeam() {
-            setLoading(true)
+            setLoadingTeam(true)
             setError('')
             try {
                 const membersList = await teamService.listMyTeamMembers()
@@ -65,7 +70,7 @@ function Calendrier() {
             } catch (e) {
                 if (!cancelled) setError(e.message || 'Erreur')
             } finally {
-                if (!cancelled) setLoading(false)
+                if (!cancelled) setLoadingTeam(false)
             }
         }
         loadTeam()
@@ -75,15 +80,14 @@ function Calendrier() {
     // Load plannings for members - single fetch on mount and month change
     React.useEffect(() => {
         let cancelled = false
-        
+
         async function loadPlans() {
-            if (members.length === 0) { 
+            if (members.length === 0) {
                 setPlansByUserDate({})
-                setLoading(false)
-                return 
+                return
             }
-            setLoading(true)
-            
+            setLoadingPlanning(true)
+
             try {
                 const entries = await Promise.all(members.map(async (m) => {
                     try {
@@ -109,11 +113,11 @@ function Calendrier() {
                 }))
                 if (!cancelled) {
                     setPlansByUserDate(Object.fromEntries(entries))
-                    setLoading(false)
                 }
             } catch (e) {
                 console.error('Planning load error:', e)
-                if (!cancelled) setLoading(false)
+            } finally {
+                if (!cancelled) setLoadingPlanning(false)
             }
         }
         loadPlans()
@@ -156,27 +160,31 @@ function Calendrier() {
                 <div style={{ color: '#b91c1c' }}>{error}</div>
             )}
 
+            {loading && (
+                <div data-testid="loading-indicator" style={{ color: '#6b7280', padding: 8 }}>Chargement...</div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 12 }}>
                 {/* Left: members list */}
                 <div>
-                    <div style={{ fontWeight: 700, marginBottom: 8 }}>Membres</div>
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif' }}>Membres</div>
                     <div style={{ display: 'grid', gap: 8 }}>
                         {members.map(u => (
                             <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                 <div style={{ width: 8, height: 8, borderRadius: 9999, background: '#a3a3a3' }} />
-                                <div style={{ fontFamily: 'Spectral, serif', fontWeight: 600 }}>{u.firstName} {u.lastName}</div>
+                                <div style={{ fontFamily: 'Fustat, sans-serif', fontWeight: 600 }}>{u.firstName} {u.lastName}</div>
                             </div>
                         ))}
                         {members.length === 0 && (
-                            <div style={{ color: '#6b7280' }}>Aucun membre</div>
+                            <div data-testid="no-members" style={{ color: '#6b7280' }}>Aucun membre</div>
                         )}
                     </div>
                     {/* Legend */}
                     <div style={{ marginTop: 30 }}>
-                        <div style={{ fontWeight: 700, marginBottom: 8 }}>Légende</div>
+                        <div data-testid="legend-header" style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif' }}>Légende</div>
                         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
-                                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                                <div key={t.id} data-testid={`legend-item-${t.id}`} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: 'Fustat, sans-serif' }}>
                                     <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
                                     <span>{t.label}</span>
                                 </div>
@@ -221,7 +229,7 @@ function Calendrier() {
                                 </div>
                             ))}
                             {members.length === 0 && (
-                                <div style={{ color: '#6b7280', padding: 8 }}>Aucun membre à afficher</div>
+                                <div data-testid="no-members-grid" style={{ color: '#6b7280', padding: 8 }}>Aucun membre à afficher</div>
                             )}
                         </div>
                     </div>

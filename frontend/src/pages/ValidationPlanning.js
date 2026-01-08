@@ -130,16 +130,16 @@ function ValidationPlanning() {
 
     function renderBadge(period) {
         return period === '0'
-            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: 'var(--color-primary)', fontSize: 12 }}>Matin</span>
-            : <span style={{ padding: '2px 8px', borderRadius: 6, background: 'var(--color-primary)', fontSize: 12 }}>Après-midi</span>
+            ? <span style={{ padding: '2px 8px', borderRadius: 6, background: '#FFE1AA', fontSize: 12, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
+            : <span style={{ padding: '2px 8px', borderRadius: 6, background: '#C4C6F0', fontSize: 12, fontFamily: 'Fustat, sans-serif' }}>Après-midi</span>
     }
 
     return (
         <div style={{ padding: 16 }}>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <div>
-                    <h2 style={{ margin: 0 }}>Validation des plannings</h2>
-                    <p style={{ margin: 0, color: 'var(--highlight2)', fontWeight:'700', fontSize:'10px' }}>Validez ou refusez les demandes de vos collaborateurs</p>
+                    <h2 style={{ margin: 0, fontSize:'28px', fontFamily: 'Spectral, serif', fontWeight: '700' }}>Validation des plannings</h2>
+                    <p style={{ margin: 0, color: 'var(--color-third-text)', fontWeight:'700', fontSize:'15px' }}>Validez ou refusez les demandes de vos collaborateurs</p>
                 </div>
             </header>
 
@@ -149,11 +149,11 @@ function ValidationPlanning() {
             {!loading && members.map(user => {
                 const requests = pendingByUser[user.id] || []
                 return (
-                    <div key={user.id} style={{ border: '1px solid var(--color-secondary)', borderRadius: 10, padding: 12, marginBottom: 12 }}>
+                    <div key={user.id} style={{ backgroundColor: 'var(--color-primary)', borderRadius: 10, padding: 12, marginBottom: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                             <div>
-                                <div style={{ fontWeight: 700 }}>{user.firstName} {user.lastName}</div>
-                                <div style={{ color: 'var(--highlight3)', fontSize: 13 }}>{requests.length} en attente</div>
+                                <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>{user.firstName} {user.lastName}</div>
+                                <div style={{ color: 'var(--color-third-text)', fontSize: 13, fontFamily: 'Fustat, sans-serif' }}>{requests.length} en attente</div>
                             </div>
                         </div>
 
@@ -163,17 +163,17 @@ function ValidationPlanning() {
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
                             {requests.map(plan => {
-                                const typeColor = colorForType(plan.typeId)
                                 const typeLabel = fixedTypes.find(t => t.id === plan.typeId)?.label || 'Type inconnu'
+                                const typeColor = colorForType(plan.typeId)
                                 return (
-                                    <div key={plan.id} style={{ border: '1px solid var(--color-secondary)', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }}>
+                                    <div key={plan.id} style={{ backgroundColor: 'var(--color-background)', borderRadius: 8, padding: 10, display: 'grid', gap: 6 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div style={{ fontWeight: 700 }}>{formatDateFr(plan.date)}</div>
+                                            <div style={{ fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>{formatDateFr(plan.date)}</div>
                                             {renderBadge(plan.period)}
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <span style={{ width: 10, height: 10, borderRadius: 9999, background: typeColor }} />
-                                            <span>{typeLabel}</span>
+                                            <span style={{ width: 10, height: 10, borderRadius: 9999, fontSize: 12, fontWeight: 700 ,fontFamily: 'Fustat, sans-serif', background: typeColor }} />
+                                            <span style={{ fontFamily: 'Fustat, sans-serif', fontSize: '14px' }}>{typeLabel}</span>
                                         </div>
                                         <div style={{ display: 'flex', gap: 8 }}>
                                             <button

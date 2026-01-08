@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, useCallback } from 'react'
 import authService from '../services/authService'
 import statsService from '../services/statsService'
 import planningService from '../services/planningService'
 import profilImg from '../assets/profil.png'
 import ValidationPlanning from './ValidationPlanning'
+import ManagerAnalytics from './ManagerAnalytics'
 
 function GererEquipe() {
-    const navigate = useNavigate()
     const roleId = parseInt(localStorage.getItem('roleId') || 0)
     const isRH = roleId === 3
     const [tab, setTab] = useState('manage') // 'manage' | 'dashboard' | 'validation' | 'all-teams'
@@ -19,7 +18,7 @@ function GererEquipe() {
     const [allUsers, setAllUsers] = useState([]) // Pour le RH
     const [userPlannings, setUserPlannings] = useState({}) // { [userId]: [plannings] } Pour le RH
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true)
         setError('')
         try {
@@ -78,13 +77,11 @@ function GererEquipe() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [isRH])
 
     useEffect(() => {
         loadData()
-    }, [])
-
-    const teamUserIds = useMemo(() => new Set(teamMembers.map(u => u.id)), [teamMembers])
+    }, [loadData])
 
     const tabButton = (key, label) => (
         <button
@@ -92,8 +89,7 @@ function GererEquipe() {
             style={{
                 padding: '8px 12px',
                 borderRadius: 8,
-                border: '1px solid var(--color-text)',
-                background: tab === key ? 'var(--highlight1)' : 'var(--color-primary)',
+                background: tab === key ? 'var(--color-secondary)' : 'var(--color-primary)',
                 color: tab === key ? 'var(--color-primary)' : 'var(--color-secondary)',
                 cursor: 'pointer',
                 fontWeight: 700
@@ -105,7 +101,7 @@ function GererEquipe() {
 
     const ManageView = () => (
         <div>
-            <h3 style={{ marginTop: 0 }}>Mon équipe</h3>
+            <h2 style={{ marginTop: 0, fontSize: '28px', fontWeight: '700' }}>Mon équipe</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
                 {teamMembers.map(u => {
                     const lastPunch = lastPunchByUserId[u.id]
@@ -116,11 +112,11 @@ function GererEquipe() {
                             <img src={profilImg} alt="Profil" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover' }} />
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 700, fontSize: 20, fontFamily:'Spectral, serif'}}>{u.firstName} {u.lastName}</div>
-                                <div style={{ fontSize: 14, color: 'var(--color-second-text)', fontWeight: 600,marginTop: 7, fontFamily: 'Fustat, sans-serif'}}>{u.email}</div>
+                                <div style={{ fontSize: 14, color: 'var(--color-third-text)', fontWeight: 600,marginTop: 7, fontFamily: 'Fustat, sans-serif'}}>{u.email}</div>
                                 <div style={{display: 'flex', gap: 8, fontSize: 15,marginTop: 14 }}>
-                                    <span style={{ color: 'var(--color-second-text)', fontFamily: 'Fustat, sans-serif'}}>Dernier pointage:</span>
+                                    <span style={{ color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif'}}>Dernier pointage:</span>
                                     <span style={{ fontWeight: 600, fontFamily: 'Fustat, sans-serif' }}>{timeText}</span>
-                                    <span style={{ color: 'var(--color-second-text)' }}>•</span>
+                                    <span style={{ color: 'var(--color-third-text)' }}>•</span>
                                     <span style ={{fontFamily: 'Fustat, sans-serif'}}>{dateText}</span>
                                 </div>
                             </div>
@@ -134,252 +130,10 @@ function GererEquipe() {
         </div>
     )
 
-    const AllTeamsView = () => {
-        const getTypeLabel = (typeId) => {
-            const types = {
-                1: 'Présence au bureau',
-                2: 'Télétravail',
-                3: 'Congé payé',
-                4: 'Déplacement professionnel',
-                5: 'Formation'
-            };
-            return types[typeId] || 'Inconnu';
-        };
-
-        const getStatutLabel = (statut) => {
-            const s = Number(statut);
-            if (s === 0) return 'En attente';
-            if (s === 1) return 'Accepté';
-            if (s === 2) return 'Refusé';
-            return 'Inconnu';
-        };
-
-        const getStatutColor = (statut) => {
-            const s = Number(statut);
-            if (s === 0) return '#fbbf24';
-            if (s === 1) return '#10b981';
-            if (s === 2) return '#ef4444';
-            return '#6b7280';
-        };
-
-        const formatDate = (dateStr) => {
-            try {
-                return new Date(dateStr).toLocaleDateString('fr-FR', {
-                    weekday: 'short',
-                    day: '2-digit',
-                    month: 'short'
-                });
-            } catch {
-                return dateStr;
-            }
-        };
-
-        return (
-            <div>
-                <h3 style={{ marginTop: 0 }}>Toutes les équipes et leurs membres</h3>
-                {allTeams.map(team => {
-                    const manager = allUsers.find(u => u.id === team.managerId);
-                    const members = allUsers.filter(u => (u.teamId || 0) === team.id);
-                    
-                    return (
-                        <div key={team.id} style={{ 
-                            marginBottom: '32px',
-                            border: '2px solid var(--color-secondary)',
-                            borderRadius: '12px',
-                            padding: '20px',
-                            background: 'var(--color-primary)'
-                        }}>
-                            <h4 style={{ 
-                                margin: '0 0 16px 0',
-                                color: 'var(--color-secondary)',
-                                fontFamily: 'Alata, sans-serif',
-                                fontSize: '20px'
-                            }}>
-                                {team.teamName || `Équipe ${team.id}`}
-                            </h4>
-                            {manager && (
-                                <p style={{ 
-                                    margin: '0 0 16px 0',
-                                    color: 'var(--color-text)',
-                                    fontSize: '14px'
-                                }}>
-                                    Manager: {manager.firstName} {manager.lastName}
-                                </p>
-                            )}
-                            
-                            <div style={{ display: 'grid', gap: '16px' }}>
-                                {members.map(user => {
-                                    const plannings = userPlannings[user.id] || [];
-                                    return (
-                                        <div key={user.id} style={{
-                                            background: 'var(--color-background)',
-                                            borderRadius: '8px',
-                                            padding: '16px',
-                                            border: '1px solid var(--color-primary)'
-                                        }}>
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                gap: '12px',
-                                                marginBottom: '12px'
-                                            }}>
-                                                <img 
-                                                    src={profilImg} 
-                                                    alt="Profil" 
-                                                    style={{ 
-                                                        width: 50, 
-                                                        height: 50, 
-                                                        borderRadius: '50%', 
-                                                        objectFit: 'cover' 
-                                                    }} 
-                                                />
-                                                <div>
-                                                    <div style={{ 
-                                                        fontWeight: 700, 
-                                                        fontSize: 16,
-                                                        fontFamily: 'Spectral, serif'
-                                                    }}>
-                                                        {user.firstName} {user.lastName}
-                                                    </div>
-                                                    <div style={{ 
-                                                        fontSize: 12, 
-                                                        color: 'var(--color-second-text)',
-                                                        fontFamily: 'Fustat, sans-serif'
-                                                    }}>
-                                                        {user.email}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            {plannings.length > 0 ? (
-                                                <div>
-                                                    <div style={{ 
-                                                        fontSize: '14px',
-                                                        fontWeight: 600,
-                                                        color: 'var(--color-text)',
-                                                        marginBottom: '8px'
-                                                    }}>
-                                                        Plannings ({plannings.length})
-                                                    </div>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                                        {plannings.slice(0, 5).map((planning, idx) => {
-                                                            const date = planning.date ?? planning.Date;
-                                                            const period = planning.period ?? planning.Period;
-                                                            const statut = planning.statut ?? planning.Statut;
-                                                            const typeId = planning.demandTypeId ?? planning.DemandTypeId ?? planning.typeDemandeId ?? planning.TypeDemandeId;
-                                                            
-                                                            return (
-                                                                <div key={idx} style={{
-                                                                    padding: '6px 12px',
-                                                                    borderRadius: '6px',
-                                                                    background: getStatutColor(statut),
-                                                                    color: 'white',
-                                                                    fontSize: '12px',
-                                                                    fontWeight: 600
-                                                                }}>
-                                                                    {formatDate(date)} {period === '0' ? 'M' : 'AM'} - {getTypeLabel(typeId)}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                        {plannings.length > 5 && (
-                                                            <div style={{
-                                                                padding: '6px 12px',
-                                                                borderRadius: '6px',
-                                                                background: '#6b7280',
-                                                                color: 'white',
-                                                                fontSize: '12px',
-                                                                fontWeight: 600
-                                                            }}>
-                                                                +{plannings.length - 5} autres
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div style={{ 
-                                                    color: 'var(--color-second-text)',
-                                                    fontSize: '14px',
-                                                    fontStyle: 'italic'
-                                                }}>
-                                                    Aucun planning
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                                {members.length === 0 && (
-                                    <div style={{ 
-                                        color: 'var(--color-second-text)',
-                                        fontStyle: 'italic',
-                                        padding: '16px'
-                                    }}>
-                                        Aucun membre dans cette équipe
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-                {allTeams.length === 0 && (
-                    <div style={{ color: 'var(--color-second-text)' }}>
-                        Aucune équipe trouvée
-                    </div>
-                )}
-            </div>
-        );
-    };
-
     const DashboardView = () => {
-        const total = teamMembers.length
-        const managers = teamMembers.filter(u => u.roleId === 1).length
-        const employees = Math.max(0, total - managers)
         return (
-            <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                    <div style={{ background: 'var(--color-primary)', padding: 16, borderRadius: 10 }}>
-                        <div style={{ color: 'var(--color-second-text)', fontSize: 12 }}>Membres</div>
-                        <div style={{ fontSize: 24, fontWeight: 800 }}>{total}</div>
-                    </div>
-                    <div style={{ background: 'var(--color-primary)', padding: 16, borderRadius: 10 }}>
-                        <div style={{ color: 'var(--color-second-text)', fontSize: 12 }}>Managers</div>
-                        <div style={{ fontSize: 24, fontWeight: 800 }}>{managers}</div>
-                    </div>
-                    <div style={{ background: 'var(--color-primary)', padding: 16, borderRadius: 10 }}>
-                        <div style={{ color: 'var(--color-second-text)', fontSize: 12 }}>Employés</div>
-                        <div style={{ fontSize: 24, fontWeight: 800 }}>{employees}</div>
-                    </div>
-                </div>
-                <div style={{ marginTop: 18, background: 'var(--color-primary)', padding: 16, borderRadius: 10 }}>
-                    <div style={{ color: 'var(--color-second-text)', fontSize: 14, marginBottom: 8 }}>Aperçu</div>
-                    <p style={{ margin: '0 0 16px 0' }}>Ce tableau de bord présentera des KPIs (absences, retards, temps hebdo, etc.).</p>
-                    <button 
-                        onClick={() => navigate('/admin?tab=analytics')}
-                        style={{
-                            background: 'var(--color-third)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '12px 24px',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s ease'
-                        }}
-                        onMouseOver={(e) => {
-                            e.target.style.background = 'var(--color-secondary)'
-                            e.target.style.transform = 'translateY(-2px)'
-                        }}
-                        onMouseOut={(e) => {
-                            e.target.style.background = 'var(--color-third)'
-                            e.target.style.transform = 'translateY(0)'
-                        }}
-                    >
-                        📊 Voir Analytics Équipe
-                    </button>
-                </div>
+            <div style={{ marginTop: 18 }}>
+                <ManagerAnalytics />
             </div>
         )
     }
@@ -391,7 +145,6 @@ function GererEquipe() {
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                     {isRH ? (
                         <>
-                            {tabButton('all-teams', 'Toutes les équipes')}
                             {tabButton('validation', 'Validation plannings')}
                         </>
                     ) : (
@@ -414,13 +167,9 @@ function GererEquipe() {
                 {tab === 'manage' && <ManageView />}
                 {tab === 'validation' && <ValidationPlanning />}
                 {tab === 'dashboard' && <DashboardView />}
-                {tab === 'all-teams' && isRH && <AllTeamsView />}
             </div>
         </div>
     )
 }
 
 export default GererEquipe
-
-
-

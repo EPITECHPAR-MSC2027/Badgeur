@@ -37,16 +37,16 @@ function Pointage() {
         try {
             const userId = localStorage.getItem('userId')
             console.log('User ID:', userId)
-            
+
             if (!userId) {
                 console.error('ID utilisateur non trouvé')
                 return
             }
-            
+
             console.log('Chargement de l\'historique pour l\'utilisateur:', userId)
             const response = await authService.get(`/badgeLogEvent/user/${userId}`)
             console.log('Réponse historique:', response.status)
-            
+
             if (response.ok) {
                 const data = await response.json()
                 console.log('Données reçues:', data)
@@ -76,7 +76,7 @@ function Pointage() {
         try {
             const userId = localStorage.getItem('userId')
             console.log('User ID pour badgeage:', userId)
-            
+
             if (!userId) {
                 throw new Error('ID utilisateur non trouvé')
             }
@@ -87,10 +87,10 @@ function Pointage() {
                 userId: parseInt(userId)
             }
             console.log('Données de badgeage:', requestData)
-            
+
             const response = await authService.post('/badgeLogEvent/', requestData)
             console.log('Réponse badgeage:', response.status)
-            
+
             if (response.ok) {
                 const result = await response.json()
                 console.log('Badgeage réussi, ID:', result)
@@ -104,11 +104,11 @@ function Pointage() {
                 setShowToast(true)
                 if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
                 toastTimerRef.current = setTimeout(() => setShowToast(false), 2500)
-                
+
                 // Créer une notification pour le badgeage
                 try {
                     const roleId = Number(localStorage.getItem('roleId') || 0)
-                    
+
                     // Notification pour l'utilisateur qui badge
                     await notificationService.createNotification({
                         userId: parseInt(userId),
@@ -116,18 +116,18 @@ function Pointage() {
                         type: 'badgeage',
                         relatedId: result
                     })
-                    
+
                     // Si l'utilisateur est un employé (roleId = 0), notifier les managers
                     if (roleId === 0) {
                         try {
                             const allUsers = await teamService.listUsers()
                             const managers = allUsers.filter(u => u.roleId === 1)
-                            
+
                             // Récupérer le prénom et nom de l'employé
                             const employeeFirstName = localStorage.getItem('firstName') || ''
                             const employeeLastName = localStorage.getItem('lastName') || ''
                             const employeeName = `${employeeFirstName} ${employeeLastName}`.trim() || 'Un employé'
-                            
+
                             // Formater la date et l'heure
                             const dateStr = now.toLocaleDateString('fr-FR', {
                                 weekday: 'long',
@@ -139,11 +139,11 @@ function Pointage() {
                                 hour: '2-digit',
                                 minute: '2-digit'
                             })
-                            
+
                             const message = `${employeeName} a badgé le ${dateStr} à ${timeStr}`
-                            
+
                             // Notifier tous les managers
-                            await Promise.all(managers.map(manager => 
+                            await Promise.all(managers.map(manager =>
                                 notificationService.createNotification({
                                     userId: manager.id,
                                     message: message,
@@ -189,12 +189,6 @@ function Pointage() {
         }
     }, [history.length, currentPage, totalPages])
 
-    const goToPage = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page)
-        }
-    }
-
     const goToPreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
@@ -209,13 +203,13 @@ function Pointage() {
 
 
     return (
-        <div className="pointage-container">
+        <div className="pointage-container" data-testid="pointage-container">
             <main className="pointage-main">
                 <div className="pointage-header">
                     <h1 className="pointage-title">Badgeage</h1>
-                    <p className="pointage-date">{formatDate(new Date())}</p>
+                    <p className="pointage-date" data-testid="current-date">{formatDate(new Date())}</p>
                     <div className="pointage-info-card">
-                        <p className="pointage-info-text">
+                        <p className="pointage-info-text" data-testid="info-text">
                             Pensez à badger à <span className="pointage-highlight">chaque moment clé</span> de votre journée :
                             votre arrivée le matin, avant votre pause déjeuner, lors de votre retour de pause, et avant votre départ en fin de journée.
                         </p>
@@ -234,6 +228,7 @@ function Pointage() {
                             key={index}
                             className="pointage-moment"
                             style={{ animationDelay: `${index * 100}ms` }}
+                            data-testid={`moment-${index}`}
                         >
                             <div className="pointage-moment-icon">
                                 <img
@@ -256,10 +251,11 @@ function Pointage() {
                 </div>
 
                 <div className="pointage-badge-container">
-                    <button 
+                    <button
                         className="pointage-badge-button"
-                        onClick={onBadge} 
+                        onClick={onBadge}
                         disabled={loading}
+                        data-testid="badge-button"
                     >
                         <div className="pointage-badge-icon">
                             <img
@@ -273,10 +269,10 @@ function Pointage() {
                     </button>
                 </div>
 
-                <div className="pointage-history-card">
+                <div className="pointage-history-card" data-testid="history-card">
                     <div className="pointage-history-header">
                         <h2 className="pointage-history-title">Historique du jour</h2>
-                        <p className="pointage-history-description">
+                        <p className="pointage-history-description" data-testid="history-count">
                             {history.length === 0
                                 ? "Aucun badgeage effectué aujourd'hui"
                                 : `${history.length} badgeage${history.length > 1 ? "s" : ""} effectué${history.length > 1 ? "s" : ""}`}
@@ -284,7 +280,7 @@ function Pointage() {
                     </div>
                     <div className="pointage-history-content">
                         {history.length === 0 ? (
-                            <div className="pointage-empty-state">
+                            <div className="pointage-empty-state" data-testid="empty-state">
                                 <div className="pointage-empty-icon">
                                     <img
                                         width={icons.badge.width}
@@ -293,11 +289,11 @@ function Pointage() {
                                         alt={icons.badge.alt}
                                     />
                                 </div>
-                                <p>Effectuez votre premier badgeage</p>
+                                <p data-testid="empty-message">Effectuez votre premier badgeage</p>
                             </div>
                         ) : (
                             <>
-                                <div>
+                                <div data-testid="history-list">
                                     {currentHistory.map((item, index) => {
                                         const globalIndex = startIndex + index
                                         // Le premier élément (index 0) est toujours le plus récent
@@ -306,6 +302,7 @@ function Pointage() {
                                             <div
                                                 key={globalIndex}
                                                 className="pointage-badge-item"
+                                                data-testid={`badge-item-${globalIndex}`}
                                             >
                                                 <div className="pointage-badge-info">
                                                     <div className="pointage-badge-indicator" />
@@ -317,28 +314,30 @@ function Pointage() {
                                                     </div>
                                                 </div>
                                                 {isLastItem && (
-                                                    <span className="pointage-last-badge">Dernier</span>
+                                                    <span className="pointage-last-badge" data-testid="last-badge">Dernier</span>
                                                 )}
                                             </div>
                                         )
                                     })}
                                 </div>
                                 {totalPages > 1 && (
-                                    <div className="pointage-pagination">
+                                    <div className="pointage-pagination" data-testid="pagination">
                                         <button
                                             className="pointage-pagination-button"
                                             onClick={goToPreviousPage}
                                             disabled={currentPage === 1}
+                                            data-testid="prev-button"
                                         >
                                             ‹ Précédent
                                         </button>
-                                        <div className="pointage-pagination-info">
+                                        <div className="pointage-pagination-info" data-testid="page-info">
                                             Page {currentPage} sur {totalPages}
                                         </div>
                                         <button
                                             className="pointage-pagination-button"
                                             onClick={goToNextPage}
                                             disabled={currentPage === totalPages}
+                                            data-testid="next-button"
                                         >
                                             Suivant ›
                                         </button>
@@ -351,11 +350,10 @@ function Pointage() {
             </main>
 
             {showToast && (
-                <div className="pointage-toast">Vous avez badgé !</div>
+                <div className="pointage-toast" data-testid="toast">Vous avez badgé !</div>
             )}
         </div>
     )
 }
 
 export default Pointage
-

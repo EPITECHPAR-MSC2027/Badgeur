@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../style/Login.css';
 import primeBankLogo from '../assets/primebank.png';
 import icon from '../assets/icon.png';
@@ -162,14 +162,15 @@ function Login({ onSubmit }) {
 
                 {!mfaRequired ? (
                     // Normal login form
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} data-testid="login-form">
                         <div className="login-form-group">
                             <h1 className="login-title">Connexion</h1>
                             <p className="login-subtitle">Accédez à votre espace de gestion du temps</p>
-                            <label className="login-label">Adresse Email</label>
+                            <label htmlFor="email-input" className="login-label">Adresse Email</label>
                             <div className="login-input-wrapper">
                                 <img src={emailIcon} alt="Email" className="login-input-icon" />
                                 <input
+                                    id="email-input"
                                     className="login-input"
                                     type="email"
                                     placeholder="nom@banque.fr"
@@ -182,10 +183,11 @@ function Login({ onSubmit }) {
                         </div>
 
                         <div className="login-form-group">
-                            <label className="login-label">Mot de passe</label>
+                            <label htmlFor="password-input" className="login-label">Mot de passe</label>
                             <div className="login-input-wrapper">
                                 <img src={lockIcon} alt="Password" className="login-input-icon" />
                                 <input
+                                    id="password-input"
                                     className="login-input"
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="••••••••"
@@ -211,18 +213,19 @@ function Login({ onSubmit }) {
                     </form>
                 ) : (
                     // MFA verification form
-                    <form onSubmit={handleMfaSubmit}>
+                    <form onSubmit={handleMfaSubmit} data-testid="mfa-form">
                         <div className="login-form-group">
-                            <h1 className="login-title">Vérification MFA</h1>
+                            <h1 className="login-title" data-testid="mfa-title">Vérification MFA</h1>
                             <p className="login-subtitle">
                                 Entrez le code à 6 chiffres de votre application d'authentification
                             </p>
 
                             <div className="login-mfa-icon">🔐</div>
 
-                            <label className="login-label">Code de vérification</label>
+                            <label htmlFor="mfa-code-input" className="login-label">Code de vérification</label>
                             <div className="login-input-wrapper">
                                 <input
+                                    id="mfa-code-input"
                                     className="login-input login-mfa-input"
                                     type="text"
                                     placeholder="000000"
@@ -240,6 +243,7 @@ function Login({ onSubmit }) {
                             type="submit"
                             className="login-submit-button"
                             disabled={loading || mfaCode.length !== 6}
+                            data-testid="mfa-verify-button"
                         >
                             {loading ? 'Vérification...' : 'Vérifier →'}
                         </button>
@@ -256,7 +260,7 @@ function Login({ onSubmit }) {
                 )}
 
                 <div className="login-support">
-                    Problème de connexion? <a href="#support">Contactez le support IT</a>
+                    Problème de connexion? <Link to="/support">Contactez le support IT</Link>
                 </div>
             </div>
         </div>

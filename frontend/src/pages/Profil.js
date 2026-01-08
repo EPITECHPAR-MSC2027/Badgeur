@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../style/theme.css'
 import '../index.css'
@@ -25,6 +25,8 @@ function Profil() {
         switch (pageKey) {
             case 'login':
                 return '/login'
+            case 'supportTicket':
+                return '/support'
             default:
                 return '/'
         }
@@ -52,10 +54,6 @@ function Profil() {
     ]
 
     useEffect(() => {
-        loadUserData()
-    }, [])
-
-    useEffect(() => {
         document.documentElement.setAttribute('data-theme', selectedTheme)
         localStorage.setItem('theme', selectedTheme)
     }, [selectedTheme])
@@ -69,26 +67,7 @@ function Profil() {
         localStorage.setItem('dyslexicMode', dyslexicMode.toString())
     }, [dyslexicMode])
 
-    const loadUserData = async () => {
-        try {
-            // Récupérer les données depuis localStorage (déjà stockées lors de la connexion)
-            const firstName = localStorage.getItem('firstName') || ''
-            const lastName = localStorage.getItem('lastName') || ''
-            const email = localStorage.getItem('email') || ''
-            const roleId = localStorage.getItem('roleId') || null
-
-            setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
-
-            // Check MFA status from backend
-            await checkMfaStatus()
-        } catch (error) {
-            console.error('Erreur lors du chargement des données utilisateur:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const checkMfaStatus = async () => {
+    const checkMfaStatus = useCallback(async () => {
         try {
             const accessToken = localStorage.getItem('accessToken')
             const refreshToken = localStorage.getItem('refreshToken')
@@ -115,7 +94,30 @@ function Profil() {
         } finally {
             setMfaLoading(false)
         }
-    }
+    }, [])
+
+    const loadUserData = useCallback(async () => {
+        try {
+            // Récupérer les données depuis localStorage (déjà stockées lors de la connexion)
+            const firstName = localStorage.getItem('firstName') || ''
+            const lastName = localStorage.getItem('lastName') || ''
+            const email = localStorage.getItem('email') || ''
+            const roleId = localStorage.getItem('roleId') || null
+
+            setUserData({ firstName, lastName, email, roleId: parseInt(roleId) })
+
+            // Check MFA status from backend
+            await checkMfaStatus()
+        } catch (error) {
+            console.error('Erreur lors du chargement des données utilisateur:', error)
+        } finally {
+            setLoading(false)
+        }
+    }, [checkMfaStatus])
+
+    useEffect(() => {
+        loadUserData()
+    }, [loadUserData])
 
     const handleMfaSetup = () => {
         navigate('/login/mfa-setup')
@@ -130,14 +132,14 @@ function Profil() {
     }
 
     const labelStyle = {
-        color: 'var(--color-second-text)',
+        color: 'var(--color-third-text)',
         fontSize: 14,
         marginBottom: 8,
         fontWeight: 600
     }
 
     const valueStyle = {
-        color: 'var(--color-third)',
+        color: 'var(--color-text)',
         fontSize: 16,
         marginBottom: 16,
         padding: '8px 12px',
@@ -158,6 +160,16 @@ function Profil() {
         color: 'var(--color-primary)',
         width: '100%',
         marginTop: 10
+    }
+    
+    const supportButtonStyle = {
+        ...buttonStyle,
+        backgroundColor: 'var(--highlight1)',
+        color: 'var(--color-primary)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
     }
 
     const handleThemeChange = (event) => {
@@ -216,6 +228,15 @@ function Profil() {
                         </div>
                     </div>
                     <button 
+                        onClick={() => handleNavigate('supportTicket')}
+                        style={supportButtonStyle}
+                        onMouseOver={(e) => e.target.style.opacity = '0.9'}
+                        onMouseOut={(e) => e.target.style.opacity = '1'}
+                    >
+                        <span>🎫</span>
+                        Créer un ticket
+                    </button>
+                    <button 
                         onClick={handleLogout}
                         style={buttonStyle}
                         onMouseOver={(e) => e.target.style.opacity = '0.9'}
@@ -230,8 +251,8 @@ function Profil() {
                     <h2 style={{ marginTop: 0, marginBottom: 20 }}>Paramètres</h2>
 
                     <div style={{ marginBottom: 30 }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Thème</h3>
-                        <p style={{ marginBottom: 12, color: 'var(--color-second-text)', fontSize: 14 }}>
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Thème</h3>
+                        <p style={{ marginBottom: 12, color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif'}}>
                             Choisissez votre thème préféré :
                         </p>
                         <select
@@ -257,7 +278,7 @@ function Profil() {
                     </div>
 
                     <div style={{ marginBottom: 30 }}>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Accessibilité</h3>
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Accessibilité</h3>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -266,7 +287,8 @@ function Profil() {
                             backgroundColor: 'var(--color-background)',
                             borderRadius: '8px',
                             border: '1px solid var(--color-third)',
-                            marginBottom: 10
+                            marginBottom: 10,
+                            fontFamily: 'Fustat, sans-serif'
                         }}>
                             <input
                                 type="checkbox"
@@ -286,25 +308,25 @@ function Profil() {
                                     cursor: 'pointer',
                                     fontSize: '16px',
                                     color: 'var(--color-secondary)',
-                                    margin: 0
+                                    margin: 0,
+                                    fontFamily: 'Fustat, sans-serif'
                                 }}
                             >
                                 Mode dyslexique (police adaptée)
                             </label>
                         </div>
-                        <p style={{ marginTop: 0, fontSize: '14px', color: 'var(--color-second-text)' }}>
+                        <p style={{ marginTop: 0, fontSize: '14px', color: 'var(--color-third-text)' }}>
                             Active une police spécialement conçue pour faciliter la lecture aux personnes dyslexiques
                         </p>
                     </div>
 
                     {/* Section Sécurité / MFA */}
                     <div>
-                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-third)' }}>Sécurité</h3>
+                        <h3 style={{ marginTop: 0, marginBottom: 10, color: 'var(--color-text)', fontFamily: 'Fustat, sans-serif' }}>Sécurité</h3>
                         <div style={{
                             padding: '15px',
                             backgroundColor: 'var(--color-background)',
                             borderRadius: '8px',
-                            border: '1px solid var(--color-third)',
                             marginBottom: 10
                         }}>
                             <div style={{
@@ -314,10 +336,10 @@ function Profil() {
                                 marginBottom: 10
                             }}>
                                 <div>
-                                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-secondary)' }}>
+                                    <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-secondary)', fontFamily: 'Fustat, sans-serif' }}>
                                         🔐 Authentification à deux facteurs
                                     </div>
-                                    <div style={{ fontSize: '14px', color: 'var(--color-second-text)', marginTop: 5 }}>
+                                    <div style={{ fontSize: '14px', color: 'var(--color-third-text)', marginTop: 5, fontFamily: 'Fustat, sans-serif' }}>
                                         {mfaLoading ? 'Chargement...' : (mfaEnabled ? 'Activée' : 'Désactivée')}
                                     </div>
                                 </div>
@@ -334,7 +356,7 @@ function Profil() {
                                     </div>
                                 )}
                             </div>
-                            <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-second-text)' }}>
+                            <p style={{ margin: '10px 0', fontSize: '14px', color: 'var(--color-third-text)',fontFamily: 'Fustat, sans-serif' }}>
                                 Ajoutez une couche de sécurité supplémentaire à votre compte avec un code de vérification temporaire.
                             </p>
                             <button

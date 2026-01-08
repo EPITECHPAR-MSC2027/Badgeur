@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import statsService from '../services/statsService'
 
 function LastPunch() {
+    const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
     const [lastAction, setLastAction] = useState(null)
     const [lastTime, setLastTime] = useState(null)
@@ -27,32 +29,141 @@ function LastPunch() {
             }
         })()
     }, [])
+
     const cardStyle = {
-        background: 'linear-gradient(to right, color-mix(in srgb, var(--highlight1) 70%, white), var(--highlight1))',
-        color: 'var(--color-primary)',
-        borderRadius: '9px',
-        padding: '16px 20px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)'
+        background: 'var(--color-primary)',
+        borderRadius: '12px',
+        padding: '24px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        border: '1px solid #e5e7eb'
     }
 
-    const row = { display: 'flex', gap: 110, alignItems: 'center', fontSize: 12, marginTop: 8 }
-    const label = { width: 180, color: 'color-mix(in srgb, var(--highlight1) 70%, black)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif' }
-    const data = { fontSize: 15, fontWeight: 500, fontFamily: 'Fustat, sans-serif', color: 'var(--color-primary)' }
+    const headerStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        marginBottom: '20px',
+        color: '#6b7280',
+        fontSize: '14px',
+        fontWeight: 500,
+        fontFamily: 'Fustat, sans-serif'
+    }
+
+    const timeContainerStyle = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: '20px',
+        borderBottom: '1px solid #e5e7eb',
+        marginBottom: '20px'
+    }
+
+    const timeStyle = {
+        fontSize: '35px',
+        fontWeight: 700,
+        color: 'var(--color-secondary)',
+        fontFamily: 'Spectral, serif',
+        lineHeight: '1',
+        margin: 0
+    }
+
+    const actionLabelStyle = {
+        fontSize: '14px',
+        color: 'var(--color-text)',
+        fontFamily: 'Fustat, sans-serif',
+        marginTop: '8px'
+    }
+
+    const statusBadgeStyle = {
+        width: '48px',
+        height: '48px',
+        borderRadius: '50%',
+        background: lastAction === 'Entrée' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
+
+    const statusDotStyle = {
+        width: '16px',
+        height: '16px',
+        borderRadius: '50%',
+        background: lastAction === 'Entrée' ? '#10b981' : '#ef4444'
+    }
+
+    const presenceRowStyle = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '20px'
+    }
+
+    const presenceLabelStyle = {
+        fontSize: '14px',
+        color: '#6b7280',
+        fontFamily: 'Fustat, sans-serif'
+    }
+
+    const durationStyle = {
+        fontSize: '24px',
+        fontWeight: 700,
+        color: 'var(--color-secondary)',
+        fontFamily: 'Spectral, serif'
+    }
+
+    const buttonStyle = {
+        width: '100%',
+        background: '#1e3a8a',
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        padding: '14px 20px',
+        fontSize: '16px',
+        fontWeight: 600,
+        fontFamily: 'Alata, sans-serif',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
+    }
 
     return (
         <div style={cardStyle}>
-            <h2 style={{ margin: 0, fontWeight: 500,fontSize: 22, color: 'var(--color-primary)' }}>Dernier pointage</h2>
-            <div style={row}><span style={label}>Dernière action</span><span style={data}>{loading ? '…' : (lastAction ? `${lastAction}${lastTime ? ` - ${lastTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}` : 'Aucune')}</span></div>
-            <div style={row}><span style={label}>Date</span><span style={data}>Aujourd'hui</span></div>
-            <div style={{ marginTop: 35, color: 'color-mix(in srgb, var(--highlight1) 70%, black)', fontSize: 15, fontWeight: 700, fontFamily: 'Fustat, sans-serif' }}>Temps de présence aujourd'hui</div>
-            <div style={{ marginTop: 6, fontSize: 22, fontWeight: 800, fontFamily: 'Spectral, sans-serif' }}>
-                {loading ? '…' : statsService.formatDuration(todayDurationMs)}
+            <div style={headerStyle}>
+                <span>⏱️</span>
+                <span>Dernier pointage</span>
             </div>
+
+            <div style={timeContainerStyle}>
+                <div>
+                    <div style={timeStyle}>
+                        {loading ? '...' : (lastTime ? lastTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '--:--')}
+                    </div>
+                    <div style={actionLabelStyle}>
+                        {loading ? '...' : (lastAction || 'Aucune action')}
+                    </div>
+                </div>
+                {!loading && lastAction && (
+                    <div style={statusBadgeStyle}>
+                        <div style={statusDotStyle}></div>
+                    </div>
+                )}
+            </div>
+
+            <div style={presenceRowStyle}>
+                <span style={presenceLabelStyle}>Présence aujourd'hui</span>
+                <span style={durationStyle}>
+                    {loading ? '...' : statsService.formatDuration(todayDurationMs)}
+                </span>
+            </div>
+
+            <button style={buttonStyle} onClick={() => navigate('/pointage')}>
+                <span>⏰</span>
+                Pointer maintenant
+            </button>
         </div>
     )
 }
 
-export default LastPunch
-
-
-
+export default LastPunch;

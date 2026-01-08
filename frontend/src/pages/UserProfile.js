@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import '../index.css';
@@ -14,19 +14,17 @@ function UserProfile() {
     const [loadingBadgeages, setLoadingBadgeages] = useState(false);
     const [teamName, setTeamName] = useState(null);
     const [managerName, setManagerName] = useState(null);
+    const currentUserRoleId = parseInt(localStorage.getItem('roleId'));
 
+    // Vérifier l'accès dès le montage du composant
     useEffect(() => {
-        loadUserData();
-    }, [userId]);
-
-    useEffect(() => {
-        if (user) {
-            loadBadgeages();
-            loadTeamAndManager();
+        if (currentUserRoleId !== 3) {
+            alert('Accès refusé. Seuls les RH peuvent accéder aux profils détaillés.');
+            navigate('/trombinoscope');
         }
-    }, [selectedDate, user]);
+    }, [currentUserRoleId, navigate]);
 
-    const loadUserData = async () => {
+    const loadUserData = useCallback(async () => {
         try {
             setLoading(true);
             const response = await authService.get('/users');
@@ -50,9 +48,9 @@ function UserProfile() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId, navigate]);
 
-    const loadTeamAndManager = async () => {
+    const loadTeamAndManager = useCallback(async () => {
         if (!user) return;
         try {
             const [teamsRes, usersRes] = await Promise.all([
@@ -95,9 +93,9 @@ function UserProfile() {
             setTeamName(null);
             setManagerName(null);
         }
-    };
+    }, [user]);
 
-    const loadBadgeages = async () => {
+    const loadBadgeages = useCallback(async () => {
         if (!user) return;
         try {
             setLoadingBadgeages(true);
@@ -118,7 +116,20 @@ function UserProfile() {
         } finally {
             setLoadingBadgeages(false);
         }
-    };
+    }, [user]);
+
+    useEffect(() => {
+        if (currentUserRoleId === 3) {
+            loadUserData();
+        }
+    }, [loadUserData, currentUserRoleId]);
+
+    useEffect(() => {
+        if (user && currentUserRoleId === 3) {
+            loadBadgeages();
+            loadTeamAndManager();
+        }
+    }, [selectedDate, user, loadBadgeages, loadTeamAndManager, currentUserRoleId]);
 
     const getRoleLabel = (roleId) => {
         switch (roleId) {
@@ -172,7 +183,6 @@ function UserProfile() {
         borderRadius: '12px',
         padding: '24px',
         marginBottom: '24px',
-        border: '2px solid var(--color-secondary)'
     };
 
     const badgeCardStyle = {
@@ -189,7 +199,7 @@ function UserProfile() {
 
     const timeBadgeStyle = {
         background: 'var(--color-primary)',
-        color: 'var(--color-third)',
+        color: 'var(--color-text)',
         borderRadius: '8px',
         padding: '12px 20px',
         fontSize: '18px',
@@ -204,6 +214,11 @@ function UserProfile() {
         color: 'var(--color-text)',
         fontSize: '14px',
         fontWeight: '800'
+    };
+
+    // Bloquer l'accès si pas RH
+    if (currentUserRoleId !== 3) {
+        return null;
     }
 
     if (loading) {
@@ -322,7 +337,8 @@ function UserProfile() {
                         marginBottom: '8px',
                         color: 'var(--color-text)',
                         fontWeight: 600,
-                        fontSize: '14px'
+                        fontSize: '14px',
+                        fontFamily:'Fustat, sans-serif'
                     }}>
                         Sélectionner un jour
                     </label>
@@ -389,7 +405,7 @@ function UserProfile() {
                                         </p>
                                         <p style={{ 
                                             margin: '4px 0 0 0', 
-                                            color: 'var(--color-second-text)',
+                                            color: 'var(--color-text)',
                                             fontSize: '14px'
                                         }}>
                                             {badge.time.toLocaleTimeString('fr-FR', { 
@@ -410,4 +426,3 @@ function UserProfile() {
 }
 
 export default UserProfile;
-
