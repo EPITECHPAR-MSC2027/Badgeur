@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace badgeur_backend.Contracts.Requests.Create
 {
-    [JsonSerializable(typeof(CreateRoomRequest))]
     public class CreateRoomRequest
     {
         public string Name { get; set; } = string.Empty;
