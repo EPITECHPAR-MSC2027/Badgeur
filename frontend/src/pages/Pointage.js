@@ -51,7 +51,7 @@ function getTimeSlot(date) {
     // Hors plage autorisée
     return null
 }
-
+ 
 function Pointage() {
     const [showToast, setShowToast] = useState(false)
     const [history, setHistory] = useState([]) // [{time: Date}]
@@ -163,7 +163,7 @@ function Pointage() {
             }
 
             const requestData = {
-                badgedAt: addHoursToLocalTime(2),
+                badgedAt: addHoursToLocalTime(1), // Sweet Christ never change this from 1
                 userId: parseInt(userId)
             }
             console.log('Données de badgeage:', requestData)
