@@ -31,11 +31,14 @@ jest.mock('../../services/teamService', () => ({
 const renderWithRouter = (component) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
 };
+
 describe('Pointage Component', () => {
     let localStorageMock;
     beforeEach(() => {
         mockNavigate.mockClear();
         jest.useFakeTimers();
+        // Set system time to a specific date for consistent testing
+        jest.setSystemTime(new Date('2026-01-09T10:00:00Z'));
 
         // Create proper localStorage mock with jest spies
         localStorageMock = {
@@ -98,8 +101,8 @@ describe('Pointage Component', () => {
     // Test 2: Loads badge history on mount
     test('Loads badge history on component mount', async () => {
         const mockHistory = [
-            { badgedAt: '2026-01-07T09:00:00Z' },
-            { badgedAt: '2026-01-07T12:00:00Z' },
+            { badgedAt: '2026-01-09T09:00:00Z' },
+            { badgedAt: '2026-01-09T12:00:00Z' },
         ];
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -133,11 +136,21 @@ describe('Pointage Component', () => {
 
     // Test 4: Successfully creates a badge
     test('Handles successful badge creation', async () => {
+        // Set time within allowed badging hours (morning slot)
+        jest.setSystemTime(new Date('2026-01-09T08:30:00Z'));
+
         // Mock history load
         authService.get.mockResolvedValueOnce({
             ok: true,
             json: async () => [],
         });
+
+        // Mock history reload after badge
+        authService.get.mockResolvedValueOnce({
+            ok: true,
+            json: async () => [{ badgedAt: '2026-01-09T08:30:00Z' }],
+        });
+
         renderWithRouter(<Pointage />);
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
@@ -162,11 +175,21 @@ describe('Pointage Component', () => {
 
     // Test 5: Shows toast notification after badge
     test('Displays toast notification after successful badge', async () => {
+        // Set time within allowed badging hours (morning slot)
+        jest.setSystemTime(new Date('2026-01-09T08:30:00Z'));
+
         // Mock history load
         authService.get.mockResolvedValueOnce({
             ok: true,
             json: async () => [],
         });
+
+        // Mock history reload after badge
+        authService.get.mockResolvedValueOnce({
+            ok: true,
+            json: async () => [{ badgedAt: '2026-01-09T08:30:00Z' }],
+        });
+
         renderWithRouter(<Pointage />);
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
@@ -192,6 +215,9 @@ describe('Pointage Component', () => {
 
     // Test 6: Disables button during loading
     test('Disables badge button during loading', async () => {
+        // Set time within allowed badging hours (morning slot)
+        jest.setSystemTime(new Date('2026-01-09T08:30:00Z'));
+
         // Mock history load
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -212,13 +238,16 @@ describe('Pointage Component', () => {
     });
 
     // Test 7: Handles badge creation error
-    test('Displays alert on badge creation error', async () => {
+    test('Displays error message on badge creation error', async () => {
+        // Set time within allowed badging hours (morning slot)
+        jest.setSystemTime(new Date('2026-01-09T08:30:00Z'));
+
         // Mock history load
         authService.get.mockResolvedValueOnce({
             ok: true,
             json: async () => [],
         });
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
         renderWithRouter(<Pointage />);
         await waitFor(() => {
             expect(screen.getByTestId('badge-button')).toBeInTheDocument();
@@ -233,9 +262,8 @@ describe('Pointage Component', () => {
         const badgeButton = screen.getByTestId('badge-button');
         fireEvent.click(badgeButton);
         await waitFor(() => {
-            expect(alertMock).toHaveBeenCalled();
+            expect(screen.getByTestId('error-message')).toBeInTheDocument();
         });
-        alertMock.mockRestore();
     });
 
     // Test 8: Handles missing userId
@@ -257,7 +285,7 @@ describe('Pointage Component', () => {
     // Test 9: Pagination works correctly
     test('Paginates badge history correctly', async () => {
         const mockHistory = Array.from({ length: 12 }, (_, i) => ({
-            badgedAt: new Date(2026, 0, 7, 9 + i, 0, 0).toISOString(),
+            badgedAt: new Date(2026, 0, 9, 9 + i, 0, 0).toISOString(),
         }));
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -295,8 +323,8 @@ describe('Pointage Component', () => {
     // Test 10: Shows "Dernier" badge for most recent entry
     test('Displays "Dernier" label for most recent badge', async () => {
         const mockHistory = [
-            { badgedAt: '2026-01-07T12:00:00Z' },
-            { badgedAt: '2026-01-07T09:00:00Z' },
+            { badgedAt: '2026-01-09T12:00:00Z' },
+            { badgedAt: '2026-01-09T09:00:00Z' },
         ];
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -315,9 +343,9 @@ describe('Pointage Component', () => {
     // Test 11: Sorts badge history by most recent first
     test('Sorts badge history with most recent first', async () => {
         const mockHistory = [
-            { badgedAt: '2026-01-07T09:00:00Z' },
-            { badgedAt: '2026-01-07T12:00:00Z' },
-            { badgedAt: '2026-01-07T10:30:00Z' },
+            { badgedAt: '2026-01-09T09:00:00Z' },
+            { badgedAt: '2026-01-09T12:00:00Z' },
+            { badgedAt: '2026-01-09T10:30:00Z' },
         ];
         authService.get.mockResolvedValueOnce({
             ok: true,
@@ -352,26 +380,24 @@ describe('Pointage Component', () => {
             ok: true,
             json: async () => [],
         });
-        const mockDate = new Date('2026-01-07T10:00:00Z');
+        const mockDate = new Date('2026-01-09T10:00:00Z');
         jest.setSystemTime(mockDate);
         renderWithRouter(<Pointage />);
         await waitFor(() => {
             const dateElement = screen.getByTestId('current-date');
-            expect(dateElement.textContent).toBe('07/01/2026');
+            expect(dateElement.textContent).toBe('09/01/2026');
         });
     });
 
     // Test 14: Resets to page 1 after creating new badge
     test('Resets to page 1 after creating new badge', async () => {
-        // Create 6 badges across multiple time slots to trigger pagination
-        // Use times that allow us to add another badge at 9:00 AM (morning slot)
+        // Set time within allowed badging hours (morning slot)
+        jest.setSystemTime(new Date('2026-01-09T08:30:00Z'));
+
         const mockHistory = [
-            { badgedAt: new Date(2026, 0, 9, 12, 15, 0).toISOString() }, // Lunch slot (11:01-12:50)
-            { badgedAt: new Date(2026, 0, 9, 13, 30, 0).toISOString() }, // Afternoon slot (12:51-16:30)
-            { badgedAt: new Date(2026, 0, 9, 17, 0, 0).toISOString() },  // Departure slot (16:31-18:00)
-            { badgedAt: new Date(2026, 0, 8, 8, 0, 0).toISOString() },   // Yesterday - for pagination
-            { badgedAt: new Date(2026, 0, 8, 12, 0, 0).toISOString() },  // Yesterday - for pagination
-            { badgedAt: new Date(2026, 0, 8, 14, 0, 0).toISOString() }   // Yesterday - for pagination
+            { badgedAt: new Date(2026, 0, 9, 12, 15, 0).toISOString() },
+            { badgedAt: new Date(2026, 0, 9, 13, 30, 0).toISOString() },
+            { badgedAt: new Date(2026, 0, 9, 17, 0, 0).toISOString() }
         ];
 
         // Initial history load
@@ -382,25 +408,22 @@ describe('Pointage Component', () => {
 
         renderWithRouter(<Pointage />);
 
-        // Wait for initial load - should show 3 badges for TODAY (2026-01-09)
         await waitFor(() => {
             const historyCount = screen.getByTestId('history-count');
             expect(historyCount.textContent).toContain('3 badgeages');
         });
 
-        // No pagination yet (only 3 badges today, need 6+ for page 2)
-
-        // Mock badge creation (4th badge in morning slot at 9:00 AM)
+        // Mock badge creation
         authService.post.mockResolvedValueOnce({
             ok: true,
             json: async () => 123,
         });
 
-        // Mock history reload after badge - now 4 badges for TODAY
+        // Mock history reload after badge - now 4 badges
         authService.get.mockResolvedValueOnce({
             ok: true,
             json: async () => [
-                { badgedAt: new Date(2026, 0, 9, 9, 0, 0).toISOString() }, // NEW badge (morning slot)
+                { badgedAt: new Date(2026, 0, 9, 8, 30, 0).toISOString() },
                 ...mockHistory
             ],
         });
@@ -413,14 +436,13 @@ describe('Pointage Component', () => {
             expect(historyCount.textContent).toContain('4 badgeages');
         });
 
-        // Still no pagination (4 badges < 6 needed for 2 pages)
         expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();
     });
 
     // Test 15: Disables pagination buttons at boundaries
     test('Disables pagination buttons at boundaries', async () => {
         const mockHistory = Array.from({ length: 12 }, (_, i) => ({
-            badgedAt: new Date(2026, 0, 7, 9 + i, 0, 0).toISOString(),
+            badgedAt: new Date(2026, 0, 9, 9 + i, 0, 0).toISOString(),
         }));
         authService.get.mockResolvedValueOnce({
             ok: true,
