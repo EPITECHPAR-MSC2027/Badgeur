@@ -190,14 +190,8 @@ describe('Profil Component', () => {
         });
 
         expect(screen.getByTestId('theme-option-main')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-azure')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-pink-matcha')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-coffee')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-deep-blue')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-cyber')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-warm')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-desert')).toBeInTheDocument();
-        expect(screen.getByTestId('theme-option-starlight')).toBeInTheDocument();
+        expect(screen.getByTestId('theme-option-night')).toBeInTheDocument();
+
     });
 
     // Test 12: Theme selector changes theme
@@ -209,10 +203,10 @@ describe('Profil Component', () => {
         });
 
         const themeSelect = screen.getByTestId('theme-select');
-        fireEvent.change(themeSelect, { target: { value: 'azure' } });
+        fireEvent.change(themeSelect, { target: { value: 'night' } });
 
-        expect(themeSelect.value).toBe('azure');
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('theme', 'azure');
+        expect(themeSelect.value).toBe('night');
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('theme', 'night');
     });
 
     // Test 13: Theme change updates document attribute
@@ -224,10 +218,10 @@ describe('Profil Component', () => {
         });
 
         const themeSelect = screen.getByTestId('theme-select');
-        fireEvent.change(themeSelect, { target: { value: 'cyber' } });
+        fireEvent.change(themeSelect, { target: { value: 'night' } });
 
         await waitFor(() => {
-            expect(document.documentElement.getAttribute('data-theme')).toBe('cyber');
+            expect(document.documentElement.getAttribute('data-theme')).toBe('night');
         });
     });
 
