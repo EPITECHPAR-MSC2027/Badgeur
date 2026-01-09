@@ -129,7 +129,7 @@ function UserProfile() {
             loadBadgeages();
             loadTeamAndManager();
         }
-    }, [selectedDate, user, loadBadgeages, loadTeamAndManager, currentUserRoleId]);
+    }, [user, loadBadgeages, loadTeamAndManager, currentUserRoleId]);
 
     const getRoleLabel = (roleId) => {
         switch (roleId) {
