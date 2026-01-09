@@ -23,7 +23,7 @@ function TeamBadgeageView({ teamMembers }) {
         const afternoonLateEnd = 16 * 60 + 55 // 16h55
 
         return (totalMinutes >= morningLateStart && totalMinutes <= morningLateEnd) ||
-               (totalMinutes >= afternoonLateStart && totalMinutes <= afternoonLateEnd)
+            (totalMinutes >= afternoonLateStart && totalMinutes <= afternoonLateEnd)
     }
 
     // Fonction pour vérifier si c'est un badgeage matin ou après-midi
@@ -48,7 +48,7 @@ function TeamBadgeageView({ teamMembers }) {
 
         setLoading(true)
         setError('')
-        
+
         try {
             const selectedDateObj = new Date(selectedDate)
             selectedDateObj.setHours(0, 0, 0, 0)
@@ -103,13 +103,20 @@ function TeamBadgeageView({ teamMembers }) {
         return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
     }
 
+    // Handle null or undefined teamMembers
+    const safeTeamMembers = teamMembers || []
+
     return (
         <div data-testid="team-badgeage-view" style={{ marginTop: 18 }}>
             <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
-                <label style={{ fontSize: 16, fontWeight: 600, fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)' }}>
+                <label
+                    data-testid="date-label"
+                    style={{ fontSize: 16, fontWeight: 600, fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)' }}
+                >
                     Date :
                 </label>
                 <input
+                    data-testid="date-input"
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
@@ -127,27 +134,36 @@ function TeamBadgeageView({ teamMembers }) {
             </div>
 
             {error && (
-                <div style={{ 
-                    color: '#b10000', 
-                    background: '#fff5f5', 
-                    border: '1px solid #f2c0c0', 
-                    borderRadius: 8, 
-                    padding: 10, 
-                    marginBottom: 16 
-                }}>
-                    {error}
+                <div
+                    data-testid="error-banner"
+                    style={{
+                        color: '#b10000',
+                        background: '#fff5f5',
+                        border: '1px solid #f2c0c0',
+                        borderRadius: 8,
+                        padding: 10,
+                        marginBottom: 16
+                    }}
+                >
+                    <span data-testid="error-message">{error}</span>
                 </div>
             )}
 
             {loading && (
-                <div style={{ textAlign: 'center', padding: 20, color: 'var(--color-third-text)' }}>
+                <div
+                    data-testid="loading-indicator"
+                    style={{ textAlign: 'center', padding: 20, color: 'var(--color-third-text)' }}
+                >
                     Chargement...
                 </div>
             )}
 
             {!loading && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 16 }}>
-                    {teamMembers.map(member => {
+                <div
+                    data-testid="members-grid"
+                    style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 16 }}
+                >
+                    {safeTeamMembers.map(member => {
                         const badgeages = badgeagesByUser[member.id] || []
                         const hasLateBadgeage = badgeages.some(b => b.isLate)
 
@@ -163,31 +179,48 @@ function TeamBadgeageView({ teamMembers }) {
                                     border: hasLateBadgeage ? '2px solid #F26A02' : 'none'
                                 }}
                             >
-                                <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}>
+                                <div
+                                    data-testid={`member-header-${member.id}`}
+                                    style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}
+                                >
                                     <img
+                                        data-testid={`member-avatar-${member.id}`}
                                         src={profilImg}
                                         alt="Profil"
                                         style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover' }}
                                     />
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 700, fontSize: 18, fontFamily: 'Spectral, serif' }}>
+                                        <div
+                                            data-testid={`member-name-${member.id}`}
+                                            style={{ fontWeight: 700, fontSize: 18, fontFamily: 'Spectral, serif' }}
+                                        >
                                             {member.firstName} {member.lastName}
                                         </div>
-                                        <div style={{ fontSize: 13, color: 'var(--color-third-text)', fontWeight: 600, marginTop: 4, fontFamily: 'Fustat, sans-serif' }}>
+                                        <div
+                                            data-testid={`member-email-${member.id}`}
+                                            style={{ fontSize: 13, color: 'var(--color-third-text)', fontWeight: 600, marginTop: 4, fontFamily: 'Fustat, sans-serif' }}
+                                        >
                                             {member.email}
                                         </div>
                                     </div>
                                 </div>
 
                                 {badgeages.length === 0 ? (
-                                    <div style={{ color: 'var(--color-third-text)', fontStyle: 'italic', fontFamily: 'Fustat, sans-serif' }}>
+                                    <div
+                                        data-testid={`member-no-badge-${member.id}`}
+                                        style={{ color: 'var(--color-third-text)', fontStyle: 'italic', fontFamily: 'Fustat, sans-serif' }}
+                                    >
                                         Aucun badgeage ce jour
                                     </div>
                                 ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <div
+                                        data-testid={`member-badges-list-${member.id}`}
+                                        style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+                                    >
                                         {badgeages.map((badgeage, index) => (
                                             <div
                                                 key={badgeage.id || index}
+                                                data-testid={`badge-item-${member.id}-${index}`}
                                                 style={{
                                                     display: 'flex',
                                                     justifyContent: 'space-between',
@@ -199,23 +232,32 @@ function TeamBadgeageView({ teamMembers }) {
                                                 }}
                                             >
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                    <span style={{ fontWeight: 600, fontSize: 15, fontFamily: 'Fustat, sans-serif' }}>
+                                                    <span
+                                                        data-testid={`badge-time-${member.id}-${index}`}
+                                                        style={{ fontWeight: 600, fontSize: 15, fontFamily: 'Fustat, sans-serif' }}
+                                                    >
                                                         {formatTime(badgeage.badgeTime)}
                                                     </span>
-                                                    <span style={{ fontSize: 12, color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif' }}>
+                                                    <span
+                                                        data-testid={`badge-type-${member.id}-${index}`}
+                                                        style={{ fontSize: 12, color: 'var(--color-third-text)', fontFamily: 'Fustat, sans-serif' }}
+                                                    >
                                                         {badgeage.type === 'matin' ? 'Matin' : 'Après-midi'}
                                                     </span>
                                                 </div>
                                                 {badgeage.isLate && (
-                                                    <span style={{
-                                                        background: '#F26A02',
-                                                        color: 'white',
-                                                        padding: '4px 8px',
-                                                        borderRadius: 4,
-                                                        fontSize: 12,
-                                                        fontWeight: 600,
-                                                        fontFamily: 'Fustat, sans-serif'
-                                                    }}>
+                                                    <span
+                                                        data-testid={`badge-late-${member.id}-${index}`}
+                                                        style={{
+                                                            background: '#F26A02',
+                                                            color: 'white',
+                                                            padding: '4px 8px',
+                                                            borderRadius: 4,
+                                                            fontSize: 12,
+                                                            fontWeight: 600,
+                                                            fontFamily: 'Fustat, sans-serif'
+                                                        }}
+                                                    >
                                                         Retard
                                                     </span>
                                                 )}
@@ -227,8 +269,11 @@ function TeamBadgeageView({ teamMembers }) {
                         )
                     })}
 
-                    {teamMembers.length === 0 && (
-                        <div style={{ color: 'var(--color-second-text)', fontFamily: 'Fustat, sans-serif' }}>
+                    {safeTeamMembers.length === 0 && (
+                        <div
+                            data-testid="no-members-message"
+                            style={{ color: 'var(--color-second-text)', fontFamily: 'Fustat, sans-serif' }}
+                        >
                             Aucun membre dans l'équipe
                         </div>
                     )}

@@ -93,7 +93,7 @@ function Admin() {
                         onEditPointage={handleEditPointage}
                         onDeletePointage={handleDeletePointage}
                     />
-                ) : ""}
+                ) : null}
             </div>
         </div>
     );
