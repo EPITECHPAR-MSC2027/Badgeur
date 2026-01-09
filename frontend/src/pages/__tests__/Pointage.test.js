@@ -361,42 +361,60 @@ describe('Pointage Component', () => {
         });
     });
 
-    // Test 14: Resets to page 1 after new badge
+    // Test 14: Resets to page 1 after creating new badge
     test('Resets to page 1 after creating new badge', async () => {
-        const mockHistory = Array.from({ length: 12 }, (_, i) => ({
-            badgedAt: new Date(2026, 0, 7, 9 + i, 0, 0).toISOString(),
-        }));
+        // Create 6 badges across multiple time slots to trigger pagination
+        // Use times that allow us to add another badge at 9:00 AM (morning slot)
+        const mockHistory = [
+            { badgedAt: new Date(2026, 0, 9, 12, 15, 0).toISOString() }, // Lunch slot (11:01-12:50)
+            { badgedAt: new Date(2026, 0, 9, 13, 30, 0).toISOString() }, // Afternoon slot (12:51-16:30)
+            { badgedAt: new Date(2026, 0, 9, 17, 0, 0).toISOString() },  // Departure slot (16:31-18:00)
+            { badgedAt: new Date(2026, 0, 8, 8, 0, 0).toISOString() },   // Yesterday - for pagination
+            { badgedAt: new Date(2026, 0, 8, 12, 0, 0).toISOString() },  // Yesterday - for pagination
+            { badgedAt: new Date(2026, 0, 8, 14, 0, 0).toISOString() }   // Yesterday - for pagination
+        ];
 
         // Initial history load
         authService.get.mockResolvedValueOnce({
             ok: true,
             json: async () => mockHistory,
         });
+
         renderWithRouter(<Pointage />);
+
+        // Wait for initial load - should show 3 badges for TODAY (2026-01-09)
         await waitFor(() => {
-            const pageInfo = screen.getByTestId('page-info');
-            expect(pageInfo.textContent).toContain('Page 1 sur 3');
+            const historyCount = screen.getByTestId('history-count');
+            expect(historyCount.textContent).toContain('3 badgeages');
         });
 
-        // Navigate to page 2
-        const nextButton = screen.getByTestId('next-button');
-        fireEvent.click(nextButton);
-        await waitFor(() => {
-            const pageInfo = screen.getByTestId('page-info');
-            expect(pageInfo.textContent).toContain('Page 2 sur 3');
-        });
+        // No pagination yet (only 3 badges today, need 6+ for page 2)
 
-        // Mock badge creation
+        // Mock badge creation (4th badge in morning slot at 9:00 AM)
         authService.post.mockResolvedValueOnce({
             ok: true,
             json: async () => 123,
         });
+
+        // Mock history reload after badge - now 4 badges for TODAY
+        authService.get.mockResolvedValueOnce({
+            ok: true,
+            json: async () => [
+                { badgedAt: new Date(2026, 0, 9, 9, 0, 0).toISOString() }, // NEW badge (morning slot)
+                ...mockHistory
+            ],
+        });
+
         const badgeButton = screen.getByTestId('badge-button');
         fireEvent.click(badgeButton);
+
         await waitFor(() => {
-            const pageInfo = screen.getByTestId('page-info');
-            expect(pageInfo.textContent).toContain('Page 1 sur 3');
+            const historyCount = screen.getByTestId('history-count');
+            expect(historyCount.textContent).toContain('4 badgeages');
         });
+
+        // Still no pagination (4 badges < 6 needed for 2 pages)
+        expect(screen.queryByTestId('pagination')).not.toBeInTheDocument();
     });
 
     // Test 15: Disables pagination buttons at boundaries
