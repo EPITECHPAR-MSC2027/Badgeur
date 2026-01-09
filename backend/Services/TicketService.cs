@@ -52,6 +52,16 @@ namespace badgeur_backend.Services
             return response.Models.Select(t => CreateTicketResponse(t)).ToList();
         }
 
+        public async Task<List<TicketResponse>> GetAllTicketsByAssignedToAsync(string assignedTo)
+        {
+            var response = await _client.From<Ticket>()
+                .Where(t => t.AssignedTo == assignedTo)
+                .Order(n => n.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
+                .Get();
+
+            return response.Models.Select(t => CreateTicketResponse(t)).ToList();
+        }
+
         public async Task<TicketResponse?> GetTicketByIdAsync(long id)
         {
             var response = await _client.From<Ticket>().Where(t => t.Id == id).Get();

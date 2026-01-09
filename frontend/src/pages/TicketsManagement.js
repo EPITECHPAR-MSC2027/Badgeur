@@ -36,6 +36,7 @@ function TicketsManagement() {
         setError('');
         try {
             const response = await authService.get('/tickets/my');
+
             if (!response.ok) {
                 throw new Error('Erreur lors du chargement des tickets');
             }
