@@ -157,7 +157,7 @@ function Login({ onSubmit }) {
 
                 {/* Error message */}
                 {error && (
-                    <div className="login-error">
+                    <div className="login-error" data-testid="login-error">
                         ⚠️ {error}
                     </div>
                 )}

@@ -30,7 +30,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": [ "<rootDir>/src/setupTests.js" ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
       "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/__mocks__/fileMock.js"
@@ -79,6 +81,7 @@
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
     "babel-jest": "^27.5.1",
+    "cypress": "^15.8.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.5.1",
     "jest-environment-jsdom": "^27.5.1"
