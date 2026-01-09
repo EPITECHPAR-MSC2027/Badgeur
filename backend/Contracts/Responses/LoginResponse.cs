@@ -6,6 +6,7 @@
         public string RefreshToken { get; set; } = string.Empty;
         public long UserId { get; set; }
         public long RoleId { get; set; }
+        public long? TeamId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

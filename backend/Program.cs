@@ -26,12 +26,15 @@ var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtSecr
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
+    var baseIssuer = builder.Configuration["Authentication:ValidIssuer"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(bytes),
         ValidAudience = builder.Configuration["Authentication:ValidAudience"],
-        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
+        // Accepter l'issuer de base et avec /auth/v1
+        ValidIssuers = new[] { baseIssuer, $"{baseIssuer}/auth/v1" },
+        ValidateIssuer = true,
     };
 });
 
