@@ -359,9 +359,11 @@ describe('UserProfile Component', () => {
             teamId: null
         };
 
+        // Use today's date (January 9, 2026) to match the component's default selectedDate
+        const today = new Date().toISOString().split('T')[0];
         const mockBadges = [
-            { id: 1, badgedAt: '2026-01-08T09:00:00Z' },
-            { id: 2, badgedAt: '2026-01-08T12:00:00Z' }
+            { id: 1, badgedAt: `${today}T09:00:00Z` },
+            { id: 2, badgedAt: `${today}T12:00:00Z` }
         ];
 
         authService.get.mockResolvedValueOnce({
@@ -623,10 +625,12 @@ describe('UserProfile Component', () => {
             teamId: null
         };
 
+        // Use today's date (January 9, 2026) to match the component's default selectedDate
+        const today = new Date().toISOString().split('T')[0];
         const mockBadges = [
-            { id: 1, badgedAt: '2026-01-08T09:00:00Z' },
-            { id: 2, badgedAt: '2026-01-08T12:30:00Z' },
-            { id: 3, badgedAt: '2026-01-08T17:00:00Z' }
+            { id: 1, badgedAt: `${today}T09:00:00Z` },
+            { id: 2, badgedAt: `${today}T12:30:00Z` },
+            { id: 3, badgedAt: `${today}T17:00:00Z` }
         ];
 
         authService.get.mockResolvedValueOnce({
