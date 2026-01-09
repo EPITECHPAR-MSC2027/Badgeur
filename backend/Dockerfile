@@ -9,7 +9,7 @@ COPY . .
 
 # Restore NuGet packages
 RUN dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org || true && \
-    dotnet restore badgeur-backend.csproj --disable-parallel
+    dotnet restore badgeur-backend.csproj --disable-parallel -v detailed
 
 # Expose port
 EXPOSE 8080

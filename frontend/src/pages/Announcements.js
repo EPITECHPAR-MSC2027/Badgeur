@@ -114,37 +114,37 @@ function Announcements() {
 
     if (loading) {
         return (
-            <div style={containerStyle}>
-                <p>Chargement des annonces...</p>
+            <div style={containerStyle} data-testid="announcements-container">
+                <p data-testid="loading-message">Chargement des annonces...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div style={containerStyle}>
-                <p style={{ color: 'red' }}>{error}</p>
+            <div style={containerStyle} data-testid="announcements-container">
+                <p style={{ color: 'red' }} data-testid="error-message">{error}</p>
             </div>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <div style={headerStyle}>
-                <h1 style={{ color: 'var(--color-secondary)', fontFamily: 'Alata, sans-serif' }}>
+        <div style={containerStyle} data-testid="announcements-container">
+            <div style={headerStyle} data-testid="announcements-header">
+                <h1 style={{ color: 'var(--color-secondary)', fontFamily: 'Alata, sans-serif' }} data-testid="page-title">
                     Annonces
                 </h1>
-                <p style={{ color: 'var(--color-third-text)', marginTop: '8px' }}>
+                <p style={{ color: 'var(--color-third-text)', marginTop: '8px' }} data-testid="page-description">
                     Consultez toutes les annonces de l'entreprise
                 </p>
             </div>
 
             {announcements.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-third-text)' }}>
-                    <p>Aucune annonce disponible</p>
+                <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-third-text)' }} data-testid="empty-state">
+                    <p data-testid="empty-message">Aucune annonce disponible</p>
                 </div>
             ) : (
-                <div style={listStyle}>
+                <div style={listStyle} data-testid="announcements-list">
                     {announcements.map(announcement => (
                         <React.Fragment key={announcement.id}>
                             <div
@@ -164,32 +164,33 @@ function Announcements() {
                                         e.currentTarget.style.boxShadow = 'none';
                                     }
                                 }}
+                                data-testid={`announcement-card-${announcement.id}`}
                             >
-                                <h3 style={titleStyle}>{announcement.title}</h3>
-                                <p style={metaStyle}>
+                                <h3 style={titleStyle} data-testid={`announcement-title-${announcement.id}`}>{announcement.title}</h3>
+                                <p style={metaStyle} data-testid={`announcement-meta-${announcement.id}`}>
                                     Par {announcement.authorFirstName} {announcement.authorLastName} • {formatDate(announcement.createdAt)}
                                 </p>
                             </div>
 
                             {selectedAnnouncement?.id === announcement.id && (
-                                <div style={detailPanelStyle}>
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        justifyContent: 'space-between', 
+                                <div style={detailPanelStyle} data-testid={`announcement-detail-${announcement.id}`}>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
                                         alignItems: 'flex-start',
                                         marginBottom: '16px',
                                         paddingBottom: '16px',
                                         borderBottom: '2px solid var(--color-third-text)'
                                     }}>
                                         <div>
-                                            <h2 style={{ 
-                                                margin: '0 0 8px 0', 
+                                            <h2 style={{
+                                                margin: '0 0 8px 0',
                                                 color: 'var(--color-secondary)',
                                                 fontFamily: 'Alata, sans-serif'
-                                            }}>
+                                            }} data-testid={`announcement-detail-title-${announcement.id}`}>
                                                 {selectedAnnouncement.title}
                                             </h2>
-                                            <p style={metaStyle}>
+                                            <p style={metaStyle} data-testid={`announcement-detail-meta-${announcement.id}`}>
                                                 Par {selectedAnnouncement.authorFirstName} {selectedAnnouncement.authorLastName} • {formatDate(selectedAnnouncement.createdAt)}
                                             </p>
                                         </div>
@@ -208,11 +209,12 @@ function Announcements() {
                                                 fontFamily: 'Alata, sans-serif',
                                                 fontWeight: 600
                                             }}
+                                            data-testid={`close-button-${announcement.id}`}
                                         >
                                             Fermer
                                         </button>
                                     </div>
-                                    <div style={messageStyle}>
+                                    <div style={messageStyle} data-testid={`announcement-message-${announcement.id}`}>
                                         {selectedAnnouncement.message}
                                     </div>
                                 </div>

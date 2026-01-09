@@ -32,7 +32,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
         setError(null);
         try {
             const userId = propUserId || localStorage.getItem('userId');
-            
+
             if (!userId) {
                 setError('Utilisateur non connecté');
                 setLoading(false);
@@ -44,7 +44,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
             // Fetch user's KPI data and badge events for the selected period
             let kpiResponse;
             let kpiData = null;
-            
+
             try {
                 // Essayer d'abord l'endpoint /kpis/me
                 kpiResponse = await authService.get('/kpis/me');
@@ -95,8 +95,8 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
             // Filter events for selected month/year
             const filteredEvents = events.filter(event => {
                 const eventDate = new Date(event.badgedAt);
-                return eventDate.getMonth() + 1 === selectedMonth && 
-                       eventDate.getFullYear() === selectedYear;
+                return eventDate.getMonth() + 1 === selectedMonth &&
+                    eventDate.getFullYear() === selectedYear;
             });
 
             console.log('Filtered events for', months[selectedMonth - 1], selectedYear, ':', filteredEvents);
@@ -108,7 +108,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
                 const vehiculeBookingsInMonth = (Array.isArray(vehiculeBookings) ? vehiculeBookings : []).filter(b => {
                     const start = new Date(b.startDatetime || b.StartDatetime);
                     return start.getMonth() + 1 === selectedMonth &&
-                           start.getFullYear() === selectedYear;
+                        start.getFullYear() === selectedYear;
                 });
                 vehicleBookingsCount = vehiculeBookingsInMonth.length;
             } catch (e) {
@@ -126,7 +126,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
                 const roomBookingsInMonth = roomBookingsForUser.filter(b => {
                     const start = new Date(b.StartDatetime || b.startDatetime);
                     return start.getMonth() + 1 === selectedMonth &&
-                           start.getFullYear() === selectedYear;
+                        start.getFullYear() === selectedYear;
                 });
                 roomBookingsCount = roomBookingsInMonth.length;
             } catch (e) {
@@ -161,9 +161,9 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
 
     const handleExport = async () => {
         if (!dashboardRef.current) return;
-        
+
         setIsExporting(true);
-        
+
         try {
             // Capture le dashboard en canvas
             const canvas = await html2canvas(dashboardRef.current, {
@@ -172,17 +172,17 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
                 logging: false,
                 backgroundColor: '#f5f5f5'
             });
-            
+
             // Convertir le canvas en image
             const imgData = canvas.toDataURL('image/png');
-            
+
             // Créer le PDF
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4'
             });
-            
+
             // Calculer les dimensions pour ajuster l'image au PDF
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -191,23 +191,23 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
             const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
             const imgX = (pdfWidth - imgWidth * ratio) / 2;
             const imgY = 10;
-            
+
             // Ajouter l'image au PDF
             pdf.addImage(
-                imgData, 
-                'PNG', 
-                imgX, 
-                imgY, 
-                imgWidth * ratio, 
+                imgData,
+                'PNG',
+                imgX,
+                imgY,
+                imgWidth * ratio,
                 imgHeight * ratio
             );
-            
+
             // Générer le nom du fichier avec la date
             const fileName = `Mes_Analytics_${months[selectedMonth - 1]}_${selectedYear}.pdf`;
-            
+
             // Télécharger le PDF
             pdf.save(fileName);
-            
+
             console.log('Export réussi:', fileName);
         } catch (error) {
             console.error('Erreur lors de l\'export:', error);
@@ -221,7 +221,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
         if (!analyticsData) return {};
 
         const { kpi, events } = analyticsData;
-        
+
         // Calculate from events
         const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
         const totalDaysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
@@ -231,7 +231,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
         let totalHours = 0;
         let totalMinutes = 0;
         const weeklyHours = {};
-        
+
         // Group events by day and calculate daily hours
         const eventsByDay = {};
         events.forEach(event => {
@@ -254,7 +254,7 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
         Object.values(eventsByDay).forEach(dayEvents => {
             // Sort events by time
             dayEvents.sort((a, b) => a - b);
-            
+
             // Pair events (entry-exit, entry-exit, ...)
             for (let i = 0; i < dayEvents.length - 1; i += 2) {
                 const entry = dayEvents[i];
@@ -319,119 +319,128 @@ function UserAnalytics({ userId: propUserId, title, subtitle }) {
     const kpis = calculateKPIs();
 
     return (
-        <div className="analytics-page">
-            <div className="analytics-header">
+        <div className="analytics-page" data-testid="analytics-page">
+            <div className="analytics-header" data-testid="analytics-header">
                 <div>
-                    <h1>{title || 'Mes Analytics'}</h1>
-                    <p>{subtitle || 'Analyse de mes données personnelles'}</p>
+                    <h1 data-testid="analytics-title">{title || 'Mes Analytics'}</h1>
+                    <p data-testid="analytics-subtitle">{subtitle || 'Analyse de mes données personnelles'}</p>
                 </div>
-                <button 
-                    className="export-btn" 
+                <button
+                    className="export-btn"
                     onClick={handleExport}
                     disabled={isExporting || loading}
+                    data-testid="export-button"
                 >
                     {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
                 </button>
             </div>
 
-            <div ref={dashboardRef} className="dashboard-content">
-            <div className="filters-section">
-                <div className="filter-group">
-                    <label>Mois:</label>
-                    <select 
-                        value={selectedMonth} 
-                        onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                    >
-                        {months.map((month, index) => (
-                            <option key={index} value={index + 1}>{month}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="filter-group">
-                    <label>Année:</label>
-                    <select 
-                        value={selectedYear} 
-                        onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                    >
-                        {years.map(year => (
-                            <option key={year} value={year}>{year}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            {loading ? (
-                <div className="loading">Chargement des données...</div>
-            ) : error ? (
-                <div className="error-message">
-                    <h3>⚠️ Erreur</h3>
-                    <p>{error}</p>
-                    <button onClick={fetchAnalyticsData} className="retry-btn">
-                        🔄 Réessayer
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <div className="kpi-grid">
-                        <KPICard 
-                            title="Jours travaillés" 
-                            value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
-                            description="Sur un mois entier"
-                        />
-                        <KPICard 
-                            title="Heures/jour" 
-                            value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
-                            description="Moyenne par jour de présence"
-                        />
-                        <KPICard 
-                            title="Heures/semaine" 
-                            value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
-                            description="Moyenne hebdomadaire"
-                        />
-                        <KPICard 
-                            title="Taux de présence" 
-                            value={`${kpis.presenceRate || 0}%`}
-                            description={`${kpis.absenceRate || 0}% d'absence`}
-                        />
-                        <KPICard 
-                            title="Réservations de véhicule" 
-                            value={analyticsData?.vehicleBookingsCount ?? 0}
-                            description="Nombre de réservations de véhicule sur le mois"
-                        />
-                        <KPICard 
-                            title="Réservations de salle" 
-                            value={analyticsData?.roomBookingsCount ?? 0}
-                            description="Nombre de réservations de salle sur le mois"
-                        />
+            <div ref={dashboardRef} className="dashboard-content" data-testid="dashboard-content">
+                <div className="filters-section" data-testid="filters-section">
+                    <div className="filter-group">
+                        <label>Mois:</label>
+                        <select
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                            data-testid="month-select"
+                        >
+                            {months.map((month, index) => (
+                                <option key={index} value={index + 1}>{month}</option>
+                            ))}
+                        </select>
                     </div>
-
-                    {analyticsData?.events && analyticsData.events.length > 0 ? (
-                        <div className="charts-section">
-                            <div className="chart-container">
-                                <h3>Taux de présence mensuel</h3>
-                                <PresenceChart data={analyticsData.events} />
-                            </div>
-                            <div className="chart-container">
-                                <h3>Heures hebdomadaires</h3>
-                                <WeeklyHoursChart data={analyticsData.events} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="no-data-message">
-                            <p>Aucune donnée disponible pour cette période</p>
-                        </div>
-                    )}
-
-                    <div className="calendar-section">
-                        <h3>Calendrier de présence</h3>
-                        <HeatmapCalendar 
-                            month={selectedMonth} 
-                            year={selectedYear} 
-                            data={analyticsData?.events || []} 
-                        />
+                    <div className="filter-group">
+                        <label>Année:</label>
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                            data-testid="year-select"
+                        >
+                            {years.map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
                     </div>
-                </>
-            )}
+                </div>
+
+                {loading ? (
+                    <div className="loading" data-testid="loading-indicator">Chargement des données...</div>
+                ) : error ? (
+                    <div className="error-message" data-testid="error-message">
+                        <h3>⚠️ Erreur</h3>
+                        <p>{error}</p>
+                        <button onClick={fetchAnalyticsData} className="retry-btn" data-testid="retry-button">
+                            🔄 Réessayer
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <div className="kpi-grid" data-testid="kpi-grid">
+                            <KPICard
+                                title="Jours travaillés"
+                                value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
+                                description="Sur un mois entier"
+                                data-testid="kpi-working-days"
+                            />
+                            <KPICard
+                                title="Heures/jour"
+                                value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
+                                description="Moyenne par jour de présence"
+                                data-testid="kpi-hours-per-day"
+                            />
+                            <KPICard
+                                title="Heures/semaine"
+                                value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
+                                description="Moyenne hebdomadaire"
+                                data-testid="kpi-hours-per-week"
+                            />
+                            <KPICard
+                                title="Taux de présence"
+                                value={`${kpis.presenceRate || 0}%`}
+                                description={`${kpis.absenceRate || 0}% d'absence`}
+                                data-testid="kpi-presence-rate"
+                            />
+                            <KPICard
+                                title="Réservations de véhicule"
+                                value={analyticsData?.vehicleBookingsCount ?? 0}
+                                description="Nombre de réservations de véhicule sur le mois"
+                                data-testid="kpi-vehicle-bookings"
+                            />
+                            <KPICard
+                                title="Réservations de salle"
+                                value={analyticsData?.roomBookingsCount ?? 0}
+                                description="Nombre de réservations de salle sur le mois"
+                                data-testid="kpi-room-bookings"
+                            />
+                        </div>
+
+                        {analyticsData?.events && analyticsData.events.length > 0 ? (
+                            <div className="charts-section" data-testid="charts-section">
+                                <div className="chart-container">
+                                    <h3>Taux de présence mensuel</h3>
+                                    <PresenceChart data={analyticsData.events} />
+                                </div>
+                                <div className="chart-container">
+                                    <h3>Heures hebdomadaires</h3>
+                                    <WeeklyHoursChart data={analyticsData.events} />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="no-data-message" data-testid="no-data-message">
+                                <p>Aucune donnée disponible pour cette période</p>
+                            </div>
+                        )}
+
+                        <div className="calendar-section" data-testid="calendar-section">
+                            <h3>Calendrier de présence</h3>
+                            <HeatmapCalendar
+                                month={selectedMonth}
+                                year={selectedYear}
+                                data={analyticsData?.events || []}
+                            />
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -29,7 +29,7 @@ function ReservationVehicule() {
             setLoading(true);
             const data = await vehiculeService.getAllVehicules();
             setVehicules(data);
-            
+
             // Check current availability for each vehicule
             const availabilityMap = {};
             for (const vehicule of data) {
@@ -105,9 +105,9 @@ function ReservationVehicule() {
             );
 
             if (!isAvailable) {
-                setFeedback({ 
-                    type: 'error', 
-                    message: 'Ce véhicule est déjà réservé pour cette période. Veuillez choisir d\'autres dates.' 
+                setFeedback({
+                    type: 'error',
+                    message: 'Ce véhicule est déjà réservé pour cette période. Veuillez choisir d\'autres dates.'
                 });
                 setSubmitting(false);
                 return;
@@ -123,7 +123,7 @@ function ReservationVehicule() {
             });
 
             setFeedback({ type: 'success', message: 'Réservation confirmée avec succès!' });
-            
+
             // Créer une notification pour la réservation
             try {
                 await notificationService.createNotification({
@@ -135,7 +135,7 @@ function ReservationVehicule() {
             } catch (notifError) {
                 console.error('Erreur lors de la création de la notification:', notifError)
             }
-            
+
             // Reset form
             setSelectedVehicule(null);
             setDestination('');
@@ -143,7 +143,7 @@ function ReservationVehicule() {
             setStartTime('');
             setEndDate('');
             setEndTime('');
-            
+
             // Recharger les véhicules pour mettre à jour la disponibilité
             await loadVehicules();
         } catch (error) {
@@ -154,21 +154,21 @@ function ReservationVehicule() {
     };
 
     return (
-        <div className="reservation-vehicule-container">
-            <header className="reservation-header">
-                <h1>Réserver un véhicule</h1>
-                <p className="reservation-subtitle">Choisissez votre véhicule et planifiez votre déplacement</p>
+        <div className="reservation-vehicule-container" data-testid="reservation-container">
+            <header className="reservation-header" data-testid="reservation-header">
+                <h1 data-testid="page-title">Réserver un véhicule</h1>
+                <p className="reservation-subtitle" data-testid="page-subtitle">Choisissez votre véhicule et planifiez votre déplacement</p>
             </header>
 
-            <div className="reservation-content">
+            <div className="reservation-content" data-testid="reservation-content">
                 {/* Section de sélection des véhicules */}
-                <div className="vehicules-section">
+                <div className="vehicules-section" data-testid="vehicules-section">
                     {loading ? (
-                        <div className="loading-message">Chargement des véhicules...</div>
+                        <div className="loading-message" data-testid="loading-message">Chargement des véhicules...</div>
                     ) : vehicules.length === 0 ? (
-                        <div className="no-vehicules">Aucun véhicule disponible</div>
+                        <div className="no-vehicules" data-testid="no-vehicules-message">Aucun véhicule disponible</div>
                     ) : (
-                        <div className="vehicules-grid">
+                        <div className="vehicules-grid" data-testid="vehicules-grid">
                             {vehicules.map((vehicule) => {
                                 const isSelected = selectedVehicule?.id === vehicule.id;
                                 const vehiculeType = vehicule.typeVehicule || 'Véhicule';
@@ -178,21 +178,24 @@ function ReservationVehicule() {
                                 return (
                                     <div
                                         key={vehicule.id}
+                                        data-testid={`vehicule-card-${vehicule.id}`}
+                                        data-selected={isSelected}
+                                        data-available={isAvailable}
                                         className={`vehicule-card ${isSelected ? 'selected' : ''} ${!isAvailable ? 'unavailable' : ''}`}
                                         onClick={() => setSelectedVehicule(vehicule)}
                                     >
-                                        <div className="vehicule-icon">{getVehiculeTypeIcon(vehiculeType)}</div>
-                                        <div className="vehicule-type">{vehiculeType}</div>
-                                        <div className="vehicule-name">{vehicule.name}</div>
-                                        <div className="vehicule-plate">{vehicule.licensePlate}</div>
-                                        <div className="vehicule-tags">
-                                            <span className="vehicule-tag">{vehicule.capacity} places</span>
-                                            <span className="vehicule-tag">{transmissionLabel}</span>
-                                            <span className="vehicule-tag">{vehicule.fuelType}</span>
+                                        <div className="vehicule-icon" data-testid={`vehicule-icon-${vehicule.id}`}>{getVehiculeTypeIcon(vehiculeType)}</div>
+                                        <div className="vehicule-type" data-testid={`vehicule-type-${vehicule.id}`}>{vehiculeType}</div>
+                                        <div className="vehicule-name" data-testid={`vehicule-name-${vehicule.id}`}>{vehicule.name}</div>
+                                        <div className="vehicule-plate" data-testid={`vehicule-plate-${vehicule.id}`}>{vehicule.licensePlate}</div>
+                                        <div className="vehicule-tags" data-testid={`vehicule-tags-${vehicule.id}`}>
+                                            <span className="vehicule-tag" data-testid={`vehicule-capacity-${vehicule.id}`}>{vehicule.capacity} places</span>
+                                            <span className="vehicule-tag" data-testid={`vehicule-transmission-${vehicule.id}`}>{transmissionLabel}</span>
+                                            <span className="vehicule-tag" data-testid={`vehicule-fuel-${vehicule.id}`}>{vehicule.fuelType}</span>
                                         </div>
-                                        <div className="vehicule-status">
-                                            <span className={`status-dot ${isAvailable ? 'available' : 'unavailable'}`}></span>
-                                            <span className="status-text">{isAvailable ? 'Disponible' : 'Indisponible'}</span>
+                                        <div className="vehicule-status" data-testid={`vehicule-status-${vehicule.id}`}>
+                                            <span className={`status-dot ${isAvailable ? 'available' : 'unavailable'}`} data-testid={`status-dot-${vehicule.id}`}></span>
+                                            <span className="status-text" data-testid={`status-text-${vehicule.id}`}>{isAvailable ? 'Disponible' : 'Indisponible'}</span>
                                         </div>
                                     </div>
                                 );
@@ -202,15 +205,15 @@ function ReservationVehicule() {
                 </div>
 
                 {/* Section détails du trajet */}
-                <div className="trip-details-section">
-                    <div className="trip-details-header">
+                <div className="trip-details-section" data-testid="trip-details-section">
+                    <div className="trip-details-header" data-testid="trip-details-header">
                         <span className="calendar-icon">📅</span>
-                        <h2>Détails du trajet</h2>
+                        <h2 data-testid="trip-details-title">Détails du trajet</h2>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="trip-form">
-                        <div className="form-group">
-                            <label>
+                    <form onSubmit={handleSubmit} className="trip-form" data-testid="trip-form">
+                        <div className="form-group" data-testid="destination-group">
+                            <label data-testid="destination-label">
                                 <span className="input-icon">📍</span>
                                 Destination
                             </label>
@@ -220,55 +223,64 @@ function ReservationVehicule() {
                                 value={destination}
                                 onChange={(e) => setDestination(e.target.value)}
                                 className="form-input"
+                                data-testid="destination-input"
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label>
+                        <div className="form-group" data-testid="start-datetime-group">
+                            <label data-testid="start-datetime-label">
                                 <span className="input-icon">🕐</span>
                                 Départ
                             </label>
-                            <div className="datetime-inputs">
+                            <div className="datetime-inputs" data-testid="start-datetime-inputs">
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     className="form-input date-input"
                                     min={new Date().toISOString().split('T')[0]}
+                                    data-testid="start-date-input"
                                 />
                                 <input
                                     type="time"
                                     value={startTime}
                                     onChange={(e) => setStartTime(e.target.value)}
                                     className="form-input time-input"
+                                    data-testid="start-time-input"
                                 />
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>
+                        <div className="form-group" data-testid="end-datetime-group">
+                            <label data-testid="end-datetime-label">
                                 <span className="input-icon">🕐</span>
                                 Retour
                             </label>
-                            <div className="datetime-inputs">
+                            <div className="datetime-inputs" data-testid="end-datetime-inputs">
                                 <input
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
                                     className="form-input date-input"
                                     min={startDate || new Date().toISOString().split('T')[0]}
+                                    data-testid="end-date-input"
                                 />
                                 <input
                                     type="time"
                                     value={endTime}
                                     onChange={(e) => setEndTime(e.target.value)}
                                     className="form-input time-input"
+                                    data-testid="end-time-input"
                                 />
                             </div>
                         </div>
 
                         {feedback && (
-                            <div className={`feedback-message ${feedback.type}`}>
+                            <div
+                                className={`feedback-message ${feedback.type}`}
+                                data-testid="feedback-message"
+                                data-feedback-type={feedback.type}
+                            >
                                 {feedback.message}
                             </div>
                         )}
@@ -277,13 +289,14 @@ function ReservationVehicule() {
                             type="submit"
                             disabled={submitting || !selectedVehicule}
                             className="confirm-button"
+                            data-testid="confirm-button"
                         >
                             <span className="button-icon">✓</span>
                             {submitting ? 'Vérification...' : 'Confirmer la réservation'}
                         </button>
 
                         {!selectedVehicule && (
-                            <p className="selection-hint">Sélectionnez un véhicule pour continuer</p>
+                            <p className="selection-hint" data-testid="selection-hint">Sélectionnez un véhicule pour continuer</p>
                         )}
                     </form>
                 </div>

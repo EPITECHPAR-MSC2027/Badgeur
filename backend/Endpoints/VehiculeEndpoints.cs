@@ -12,7 +12,7 @@ namespace badgeur_backend.Endpoints
 
             group.MapPost("/", async (CreateVehiculeRequest request, VehiculeService vehiculeService) =>
             {
-                var id = await vehiculeService.CreateVehiculeAsync(request);
+                long? id = await vehiculeService.CreateVehiculeAsync(request);
 
                 if (id == null)
                     return Results.BadRequest("Failed to create a new vehicule.");

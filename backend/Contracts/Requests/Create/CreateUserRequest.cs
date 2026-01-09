@@ -3,7 +3,6 @@
 namespace badgeur_backend.Contracts.Requests.Create
 {
 
-    [JsonSerializable(typeof(CreateUserRequest))]
     public class CreateUserRequest
     {
         public required string FirstName { get; set; }
