@@ -35,43 +35,43 @@ function Home() {
         // Debug : afficher les données utilisateur
         console.log('userData:', userData)
         console.log('teamId:', userData.teamId)
-        
+
         // Charger le manager pour tous les utilisateurs qui ont une équipe
         if (userData.teamId && !isNaN(userData.teamId)) {
             try {
                 setLoadingManager(true)
-                
+
                 // Récupérer les équipes et les utilisateurs en parallèle
                 const [teamsResponse, usersResponse] = await Promise.all([
                     authService.get('/teams'),
                     authService.get('/users')
                 ])
-                
+
                 console.log('teamsResponse.ok:', teamsResponse.ok)
                 console.log('usersResponse.ok:', usersResponse.ok)
-                
+
                 if (teamsResponse.ok && usersResponse.ok) {
                     const teams = await teamsResponse.json()
                     const users = await usersResponse.json()
-                    
+
                     console.log('teams:', teams)
                     console.log('users:', users)
-                    
+
                     // Trouver l'équipe de l'utilisateur
-                    const userTeam = Array.isArray(teams) 
+                    const userTeam = Array.isArray(teams)
                         ? teams.find(t => t.id === userData.teamId)
                         : null
-                    
+
                     console.log('userTeam:', userTeam)
-                    
+
                     if (userTeam && userTeam.managerId) {
                         // Trouver le manager dans la liste des utilisateurs
                         const manager = Array.isArray(users)
                             ? users.find(u => u.id === userTeam.managerId)
                             : null
-                        
+
                         console.log('manager:', manager)
-                        
+
                         if (manager) {
                             setManagerName(`${manager.firstName} ${manager.lastName}`)
                         } else {
@@ -166,7 +166,7 @@ function Home() {
         fontSize: '42px',
         fontWeight: '700',
         fontFamily: 'Alata, sans-serif',
-        color:'var(--color-primary)'
+        color: 'var(--color-primary)'
     }
 
     const h2Style = {
@@ -175,7 +175,7 @@ function Home() {
         fontWeight: '500',
         fontFamily: 'Alata, sans-serif',
         opacity: 0.95,
-        color:'var(--color-primary)'
+        color: 'var(--color-primary)'
     }
 
     const managerBoxStyle = {
@@ -186,7 +186,7 @@ function Home() {
         boxShadow: '0 4px 8px rgba(26, 26, 26, 0.2)',
         borderRadius: '0 0 12px 12px',
         margin: '0 -40px',
-        marginTop:'20px'
+        marginTop: '20px'
     }
 
     const managerTextStyle = {
@@ -203,13 +203,13 @@ function Home() {
     }
 
     return (
-        <div className="App">
-            <header className="App-header" style={AppHeader}>
+        <div className="App" data-testid="home-container">
+            <header className="App-header" style={AppHeader} data-testid="home-header">
                 <div style={headerContentStyle}>
                     <h1 data-testid="page-title" style={h1Style}>Tableaux de bord</h1>
                     <h2 data-testid="welcome-message" style={h2Style}>Bienvenue {userData.firstName} {userData.lastName}</h2>
                 </div>
-                
+
                 {!loadingManager && userData.teamId && (
                     <div style={managerBoxStyle}>
                         <img src={icon} alt="Icon" style={iconStyle} />
