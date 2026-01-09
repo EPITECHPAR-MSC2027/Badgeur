@@ -19,14 +19,49 @@ function formatDate(date) {
     return date.toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' })
 }
 
+// Fonction pour vérifier si deux dates sont le même jour
+function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate()
+}
+
+// Fonction pour déterminer dans quelle plage horaire on se trouve
+function getTimeSlot(date) {
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+    const totalMinutes = hours * 60 + minutes
+
+    // Plage 1: 7h30 - 11h00 (450 - 660 minutes)
+    if (totalMinutes >= 450 && totalMinutes <= 660) {
+        return 'morning'
+    }
+    // Plage 2: 11h01 - 12h50 (661 - 770 minutes)
+    if (totalMinutes >= 661 && totalMinutes <= 770) {
+        return 'lunch'
+    }
+    // Plage 3: 12h51 - 16h30 (771 - 990 minutes)
+    if (totalMinutes >= 771 && totalMinutes <= 990) {
+        return 'afternoon'
+    }
+    // Plage 4: 16h31 - 18h00 (991 - 1080 minutes)
+    if (totalMinutes >= 991 && totalMinutes <= 1080) {
+        return 'departure'
+    }
+    // Hors plage autorisée
+    return null
+}
+
 function Pointage() {
     const [showToast, setShowToast] = useState(false)
     const [history, setHistory] = useState([]) // [{time: Date}]
     const [loading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
+    const [errorMessage, setErrorMessage] = useState('')
     const itemsPerPage = 5
 
     const toastTimerRef = useRef(null)
+    const errorTimerRef = useRef(null)
 
     // Charger l'historique des badgeages au montage du composant
     useEffect(() => {
@@ -50,9 +85,13 @@ function Pointage() {
             if (response.ok) {
                 const data = await response.json()
                 console.log('Données reçues:', data)
-                // Trier par date décroissante (plus récent en premier)
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                
+                // Filtrer uniquement les badgeages d'aujourd'hui et trier par date décroissante
                 const sortedHistory = data
                     .map(item => ({ time: new Date(item.badgedAt) }))
+                    .filter(item => isSameDay(item.time, today))
                     .sort((a, b) => b.time - a.time)
                 setHistory(sortedHistory)
             } else {
@@ -73,6 +112,11 @@ function Pointage() {
 
     const onBadge = async () => {
         setLoading(true)
+        setErrorMessage('')
+        
+        // Nettoyer le timer d'erreur précédent
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+        
         try {
             const userId = localStorage.getItem('userId')
             console.log('User ID pour badgeage:', userId)
@@ -82,6 +126,42 @@ function Pointage() {
             }
 
             const now = new Date()
+            
+            // Vérifier si on est dans une plage horaire autorisée
+            const currentSlot = getTimeSlot(now)
+            if (!currentSlot) {
+                setErrorMessage('Badgeage non autorisé en dehors des heures de travail')
+                errorTimerRef.current = setTimeout(() => setErrorMessage(''), 5000)
+                setLoading(false)
+                return
+            }
+
+            // Vérifier les badgeages du jour
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+            const todayBadges = history.filter(item => isSameDay(item.time, today))
+            
+            // Vérifier si on a déjà 4 badgeages aujourd'hui
+            if (todayBadges.length >= 4) {
+                setErrorMessage('Vous avez déjà effectué 4 badgeages aujourd\'hui')
+                errorTimerRef.current = setTimeout(() => setErrorMessage(''), 5000)
+                setLoading(false)
+                return
+            }
+
+            // Vérifier si on a déjà badgé dans cette plage horaire
+            const hasBadgedInSlot = todayBadges.some(badge => {
+                const badgeSlot = getTimeSlot(badge.time)
+                return badgeSlot === currentSlot
+            })
+
+            if (hasBadgedInSlot) {
+                setErrorMessage('Vous avez déjà badgé')
+                errorTimerRef.current = setTimeout(() => setErrorMessage(''), 5000)
+                setLoading(false)
+                return
+            }
+
             const requestData = {
                 badgedAt: addHoursToLocalTime(2),
                 userId: parseInt(userId)
@@ -94,11 +174,8 @@ function Pointage() {
             if (response.ok) {
                 const result = await response.json()
                 console.log('Badgeage réussi, ID:', result)
-                // Ajouter le nouveau badgeage au début et trier pour maintenir l'ordre
-                setHistory((prev) => {
-                    const updated = [{ time: now }, ...prev]
-                    return updated.sort((a, b) => b.time - a.time)
-                })
+                // Recharger l'historique pour avoir les données à jour
+                await loadBadgeHistory()
                 // Retourner à la première page pour voir le nouveau badgeage
                 setCurrentPage(1)
                 setShowToast(true)
@@ -165,7 +242,8 @@ function Pointage() {
             }
         } catch (error) {
             console.error('Erreur lors du badgeage:', error)
-            alert(error.message || 'Erreur lors du badgeage. Veuillez réessayer.')
+            setErrorMessage(error.message || 'Erreur lors du badgeage. Veuillez réessayer.')
+            errorTimerRef.current = setTimeout(() => setErrorMessage(''), 5000)
         } finally {
             setLoading(false)
         }
@@ -173,6 +251,7 @@ function Pointage() {
 
     useEffect(() => () => {
         if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
     }, [])
 
     // Calculer les éléments à afficher pour la page actuelle
@@ -204,7 +283,30 @@ function Pointage() {
 
     return (
         <div className="pointage-container" data-testid="pointage-container">
-            <main className="pointage-main">
+            {errorMessage && (
+                <div 
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        background: '#fff5f5',
+                        borderBottom: '1px solid #f2c0c0',
+                        padding: '12px 20px',
+                        color: '#b10000',
+                        fontSize: 15,
+                        fontWeight: 600,
+                        textAlign: 'center',
+                        zIndex: 1000,
+                        fontFamily: 'Fustat, sans-serif',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}
+                    data-testid="error-message"
+                >
+                    {errorMessage}
+                </div>
+            )}
+            <main className="pointage-main" style={{ marginTop: errorMessage ? '60px' : '0' }}>
                 <div className="pointage-header">
                     <h1 className="pointage-title">Badgeage</h1>
                     <p className="pointage-date" data-testid="current-date">{formatDate(new Date())}</p>
@@ -275,7 +377,7 @@ function Pointage() {
                         <p className="pointage-history-description" data-testid="history-count">
                             {history.length === 0
                                 ? "Aucun badgeage effectué aujourd'hui"
-                                : `${history.length} badgeage${history.length > 1 ? "s" : ""} effectué${history.length > 1 ? "s" : ""}`}
+                                : `${history.length} badgeage${history.length > 1 ? "s" : ""} effectué${history.length > 1 ? "s" : ""} (${4 - history.length} restant${4 - history.length > 1 ? "s" : ""})`}
                         </p>
                     </div>
                     <div className="pointage-history-content">
