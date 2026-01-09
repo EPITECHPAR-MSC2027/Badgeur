@@ -43,14 +43,8 @@ function Profil() {
 
     const themes = [
         { value: 'main', label: 'Principal' },
-        { value: 'azure', label: 'Azure' },
+        { value: 'night', label: 'Night' },
         { value: 'pink-matcha', label: 'Rose Matcha' },
-        { value: 'coffee', label: 'Café' },
-        { value: 'deep-blue', label: 'Bleu Profond' },
-        { value: 'cyber', label: 'Cyber' },
-        { value: 'warm', label: 'Chaleureux' },
-        { value: 'desert', label: 'Désert' },
-        { value: 'starlight', label: 'Lumière des Étoiles' }
     ]
 
     useEffect(() => {

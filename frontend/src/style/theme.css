@@ -22,63 +22,27 @@ body.dyslexic-mode * {
 }
 
 [data-theme='night'] {
-    --color-primary: #16161a;
-    --color-secondary: #F4F3F7;
-    --color-third: #94a1b2;
-    --color-background: #16161a;
-    --color-second-text: #2cb67d;
-    --highlight1: #7bb3e7;
-    --highlight2: #fca059;
-    --highlight3: #8063cf;
-    --highlight4: #eb5da2;
-}
-
-[data-theme='azure'] {
-    --color-primary: #95B2C4;
-    --color-secondary: #507695;
-    --color-third: #f0acac;
-    --color-background: #F5F5F5;
-    --color-second-text: #d8a3c7;
-    --color-highlight: #D4E8F5;
-    --color-highlight-text: #507695;
+    --color-primary: #2e2e2e;
+    --color-secondary: #828fa5;
+    --color-background: #141317;
+    --color-second-text: #C2C2D6;
+    --color-third-text: #9B9B9B;
+    --color-text: #F4F4F6;
+    --highlight1: #266BBA;
+    --highlight2: #F26A02;
+    --highlight3: #7F33D6;
+    --highlight4: #C33479;
 }
 
 [data-theme='pink-matcha'] {
-    --color-primary: #FFDAF4;
-    --color-secondary: #9A0002;
-    --color-third: #285823;
-    --color-background: #FFF6FF;
-    --color-second-text: #55A155;
-    --color-highlight: #E8F5E9;
-    --color-highlight-text: #285823;
-}
-
-[data-theme='coffee'] {
-    --color-primary: #E5C5C1;
-    --color-secondary: #7F6269;
-    --color-third: #BD8E89;
-    --color-background: #EAEFFF;
-    --color-second-text: #b29482;
-    --color-highlight: #F5E6E4;
-    --color-highlight-text: #7F6269;
-}
-
-[data-theme='deep-blue'] {
-    --color-primary: #63688C;
-    --color-secondary: #272C4F;
-    --color-third: #272C4F;
-    --color-background: #EAEFFF;
-    --color-second-text: #acb2e5;
-    --color-highlight: #D8DCF5;
-    --color-highlight-text: #272C4F;
-}
-
-[data-theme='desert'] {
-    --color-primary: #C7AF94;
-    --color-secondary: #676D40;
-    --color-third: #859a68;
-    --color-background: #EADED0;
-    --color-second-text: #95714F;
-    --color-highlight: #E5DDD0;
-    --color-highlight-text: #676D40;
+    --color-primary: #77a37d;
+    --color-secondary: #527055;
+    --color-background: #ffddf0;
+    --color-second-text: #e2a0a1;
+    --color-third-text: #55A155;
+    --color-text: #285823;
+    --highlight1: #266BBA;
+    --highlight2: #F26A02;
+    --highlight3: #7F33D6;
+    --highlight4: #C33479;
 }

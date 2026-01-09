@@ -261,7 +261,7 @@ function Planning() {
                 <section style={leftColStyle} onMouseUp={onGridMouseUp} data-testid="calendar-section">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                         <div />
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', color:'var(--color-text)' }}>
                             <select
                                 value={currentMonthIndex}
                                 onChange={(e) => setCurrentMonthIndex(Number(e.target.value))}
@@ -292,7 +292,7 @@ function Planning() {
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }} data-testid="calendar-grid">
                             {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
-                                <div key={i} style={{ textAlign: 'center', color: '#6b7280', fontSize: 12 }} data-testid={`day-header-${i}`}>{d}</div>
+                                <div key={i} style={{ textAlign: 'center', color: 'var(--color-text)', fontSize: 12 }} data-testid={`day-header-${i}`}>{d}</div>
                             ))}
                             {monthGrid.cells.map((c, idx) => {
                                 if (c === null) return <div key={`b${idx}`} data-testid={`blank-cell-${idx}`} />
@@ -349,21 +349,21 @@ function Planning() {
                         <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                             <div>
                                 <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>du</div>
-                                <div style={{ fontWeight: 700 }} data-testid="range-start-display">{rangeStart ? toYMD(rangeStart) : '—'}</div>
-                                <label style={{ display: 'block', marginTop: 8 }}>
+                                <div style={{ fontWeight: 700,color:'var(--color-text)' }} data-testid="range-start-display">{rangeStart ? toYMD(rangeStart) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8,color:'var(--color-text)' }}>
                                     <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} data-testid="start-half-morning" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                                 </label>
-                                <label>
+                                <label style={{color:'var(--color-text)'}}>
                                     <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} data-testid="start-half-afternoon" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                                 </label>
                             </div>
                             <div>
                                 <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>au</div>
-                                <div style={{ fontWeight: 700 }} data-testid="range-end-display">{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
-                                <label style={{ display: 'block', marginTop: 8 }}>
+                                <div style={{ fontWeight: 700,color:'var(--color-text)' }} data-testid="range-end-display">{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8,color:'var(--color-text)' }}>
                                     <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} data-testid="end-half-morning" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                                 </label>
-                                <label>
+                                <label style={{color:'var(--color-text)'}}>
                                     <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} data-testid="end-half-afternoon" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                                 </label>
                             </div>
@@ -374,7 +374,7 @@ function Planning() {
                         <p style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-third-text)', margin: '0' }}>Type de demande</p>
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
-                                <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif' }} data-testid={`type-option-${t.id}`}>
+                                <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif',color:'var(--color-text)' }} data-testid={`type-option-${t.id}`}>
                                     <input type="radio" name="typeId" value={t.id} checked={selectedTypeId === t.id} onChange={() => setSelectedTypeId(t.id)} data-testid={`type-radio-${t.id}`} />
                                     <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
                                     <span>{t.label}</span>

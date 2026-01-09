@@ -26,6 +26,7 @@ class AuthService {
         localStorage.removeItem('roleId');
         localStorage.removeItem('email');
         localStorage.removeItem('userId');
+        localStorage.removeItem('teamId');
     }
 
     // Effectue une requête HTTP avec authentification automatique
