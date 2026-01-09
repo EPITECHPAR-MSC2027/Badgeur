@@ -105,9 +105,9 @@ function TeamsSection() {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Manager</th>
+                                <th className="sortable">ID</th>
+                                <th className="sortable">Nom</th>
+                                <th className="sortable">Manager</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

@@ -206,12 +206,37 @@ function UsersSection() {
                     <table className="admin-table">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('firstName')}>Prénom</th>
-                                <th onClick={() => handleSort('lastName')}>Nom</th>
-                                <th onClick={() => handleSort('email')}>Email</th>
-                                <th onClick={() => handleSort('telephone')}>Téléphone</th>
+                                <th 
+                                    className={`sortable ${sortConfig.key === 'firstName' ? sortConfig.direction : ''}`}
+                                    onClick={() => handleSort('firstName')}
+                                >
+                                    Prénom
+                                </th>
+                                <th 
+                                    className={`sortable ${sortConfig.key === 'lastName' ? sortConfig.direction : ''}`}
+                                    onClick={() => handleSort('lastName')}
+                                >
+                                    Nom
+                                </th>
+                                <th 
+                                    className={`sortable ${sortConfig.key === 'email' ? sortConfig.direction : ''}`}
+                                    onClick={() => handleSort('email')}
+                                >
+                                    Email
+                                </th>
+                                <th 
+                                    className={`sortable ${sortConfig.key === 'telephone' ? sortConfig.direction : ''}`}
+                                    onClick={() => handleSort('telephone')}
+                                >
+                                    Téléphone
+                                </th>
                                 <th>Équipe</th>
-                                <th onClick={() => handleSort('roleId')}>Rôle</th>
+                                <th 
+                                    className={`sortable ${sortConfig.key === 'roleId' ? sortConfig.direction : ''}`}
+                                    onClick={() => handleSort('roleId')}
+                                >
+                                    Rôle
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

@@ -4,7 +4,9 @@
 
 .admin-page h1 {
     margin-bottom: 20px;
-    color: var(--color-third);
+    color: var(--color-secondary);
+    font-family: 'Fustat', sans-serif;
+
 }
 
 .admin-page form {
@@ -15,6 +17,8 @@
     background: var(--color-primary);
     padding: 20px;
     border-radius: 8px;
+    font-family: 'Fustat', sans-serif;
+
 }
 
 .admin-page input,
@@ -27,7 +31,7 @@
 
 .admin-page button {
     padding: 8px 16px;
-    background: var(--color-third);
+    background: var(--color-secondary);
     color: white;
     border: none;
     border-radius: 4px;
@@ -44,6 +48,8 @@
     background: var(--color-primary);
     border-radius: 8px;
     overflow: hidden;
+    font-family: 'Fustat', sans-serif;
+
 }
 
 .admin-page th,
@@ -54,8 +60,40 @@
 }
 
 .admin-page th {
-    background: var(--color-third);
-    color: white;
+    background: var(--color-primary);
+    color: var(--color-text);
+    font-family: 'Fustat', sans-serif;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 24px;
+}
+
+.admin-page th:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.admin-page th.sortable::after {
+    content: '↕';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--color-third-text);
+    opacity: 0.5;
+}
+
+.admin-page th.sortable.asc::after {
+    content: '↑';
+    opacity: 1;
+    color: var(--color-secondary);
+}
+
+.admin-page th.sortable.desc::after {
+    content: '↓';
+    opacity: 1;
+    color: var(--color-secondary);
 }
 
 .admin-page tr:hover {
@@ -74,13 +112,15 @@
     border: none;
     border-radius: 8px;
     background: var(--color-primary);
-    color: var(--color-third);
+    color: var(--color-text);
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Fustat', sans-serif;
+
 }
 
 .nav-button.active {
-    background: var(--color-third);
+    background: var(--color-third-text);
     color: white;
 }
 
@@ -94,8 +134,8 @@
 }
 
 .btn-edit {
-    background: var(--color-third);
-    color: white;
+    background: var(--color-secondary);
+    color: var(--color-primary);
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
@@ -134,7 +174,8 @@
 
 .filter-group label {
     font-size: 14px;
-    color: var(--color-second-text);
+    color: var(--color-third-text);
+    font-family: 'Fustat', sans-serif;
 }
 
 .filter-group select {
@@ -155,11 +196,13 @@
     border: 1px solid var(--color-secondary);
     border-radius: 4px;
     font-size: 14px;
+    font-family: 'Fustat', sans-serif;
+    color: var(--color-text)
 }
 
 .filter-group input[type="date"]:focus {
     outline: none;
-    border-color: var(--color-third);
+    border-color: var(--color-text);
 }
 
 /* Inline edit styles for admin tables */
@@ -173,6 +216,8 @@
     border: 1px solid var(--color-secondary);
     border-radius: 4px;
     font-size: 14px;
+    font-family: 'Fustat', sans-serif;
+    color: var(--color-text)
 }
 
 .edit-actions {

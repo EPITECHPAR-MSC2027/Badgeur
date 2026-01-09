@@ -176,9 +176,9 @@ function PointagesSection() {
             <table className="admin-table">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Heure</th>
-                        <th>Utilisateur</th>
+                        <th className="sortable">Date</th>
+                        <th className="sortable">Heure</th>
+                        <th className="sortable">Utilisateur</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
