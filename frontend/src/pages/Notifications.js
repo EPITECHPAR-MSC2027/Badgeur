@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import notificationService from '../services/notificationService'
+import React, { useCallback, useEffect, useState } from 'react'
 import '../index.css'
+import notificationService from '../services/notificationService'
 
 function Notifications() {
     const [notifications, setNotifications] = useState([])
@@ -12,7 +12,7 @@ function Notifications() {
             setLoading(false)
             return
         }
-        
+
         try {
             setLoading(true)
             const data = await notificationService.getNotificationsByUserId(userId)
@@ -49,7 +49,7 @@ function Notifications() {
         if (type === 'planning_response' && message && message.toLowerCase().includes('refusée')) {
             return '❌'
         }
-        
+
         switch (type) {
             case 'badgeage':
                 return '🕐'
@@ -69,9 +69,9 @@ function Notifications() {
     }
 
     const isRefusedPlanning = (notification) => {
-        return notification.type === 'planning_response' && 
-               notification.message && 
-               notification.message.toLowerCase().includes('refusée')
+        return notification.type === 'planning_response' &&
+            notification.message &&
+            notification.message.toLowerCase().includes('refusée')
     }
 
     const cardStyle = {
@@ -123,11 +123,11 @@ function Notifications() {
 
     if (loading) {
         return (
-            <div style={cardStyle}>
+            <div style={cardStyle} data-testid="notifications-container">
                 <div style={titleStyle}>
-                    <h1>Notifications</h1>
+                    <h1 data-testid="notifications-title">Notifications</h1>
                 </div>
-                <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)' }}>
+                <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)' }} data-testid="loading-message">
                     Chargement...
                 </div>
             </div>
@@ -135,45 +135,54 @@ function Notifications() {
     }
 
     return (
-        <div style={cardStyle}>
+        <div style={cardStyle} data-testid="notifications-container">
             <div style={titleStyle}>
-                <h1>Notifications</h1>
+                <h1 data-testid="notifications-title">Notifications</h1>
             </div>
             {notifications.length === 0 ? (
-                <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)', marginTop: 12 }}>
+                <div style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-text)', marginTop: 12 }} data-testid="empty-message">
                     Aucune notification
                 </div>
             ) : (
-                notifications.map(notification => {
-                    const isRefused = isRefusedPlanning(notification)
-                    const notificationStyle = isRefused 
-                        ? refusedNotificationStyle
-                        : (notification.isRead ? readNotificationStyle : unreadNotificationStyle)
-                    
-                    return (
-                        <div key={notification.id} style={notificationStyle}>
-                            <span style={{ fontSize: '18px' }}>
-                                {getTypeIcon(notification.type, notification.message)}
-                            </span>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ 
-                                    marginBottom: '4px',
-                                    fontWeight: notification.isRead ? 400 : 600,
-                                    color: 'var(--color-secondary)'
-                                }}>
-                                    {notification.message}
-                                </div>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    color: 'var(--color-text)',
-                                    marginTop: '4px'
-                                }}>
-                                    {formatDate(notification.createdAt)}
+                <div data-testid="notifications-list">
+                    {notifications.map(notification => {
+                        const isRefused = isRefusedPlanning(notification)
+                        const notificationStyle = isRefused
+                            ? refusedNotificationStyle
+                            : (notification.isRead ? readNotificationStyle : unreadNotificationStyle)
+
+                        return (
+                            <div
+                                key={notification.id}
+                                style={notificationStyle}
+                                data-testid={`notification-item-${notification.id}`}
+                                data-notification-type={notification.type}
+                                data-is-read={notification.isRead}
+                                data-is-refused={isRefused}
+                            >
+                                <span style={{ fontSize: '18px' }} data-testid={`notification-icon-${notification.id}`}>
+                                    {getTypeIcon(notification.type, notification.message)}
+                                </span>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{
+                                        marginBottom: '4px',
+                                        fontWeight: notification.isRead ? 400 : 600,
+                                        color: 'var(--color-secondary)'
+                                    }} data-testid={`notification-message-${notification.id}`}>
+                                        {notification.message}
+                                    </div>
+                                    <div style={{
+                                        fontSize: '11px',
+                                        color: 'var(--color-text)',
+                                        marginTop: '4px'
+                                    }} data-testid={`notification-date-${notification.id}`}>
+                                        {formatDate(notification.createdAt)}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                })
+                        )
+                    })}
+                </div>
             )}
         </div>
     )

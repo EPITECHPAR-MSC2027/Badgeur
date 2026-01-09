@@ -3,7 +3,6 @@
 namespace badgeur_backend.Contracts.Requests.Update
 {
 
-    [JsonSerializable(typeof(UpdateUserRequest))]
     public class UpdateUserRequest
     {
         public required string FirstName { get; set; }

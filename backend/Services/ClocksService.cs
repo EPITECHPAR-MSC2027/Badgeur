@@ -54,7 +54,7 @@ namespace badgeur_backend.Services
             return response.Models.Select(c => CreateClocksResponse(c)).ToList();
         }
 
-        public virtual async Task<ClocksResponse> UpdateClocksAsync(long id, UpdateClocksRequest updateClocksRequest)
+        public virtual async Task<ClocksResponse?> UpdateClocksAsync(long id, UpdateClocksRequest updateClocksRequest)
         {
             var request = await _client.From<Clocks>().Where(n => n.Id == id).Get();
             var clocks = request.Models.FirstOrDefault();

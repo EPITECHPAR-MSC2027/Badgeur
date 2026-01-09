@@ -104,17 +104,13 @@ function Planning() {
                 const perSlot = {}
 
                 for (const r of records) {
-                    // r.Date likely ISO; normalize to local YMD
                     const d = new Date(r.date ?? r.Date)
                     const ymd = toYMD(d)
                     const period = String(r.period ?? r.Period)
-                    // Backend returns Statut as string, convert to number
                     const statut = Number(r.statut ?? r.Statut ?? 0)
                     const typeId = Number(r.demandTypeId ?? r.DemandTypeId ?? r.typeDemandeId ?? r.TypeDemandeId)
                     if (!perSlot[ymd]) perSlot[ymd] = {}
                     perSlot[ymd][period] = { typeId, statut }
-                    // Debug: log the data
-                    console.log(`Planning data: ${ymd} period ${period}`, { typeId, statut, r })
                 }
                 setSubmittedSlots(perSlot)
             } catch (_) {
@@ -158,7 +154,6 @@ function Planning() {
         return acc
     }
 
-    // Generate inclusive half-day slots between start/date/half and end/date/half
     const getSelectedHalfSlots = () => {
         if (!rangeStart || !rangeEnd) return []
         const start = normalizeDateOnly(rangeStart)
@@ -201,14 +196,12 @@ function Planning() {
             return
         }
 
-        // Expand inclusive half-day slots between start and end
         const slots = getSelectedHalfSlots()
         const roleId = Number(localStorage.getItem('roleId') || 0)
-        const statutValue = roleId === 1 ? '1' : '0' // manager = validé direct
+        const statutValue = roleId === 1 ? '1' : '0'
 
         const payloads = slots.map(s => ({
             UserId: userId,
-            // set at noon to avoid UTC shift to previous day in DB
             Date: `${s.date}T12:00:00`,
             Period: s.period,
             Statut: statutValue,
@@ -222,22 +215,17 @@ function Planning() {
             if (rejected.length === 0) {
                 setFeedback({ type: 'success', message: "Demande envoyée avec succès." })
 
-                // Si l'utilisateur est un Employee (roleId = 0), notifier les managers
                 if (roleId === 0) {
                     try {
                         const allUsers = await teamService.listUsers()
                         const managers = allUsers.filter(u => u.roleId === 1)
-
-                        // Récupérer le prénom et nom de l'employé
                         const employeeFirstName = localStorage.getItem('firstName') || ''
                         const employeeLastName = localStorage.getItem('lastName') || ''
                         const employeeName = `${employeeFirstName} ${employeeLastName}`.trim() || 'Un employé'
-
                         const typeLabel = fixedTypes.find(t => t.id === selectedTypeId)?.label || 'demande'
                         const slotsCount = slots.length
                         const message = `${employeeName} a fait une nouvelle demande de planning : ${typeLabel} (${slotsCount} créneau${slotsCount > 1 ? 'x' : ''})`
 
-                        // Notifier tous les managers
                         await Promise.all(managers.map(manager =>
                             notificationService.createNotification({
                                 userId: manager.id,
@@ -251,11 +239,9 @@ function Planning() {
                     }
                 }
 
-                // reset selection but keep mode
                 setSelectedTypeId(null)
                 setRangeStart(null)
                 setRangeEnd(null)
-                // refresh from DB to color according to records
                 setRefreshToggle(t => !t)
             } else {
                 setFeedback({ type: 'error', message: `${rejected.length}/${results.length} demandes ont échoué.` })
@@ -266,23 +252,32 @@ function Planning() {
     }
 
     return (
-        <div className="App" style={appStyle}>
+        <div className="App" style={appStyle} data-testid="planning-container">
             <header className="App-header" style={{ marginBottom: 16 }}>
-                <h1>Demande de planning</h1>
+                <h1 data-testid="planning-title">Demande de planning</h1>
             </header>
 
-            <form onSubmit={handleSubmit} style={formRowStyle}>
-                {/* Left column: Calendar */}
-                <section style={leftColStyle} onMouseUp={onGridMouseUp}>
+            <form onSubmit={handleSubmit} style={formRowStyle} data-testid="planning-form">
+                <section style={leftColStyle} onMouseUp={onGridMouseUp} data-testid="calendar-section">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                         <div />
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center', color:'var(--color-text)' }}>
-                            <select value={currentMonthIndex} onChange={(e) => setCurrentMonthIndex(Number(e.target.value))} style={selectStyle}>
+                            <select
+                                value={currentMonthIndex}
+                                onChange={(e) => setCurrentMonthIndex(Number(e.target.value))}
+                                style={selectStyle}
+                                data-testid="month-select"
+                            >
                                 {Array.from({ length: 12 }).map((_, i) => (
                                     <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('fr-FR', { month: 'long' })}</option>
                                 ))}
                             </select>
-                            <select value={currentYear} onChange={(e) => setCurrentYear(Number(e.target.value))} style={selectStyle}>
+                            <select
+                                value={currentYear}
+                                onChange={(e) => setCurrentYear(Number(e.target.value))}
+                                style={selectStyle}
+                                data-testid="year-select"
+                            >
                                 {Array.from({ length: 5 }).map((_, i) => {
                                     const y = today.getFullYear() - 1 + i
                                     return <option key={y} value={y}>{y}</option>
@@ -292,22 +287,21 @@ function Planning() {
                     </div>
 
                     <div style={{ minWidth: 260 }}>
-                        <div style={{ fontWeight: 700, marginBottom: 8, textTransform: 'capitalize', textAlign: 'right', fontFamily: 'Alata, sans-serif' }}>
+                        <div style={{ fontWeight: 700, marginBottom: 8, textTransform: 'capitalize', textAlign: 'right', fontFamily: 'Alata, sans-serif' }} data-testid="current-month-display">
                             {new Date(monthGrid.year, monthGrid.monthIndex).toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }} data-testid="calendar-grid">
                             {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
-                                <div key={i} style={{ textAlign: 'center', color: 'var(--color-text)', fontSize: 12 }}>{d}</div>
+                                <div key={i} style={{ textAlign: 'center', color: 'var(--color-text)', fontSize: 12 }} data-testid={`day-header-${i}`}>{d}</div>
                             ))}
                             {monthGrid.cells.map((c, idx) => {
-                                if (c === null) return <div key={`b${idx}`} />
+                                if (c === null) return <div key={`b${idx}`} data-testid={`blank-cell-${idx}`} />
                                 const weekend = isWeekend(c)
                                 const isSelected = !weekend && isBetween(c, rangeStart, rangeEnd)
                                 const isEdge = isSelected && (
                                     normalizeDateOnly(c).getTime() === (rangeStart && normalizeDateOnly(rangeStart).getTime()) ||
                                     normalizeDateOnly(c).getTime() === (rangeEnd && normalizeDateOnly(rangeEnd).getTime())
                                 )
-                                // per-period colors
                                 const dayKey = toYMD(c)
                                 const slot0 = submittedSlots[dayKey]?.['0']
                                 const slot1 = submittedSlots[dayKey]?.['1']
@@ -332,12 +326,14 @@ function Planning() {
                                             cursor: weekend ? 'not-allowed' : 'pointer',
                                             overflow: 'hidden'
                                         }}
+                                        data-testid={`calendar-day-${c.getDate()}`}
+                                        data-weekend={weekend}
+                                        data-selected={isSelected}
                                     >
-                                        {/* top half (matin) */}
                                         {(slot0 || slot1) && (
                                             <>
-                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: color0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} />
-                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: color1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} />
+                                                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: '50%', background: color0 ? (slot0.statut === 0 ? `${color0}66` : color0) : 'transparent' }} data-testid={`day-${c.getDate()}-morning-slot`} />
+                                                <div style={{ position: 'absolute', left: 0, bottom: 0, right: 0, height: '50%', background: color1 ? (slot1.statut === 0 ? `${color1}66` : color1) : 'transparent' }} data-testid={`day-${c.getDate()}-afternoon-slot`} />
                                             </>
                                         )}
                                         <span style={{ position: 'relative' }}>{c.getDate()}</span>
@@ -348,41 +344,38 @@ function Planning() {
                     </div>
                 </section>
 
-                {/* Right column: Controls */}
-                <div style={rightColStyle}>
-                    {/* Selection summary and half-days */}
-                    <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }}>
+                <div style={rightColStyle} data-testid="controls-section">
+                    <div style={{ border: '1px solid #e5e7eb', borderRadius: 10, padding: 12 }} data-testid="date-range-selector">
                         <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                             <div>
                                 <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>du</div>
-                                <div style={{ fontWeight: 700, color:'var(--color-text)' }}>{rangeStart ? toYMD(rangeStart) : '—'}</div>
-                                <label style={{ display: 'block', marginTop: 8, color:'var(--color-text)' }}>
-                                    <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
+                                <div style={{ fontWeight: 700,color:'var(--color-text)' }} data-testid="range-start-display">{rangeStart ? toYMD(rangeStart) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8,color:'var(--color-text)' }}>
+                                    <input type="radio" name="startHalf" value="0" checked={startHalf === '0'} onChange={() => setStartHalf('0')} data-testid="start-half-morning" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                                 </label>
                                 <label style={{color:'var(--color-text)'}}>
-                                    <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
+                                    <input type="radio" name="startHalf" value="1" checked={startHalf === '1'} onChange={() => setStartHalf('1')} data-testid="start-half-afternoon" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                                 </label>
                             </div>
                             <div>
                                 <div style={{ color: 'var(--color-third-text)', fontSize: 14, fontFamily: 'Fustat, sans-serif' }}>au</div>
-                                <div style={{ fontWeight: 700, color:'var(--color-text)' }}>{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
-                                <label style={{ display: 'block', marginTop: 8, color:'var(--color-text)' }}>
-                                    <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
+                                <div style={{ fontWeight: 700,color:'var(--color-text)' }} data-testid="range-end-display">{rangeEnd ? toYMD(rangeEnd) : '—'}</div>
+                                <label style={{ display: 'block', marginTop: 8,color:'var(--color-text)' }}>
+                                    <input type="radio" name="endHalf" value="0" checked={endHalf === '0'} onChange={() => setEndHalf('0')} data-testid="end-half-morning" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Matin</span>
                                 </label>
                                 <label style={{color:'var(--color-text)'}}>
-                                    <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
+                                    <input type="radio" name="endHalf" value="1" checked={endHalf === '1'} onChange={() => setEndHalf('1')} data-testid="end-half-afternoon" /> <span style={{ marginLeft: 6, fontFamily: 'Fustat, sans-serif' }}>Après midi</span>
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    {/* Fixed type options + legend */}
-                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }} data-testid="type-selector">
                         <p style={{ fontFamily: 'Fustat, sans-serif', color: 'var(--color-third-text)', margin: '0' }}>Type de demande</p>
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
-                                <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif',color:'var(--color-text)' }}>
-                                    <input type="radio" name="typeId" value={t.id} checked={selectedTypeId === t.id} onChange={() => setSelectedTypeId(t.id)} />
+                                <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 8, border: '1px solid #d0d1d3ff', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Fustat, sans-serif',color:'var(--color-text)' }} data-testid={`type-option-${t.id}`}>
+                                    <input type="radio" name="typeId" value={t.id} checked={selectedTypeId === t.id} onChange={() => setSelectedTypeId(t.id)} data-testid={`type-radio-${t.id}`} />
                                     <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
                                     <span>{t.label}</span>
                                 </label>
@@ -391,13 +384,13 @@ function Planning() {
                     </div>
 
                     {feedback && (
-                        <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }}>
+                        <div style={{ color: feedback.type === 'error' ? '#b91c1c' : '#065f46' }} data-testid="feedback-message" data-feedback-type={feedback.type}>
                             {feedback.message}
                         </div>
                     )}
 
                     <div>
-                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: 'var(--hightlight1)', color: '#fff', border: 'none', cursor: 'pointer' }}>
+                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: 'var(--hightlight1)', color: '#fff', border: 'none', cursor: 'pointer' }} data-testid="submit-button">
                             {submitting ? 'Envoi...' : 'Valider la demande'}
                         </button>
                     </div>

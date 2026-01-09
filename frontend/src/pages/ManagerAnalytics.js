@@ -72,8 +72,8 @@ function ManagerAnalytics() {
                     }
                     const filteredEvents = events.filter(event => {
                         const eventDate = new Date(event.badgedAt);
-                        return eventDate.getMonth() + 1 === selectedMonth && 
-                               eventDate.getFullYear() === selectedYear;
+                        return eventDate.getMonth() + 1 === selectedMonth &&
+                            eventDate.getFullYear() === selectedYear;
                     });
 
                     return {
@@ -109,7 +109,7 @@ function ManagerAnalytics() {
                     if (!teamUserIds.has(bookingUserId)) return false;
                     const start = new Date(b.startDatetime || b.StartDatetime);
                     return start.getMonth() + 1 === selectedMonth &&
-                           start.getFullYear() === selectedYear;
+                        start.getFullYear() === selectedYear;
                 });
                 vehicleBookingsCountTeam = vehicleBookingsForTeam.length;
             } catch (e) {
@@ -125,7 +125,7 @@ function ManagerAnalytics() {
                     if (!teamUserIds.has(bookingUserId)) return false;
                     const start = new Date(b.StartDatetime || b.startDatetime);
                     return start.getMonth() + 1 === selectedMonth &&
-                           start.getFullYear() === selectedYear;
+                        start.getFullYear() === selectedYear;
                 });
                 roomBookingsCountTeam = roomBookingsForTeam.length;
             } catch (e) {
@@ -174,9 +174,9 @@ function ManagerAnalytics() {
 
     const handleExport = async () => {
         if (!dashboardRef.current) return;
-        
+
         setIsExporting(true);
-        
+
         try {
             const canvas = await html2canvas(dashboardRef.current, {
                 scale: 2,
@@ -184,15 +184,15 @@ function ManagerAnalytics() {
                 logging: false,
                 backgroundColor: '#f5f5f5'
             });
-            
+
             const imgData = canvas.toDataURL('image/png');
-            
+
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4'
             });
-            
+
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
             const imgWidth = canvas.width;
@@ -200,20 +200,20 @@ function ManagerAnalytics() {
             const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
             const imgX = (pdfWidth - imgWidth * ratio) / 2;
             const imgY = 10;
-            
+
             pdf.addImage(
-                imgData, 
-                'PNG', 
-                imgX, 
-                imgY, 
-                imgWidth * ratio, 
+                imgData,
+                'PNG',
+                imgX,
+                imgY,
+                imgWidth * ratio,
                 imgHeight * ratio
             );
-            
+
             const fileName = `Analytics_Equipe_${months[selectedMonth - 1]}_${selectedYear}.pdf`;
-            
+
             pdf.save(fileName);
-            
+
             console.log('Export réussi:', fileName);
         } catch (error) {
             console.error('Erreur lors de l\'export:', error);
@@ -234,14 +234,14 @@ function ManagerAnalytics() {
         // Calculer les KPIs pour chaque membre
         const memberKPIs = memberData.map(member => {
             const { kpi, events } = member;
-            
+
             const workingDays = new Set(events.map(e => new Date(e.badgedAt).toDateString())).size;
             const presenceRate = totalDaysInMonth > 0 ? (workingDays / totalDaysInMonth) * 100 : 0;
 
             let totalHours = 0;
             let totalMinutes = 0;
             const weeklyHours = {};
-            
+
             const eventsByDay = {};
             events.forEach(event => {
                 const date = new Date(event.badgedAt);
@@ -260,7 +260,7 @@ function ManagerAnalytics() {
 
             Object.values(eventsByDay).forEach(dayEvents => {
                 dayEvents.sort((a, b) => a - b);
-                
+
                 for (let i = 0; i < dayEvents.length - 1; i += 2) {
                     const entry = dayEvents[i];
                     const exit = dayEvents[i + 1];
@@ -370,21 +370,22 @@ function ManagerAnalytics() {
     const selectedMember = teamMembers.find(m => String(m.id) === String(selectedMemberId));
 
     return (
-        <div className="analytics-page">
-            <div className="analytics-header">
+        <div className="analytics-page" data-testid="manager-analytics-page">
+            <div className="analytics-header" data-testid="analytics-header">
                 <div>
-                    <h1>Analytics Équipe</h1>
-                    <p>
+                    <h1 data-testid="page-title">Analytics Équipe</h1>
+                    <p data-testid="page-subtitle">
                         {selectedMember
                             ? `Analytics détaillés pour ${selectedMember.firstName} ${selectedMember.lastName}`
                             : `Analyse des données moyennes de mon équipe (${teamMembers.length} membre${teamMembers.length > 1 ? 's' : ''})`}
                     </p>
                 </div>
                 {!selectedMember && (
-                    <button 
-                        className="export-btn" 
+                    <button
+                        className="export-btn"
                         onClick={handleExport}
                         disabled={isExporting || loading}
+                        data-testid="export-button"
                     >
                         {isExporting ? '⏳ Export en cours...' : '📊 Exporter en PDF'}
                     </button>
@@ -392,28 +393,34 @@ function ManagerAnalytics() {
             </div>
 
             {!selectedMember && (
-                <div className="kpi-grid" style={{ marginTop: '12px' }}>
-                    <KPICard 
-                        title="Membres de l'équipe" 
-                        value={totalMembers}
-                        description="Nombre total de personnes dans mon équipe"
-                    />
-                    <KPICard 
-                        title="Managers" 
-                        value={totalManagers}
-                        description="Nombre de managers dans l'équipe"
-                    />
-                    <KPICard 
-                        title="Employés" 
-                        value={totalEmployees}
-                        description="Nombre d'employés (hors managers)"
-                    />
+                <div className="kpi-grid" style={{ marginTop: '12px' }} data-testid="team-summary-grid">
+                    <div data-testid="total-members-card">
+                        <KPICard
+                            title="Membres de l'équipe"
+                            value={totalMembers}
+                            description="Nombre total de personnes dans mon équipe"
+                        />
+                    </div>
+                    <div data-testid="total-managers-card">
+                        <KPICard
+                            title="Managers"
+                            value={totalManagers}
+                            description="Nombre de managers dans l'équipe"
+                        />
+                    </div>
+                    <div data-testid="total-employees-card">
+                        <KPICard
+                            title="Employés"
+                            value={totalEmployees}
+                            description="Nombre d'employés (hors managers)"
+                        />
+                    </div>
                 </div>
             )}
 
-            <div ref={dashboardRef} className="dashboard-content">
-                <div className="filters-section">
-                    <div className="filter-group">
+            <div ref={dashboardRef} className="dashboard-content" data-testid="dashboard-content">
+                <div className="filters-section" data-testid="filters-section">
+                    <div className="filter-group" data-testid="view-filter">
                         <label>Vue:</label>
                         <select
                             value={selectedMemberId || 'team'}
@@ -421,10 +428,11 @@ function ManagerAnalytics() {
                                 const value = e.target.value;
                                 setSelectedMemberId(value === 'team' ? '' : value);
                             }}
+                            data-testid="view-select"
                         >
                             <option value="team">Équipe (tous les membres)</option>
                             {teamMembers.map(member => (
-                                <option key={member.id} value={member.id}>
+                                <option key={member.id} value={member.id} data-testid={`member-option-${member.id}`}>
                                     {member.firstName} {member.lastName}
                                 </option>
                             ))}
@@ -433,25 +441,27 @@ function ManagerAnalytics() {
 
                     {!selectedMember && (
                         <>
-                            <div className="filter-group">
+                            <div className="filter-group" data-testid="month-filter">
                                 <label>Mois:</label>
-                                <select 
-                                    value={selectedMonth} 
+                                <select
+                                    value={selectedMonth}
                                     onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                                    data-testid="month-select"
                                 >
                                     {months.map((month, index) => (
-                                        <option key={index} value={index + 1}>{month}</option>
+                                        <option key={index} value={index + 1} data-testid={`month-option-${index + 1}`}>{month}</option>
                                     ))}
                                 </select>
                             </div>
-                            <div className="filter-group">
+                            <div className="filter-group" data-testid="year-filter">
                                 <label>Année:</label>
-                                <select 
-                                    value={selectedYear} 
+                                <select
+                                    value={selectedYear}
                                     onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                    data-testid="year-select"
                                 >
                                     {years.map(year => (
-                                        <option key={year} value={year}>{year}</option>
+                                        <option key={year} value={year} data-testid={`year-option-${year}`}>{year}</option>
                                     ))}
                                 </select>
                             </div>
@@ -460,8 +470,8 @@ function ManagerAnalytics() {
                 </div>
 
                 {selectedMember ? (
-                    <div style={{ marginTop: '16px' }}>
-                        <UserAnalytics 
+                    <div style={{ marginTop: '16px' }} data-testid="user-analytics-container">
+                        <UserAnalytics
                             userId={selectedMember.id}
                             title={`Analytics de ${selectedMember.firstName} ${selectedMember.lastName}`}
                             subtitle="Analyse détaillée de cet employé"
@@ -470,77 +480,89 @@ function ManagerAnalytics() {
                 ) : (
                     <>
                         {loading ? (
-                            <div className="loading">Chargement des données...</div>
+                            <div className="loading" data-testid="loading-state">Chargement des données...</div>
                         ) : error ? (
-                            <div className="error-message">
+                            <div className="error-message" data-testid="error-message">
                                 <h3>⚠️ Erreur</h3>
-                                <p>{error}</p>
-                                <button onClick={fetchAnalyticsData} className="retry-btn">
+                                <p data-testid="error-text">{error}</p>
+                                <button onClick={fetchAnalyticsData} className="retry-btn" data-testid="retry-button">
                                     🔄 Réessayer
                                 </button>
                             </div>
                         ) : teamMembers.length === 0 ? (
-                            <div className="no-data-message">
+                            <div className="no-data-message" data-testid="no-team-message">
                                 <p>Aucun membre dans votre équipe</p>
                             </div>
                         ) : (
                             <>
-                                <div className="kpi-grid">
-                                    <KPICard 
-                                        title="Jours travaillés (moyenne)" 
-                                        value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
-                                        description="Moyenne par membre sur un mois entier"
-                                    />
-                                    <KPICard 
-                                        title="Heures/jour (moyenne)" 
-                                        value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
-                                        description="Moyenne par jour de présence"
-                                    />
-                                    <KPICard 
-                                        title="Heures/semaine (moyenne)" 
-                                        value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
-                                        description="Moyenne hebdomadaire"
-                                    />
-                                    <KPICard 
-                                        title="Taux de présence (moyenne)" 
-                                        value={`${kpis.presenceRate || 0}%`}
-                                        description={`${kpis.absenceRate || 0}% d'absence moyen`}
-                                    />
-                                    <KPICard 
-                                        title="Réservations de véhicule (équipe)" 
-                                        value={analyticsData?.vehicleBookingsCountTeam ?? 0}
-                                        description="Nombre total de réservations de véhicule sur le mois"
-                                    />
-                                    <KPICard 
-                                        title="Réservations de salle (équipe)" 
-                                        value={analyticsData?.roomBookingsCountTeam ?? 0}
-                                        description="Nombre total de réservations de salle sur le mois"
-                                    />
+                                <div className="kpi-grid" data-testid="kpi-grid">
+                                    <div data-testid="kpi-working-days">
+                                        <KPICard
+                                            title="Jours travaillés (moyenne)"
+                                            value={`${kpis.workingDays || 0}/${kpis.totalDays || 0}`}
+                                            description="Moyenne par membre sur un mois entier"
+                                        />
+                                    </div>
+                                    <div data-testid="kpi-hours-per-day">
+                                        <KPICard
+                                            title="Heures/jour (moyenne)"
+                                            value={kpis.hoursPerDay ? `${kpis.hoursPerDay}h` : '00:00h'}
+                                            description="Moyenne par jour de présence"
+                                        />
+                                    </div>
+                                    <div data-testid="kpi-hours-per-week">
+                                        <KPICard
+                                            title="Heures/semaine (moyenne)"
+                                            value={kpis.hoursPerWeek ? `${kpis.hoursPerWeek}h` : '00:00h'}
+                                            description="Moyenne hebdomadaire"
+                                        />
+                                    </div>
+                                    <div data-testid="kpi-presence-rate">
+                                        <KPICard
+                                            title="Taux de présence (moyenne)"
+                                            value={`${kpis.presenceRate || 0}%`}
+                                            description={`${kpis.absenceRate || 0}% d'absence moyen`}
+                                        />
+                                    </div>
+                                    <div data-testid="kpi-vehicle-bookings">
+                                        <KPICard
+                                            title="Réservations de véhicule (équipe)"
+                                            value={analyticsData?.vehicleBookingsCountTeam ?? 0}
+                                            description="Nombre total de réservations de véhicule sur le mois"
+                                        />
+                                    </div>
+                                    <div data-testid="kpi-room-bookings">
+                                        <KPICard
+                                            title="Réservations de salle (équipe)"
+                                            value={analyticsData?.roomBookingsCountTeam ?? 0}
+                                            description="Nombre total de réservations de salle sur le mois"
+                                        />
+                                    </div>
                                 </div>
 
                                 {analyticsData?.events && analyticsData.events.length > 0 ? (
-                                    <div className="charts-section">
-                                        <div className="chart-container">
+                                    <div className="charts-section" data-testid="charts-section">
+                                        <div className="chart-container" data-testid="presence-chart">
                                             <h3>Taux de présence mensuel (équipe)</h3>
                                             <PresenceChart data={analyticsData.events} />
                                         </div>
-                                        <div className="chart-container">
+                                        <div className="chart-container" data-testid="weekly-hours-chart">
                                             <h3>Heures hebdomadaires (équipe)</h3>
                                             <WeeklyHoursChart data={analyticsData.events} />
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="no-data-message">
+                                    <div className="no-data-message" data-testid="no-chart-data">
                                         <p>Aucune donnée disponible pour cette période</p>
                                     </div>
                                 )}
 
-                                <div className="calendar-section">
+                                <div className="calendar-section" data-testid="calendar-section">
                                     <h3>Calendrier de présence (équipe)</h3>
-                                    <TeamHeatmapCalendar 
-                                        month={selectedMonth} 
-                                        year={selectedYear} 
-                                        memberData={analyticsData?.memberData || []} 
+                                    <TeamHeatmapCalendar
+                                        month={selectedMonth}
+                                        year={selectedYear}
+                                        memberData={analyticsData?.memberData || []}
                                     />
                                 </div>
                             </>
@@ -564,18 +586,18 @@ function TeamHeatmapCalendar({ month, year, memberData }) {
 
     const getPresenceRate = (day) => {
         if (!memberData || memberData.length === 0) return 0;
-        
+
         // Pour chaque jour, compter combien de membres étaient présents
         const membersPresent = new Set();
-        
+
         memberData.forEach(member => {
             const dayEvents = member.events.filter(event => {
                 const eventDate = new Date(event.badgedAt);
-                return eventDate.getDate() === day && 
-                       eventDate.getMonth() + 1 === month &&
-                       eventDate.getFullYear() === year;
+                return eventDate.getDate() === day &&
+                    eventDate.getMonth() + 1 === month &&
+                    eventDate.getFullYear() === year;
             });
-            
+
             if (dayEvents.length > 0) {
                 membersPresent.add(member.memberId);
             }
@@ -602,22 +624,23 @@ function TeamHeatmapCalendar({ month, year, memberData }) {
     const weekDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
     const calendarDays = [];
-    
+
     for (let i = 0; i < firstDay; i++) {
-        calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+        calendarDays.push(<div key={`empty-${i}`} className="calendar-day empty" data-testid={`empty-day-${i}`}></div>);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
         const presenceRate = getPresenceRate(day);
         const color = getColorForPresence(presenceRate);
         const percentage = (presenceRate * 100).toFixed(0);
-        
+
         calendarDays.push(
-            <div 
-                key={day} 
+            <div
+                key={day}
                 className="calendar-day"
                 style={{ backgroundColor: color }}
                 title={`${day} ${monthNames[month - 1]}: ${percentage}% de l'équipe présente`}
+                data-testid={`calendar-day-${day}`}
             >
                 {day}
             </div>
@@ -625,37 +648,37 @@ function TeamHeatmapCalendar({ month, year, memberData }) {
     }
 
     return (
-        <div className="heatmap-calendar">
-            <div className="calendar-header">
-                <h4>{monthNames[month - 1]} {year}</h4>
+        <div className="heatmap-calendar" data-testid="heatmap-calendar">
+            <div className="calendar-header" data-testid="calendar-header">
+                <h4 data-testid="calendar-title">{monthNames[month - 1]} {year}</h4>
             </div>
-            
-            <div className="calendar-grid">
-                <div className="week-days">
-                    {weekDays.map(day => (
-                        <div key={day} className="week-day">{day}</div>
+
+            <div className="calendar-grid" data-testid="calendar-grid">
+                <div className="week-days" data-testid="week-days">
+                    {weekDays.map((day, index) => (
+                        <div key={day} className="week-day" data-testid={`week-day-${index}`}>{day}</div>
                     ))}
                 </div>
-                
-                <div className="calendar-days">
+
+                <div className="calendar-days" data-testid="calendar-days">
                     {calendarDays}
                 </div>
             </div>
-            
-            <div className="calendar-legend">
-                <div className="legend-item">
+
+            <div className="calendar-legend" data-testid="calendar-legend">
+                <div className="legend-item" data-testid="legend-high">
                     <div className="legend-color" style={{ backgroundColor: '#10b981', color: 'var(--color-secondary)' }}></div>
                     <span>≥80% présents</span>
                 </div>
-                <div className="legend-item">
+                <div className="legend-item" data-testid="legend-medium">
                     <div className="legend-color" style={{ backgroundColor: '#f59e0b', color: 'var(--color-secondary)' }}></div>
                     <span>≥50% présents</span>
                 </div>
-                <div className="legend-item">
+                <div className="legend-item" data-testid="legend-low">
                     <div className="legend-color" style={{ backgroundColor: '#fbbf24', color: 'var(--color-secondary)' }}></div>
                     <span>&lt;50% présents</span>
                 </div>
-                <div className="legend-item">
+                <div className="legend-item" data-testid="legend-none">
                     <div className="legend-color" style={{ backgroundColor: '#ef4444', color: 'var(--color-secondary)' }}></div>
                     <span>Aucun présent</span>
                 </div>

@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace badgeur_backend.Contracts.Requests.Update
 {
-    [JsonSerializable(typeof(UpdateBookingVehiculeRequest))]
     public class UpdateBookingVehiculeRequest
     {
         public long IdVehicule { get; set; }

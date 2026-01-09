@@ -131,10 +131,16 @@ namespace badgeur_backend.Services
 
         public async Task<bool> IsUserManager(long id, RoleService roleService)
         {
-            UserResponse user = await GetUserByIdAsync(id);
-            RoleResponse role = await roleService.GetRoleByIdAsync(user.RoleId);
+            UserResponse? user = await GetUserByIdAsync(id);
 
-            if (role.RoleName == "Manager")
+            if (user == null)
+            {
+                return false;
+            }   
+
+            RoleResponse? role = await roleService.GetRoleByIdAsync(user.RoleId);
+
+            if (role?.RoleName == "Manager")
             {
                 return true;
             }

@@ -206,8 +206,8 @@ function Home() {
         <div className="App">
             <header className="App-header" style={AppHeader}>
                 <div style={headerContentStyle}>
-                    <h1 style={h1Style}>Tableaux de bord</h1>
-                    <h2 style={h2Style}>Bienvenue {userData.firstName} {userData.lastName}</h2>
+                    <h1 data-testid="page-title" style={h1Style}>Tableaux de bord</h1>
+                    <h2 data-testid="welcome-message" style={h2Style}>Bienvenue {userData.firstName} {userData.lastName}</h2>
                 </div>
                 
                 {!loadingManager && userData.teamId && (
@@ -219,19 +219,37 @@ function Home() {
                     </div>
                 )}
             </header>
-            <div style={containerStyle}>
-                <div className="time" style={timeBoxStyle}>
-                    <h1 style={{ fontSize: '19px', margin:'0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-secondary)' }}>Heures et date actuelle</h1>
-                    <div style={{ fontSize: '38px', fontWeight: 600, color: 'var(--color-secondary)' }}>{timeText}</div>
-                    <div style={{ fontSize: '14px', color: 'var(--color-secondary)' }}>{dateText}</div>
+            <div style={containerStyle} data-testid="time-container">
+                <div className="time" style={timeBoxStyle} data-testid="time-box">
+                    <h1
+                        style={{ fontSize: '19px', margin: '0', marginLeft: '15px', fontWeight: 500, color: 'var(--color-secondary)' }}
+                        data-testid="time-box-title"
+                    >
+                        Heures et date actuelle
+                    </h1>
+                    <div
+                        style={{ fontSize: '38px', fontWeight: 600, color: 'var(--color-secondary)' }}
+                        data-testid="current-time"
+                    >
+                        {timeText}
+                    </div>
+                    <div
+                        style={{ fontSize: '14px', color: 'var(--color-secondary)' }}
+                        data-testid="current-date"
+                    >
+                        {dateText}
+                    </div>
                 </div>
             </div>
-            <div style={gridStyle}>
+            <div style={gridStyle} data-testid="dashboard-grid">
                 <LastPunch />
                 <WeekHours />
                 <DayPlanning />
             </div>
-            <div style={{ padding: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            <div
+                style={{ padding: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}
+                data-testid="announcements-notifications-grid"
+            >
                 <Announcements />
                 <Notifications />
             </div>

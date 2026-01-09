@@ -3,7 +3,6 @@
 namespace badgeur_backend.Contracts.Requests.Update
 {
 
-    [JsonSerializable(typeof(UpdateUserRoleRequest))]
     public class UpdateUserRoleRequest
     {
         public required long NewRoleId { get; set; }
