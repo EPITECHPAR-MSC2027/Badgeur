@@ -114,6 +114,7 @@ namespace badgeur_backend.Endpoints
     HttpContext context)
         {
             var authenticatedUser = context.Items["User"] as Supabase.Gotrue.User;
+
             if (authenticatedUser == null || string.IsNullOrEmpty(authenticatedUser?.Email))
                 return Results.Unauthorized();
 
@@ -122,7 +123,13 @@ namespace badgeur_backend.Endpoints
             if (connectedUser == null)
                 return Results.Unauthorized();
 
-            var tickets = await ticketService.GetAllTicketsByEmailAsync(connectedUser.Email);
+            string assignedTo = connectedUser.RoleId switch
+            {
+                2 => "IT support", // Admin
+                3 => "RH", // HR
+            };
+
+            var tickets = await ticketService.GetTicketsByAssignedToAsync(assignedTo);
 
             if (!tickets.Any())
                 return Results.NotFound("No tickets found.");

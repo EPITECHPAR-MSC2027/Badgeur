@@ -104,6 +104,8 @@ function Login({ onSubmit }) {
         localStorage.setItem('roleId', data.roleId);
         localStorage.setItem('email', data.email);
         localStorage.setItem('userId', data.userId);
+        // Stocker teamId s'il existe, sinon stocker une chaîne vide
+        localStorage.setItem('teamId', data.teamId != null ? data.teamId.toString() : '');
 
         if (onSubmit) onSubmit(data);
         navigate('/home');
@@ -155,7 +157,7 @@ function Login({ onSubmit }) {
 
                 {/* Error message */}
                 {error && (
-                    <div className="login-error">
+                    <div className="login-error" data-testid="login-error">
                         ⚠️ {error}
                     </div>
                 )}

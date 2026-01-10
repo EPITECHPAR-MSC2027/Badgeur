@@ -167,12 +167,12 @@ function Calendrier() {
             <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 12 }}>
                 {/* Left: members list */}
                 <div>
-                    <div style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif' }}>Membres</div>
+                    <div style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif', color:'var(--color-text)' }}>Membres</div>
                     <div style={{ display: 'grid', gap: 8 }}>
                         {members.map(u => (
                             <div key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                 <div style={{ width: 8, height: 8, borderRadius: 9999, background: '#a3a3a3' }} />
-                                <div style={{ fontFamily: 'Fustat, sans-serif', fontWeight: 600 }}>{u.firstName} {u.lastName}</div>
+                                <div style={{ fontFamily: 'Fustat, sans-serif', fontWeight: 600, color:'var(--color-text)' }}>{u.firstName} {u.lastName}</div>
                             </div>
                         ))}
                         {members.length === 0 && (
@@ -181,11 +181,11 @@ function Calendrier() {
                     </div>
                     {/* Legend */}
                     <div style={{ marginTop: 30 }}>
-                        <div data-testid="legend-header" style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif' }}>Légende</div>
+                        <div data-testid="legend-header" style={{ fontWeight: 700, marginBottom: 8, fontFamily: 'Fustat, sans-serif', color:'var(--color-text)' }}>Légende</div>
                         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                             {fixedTypes.map(t => (
-                                <div key={t.id} data-testid={`legend-item-${t.id}`} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: 'Fustat, sans-serif' }}>
-                                    <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color }} />
+                                <div key={t.id} data-testid={`legend-item-${t.id}`} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: 'Fustat, sans-serif', color:'var(--color-text)' }}>
+                                    <span style={{ width: 10, height: 10, borderRadius: 9999, background: t.color, color:'var(--color-text)' }} />
                                     <span>{t.label}</span>
                                 </div>
                             ))}

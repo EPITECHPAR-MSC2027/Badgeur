@@ -39,7 +39,6 @@ function Admin() {
         <div className="App" data-testid="admin-container">
             <header className="App-header" data-testid="admin-header">
                 <h1 data-testid="admin-title">Administration</h1>
-                <SeedDataPanel />
                 <div className="admin-nav" data-testid="admin-nav">
                     <button
                         data-testid="nav-button-users"
@@ -94,11 +93,7 @@ function Admin() {
                         onEditPointage={handleEditPointage}
                         onDeletePointage={handleDeletePointage}
                     />
-                ) : activeSection === 'plannings' ? (
-                    <PlanningsSection data-testid="plannings-section" />
-                ) : (
-                    <TypeDemandesSection data-testid="typeDemandes-section" />
-                )}
+                ) : null}
             </div>
         </div>
     );

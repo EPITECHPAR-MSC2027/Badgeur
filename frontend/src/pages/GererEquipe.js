@@ -5,11 +5,12 @@ import planningService from '../services/planningService'
 import profilImg from '../assets/profil.png'
 import ValidationPlanning from './ValidationPlanning'
 import ManagerAnalytics from './ManagerAnalytics'
+import TeamBadgeageView from './TeamBadgeageView'
 
 function GererEquipe() {
     const roleId = parseInt(localStorage.getItem('roleId') || 0)
     const isRH = roleId === 3
-    const [tab, setTab] = useState('manage') // 'manage' | 'dashboard' | 'validation' | 'all-teams'
+    const [tab, setTab] = useState('manage') // 'manage' | 'dashboard' | 'validation' | 'badgeage' | 'all-teams'
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [teamMembers, setTeamMembers] = useState([]) // [{id, firstName, lastName, email, roleId, teamId}]
@@ -151,6 +152,7 @@ function GererEquipe() {
                     ) : (
                         <>
                             {tabButton('manage', 'Membres')}
+                            {tabButton('badgeage', 'Badgeages')}
                             {tabButton('validation', 'Validation plannings')}
                             {tabButton('dashboard', 'Dashboard')}
                         </>
@@ -166,6 +168,7 @@ function GererEquipe() {
 
             <div data-testid="content-container" style={{ padding: 20, opacity: loading ? 0.6 : 1 }}>
                 {tab === 'manage' && <ManageView />}
+                {tab === 'badgeage' && <TeamBadgeageView teamMembers={teamMembers} />}
                 {tab === 'validation' && <ValidationPlanning />}
                 {tab === 'dashboard' && <DashboardView />}
             </div>

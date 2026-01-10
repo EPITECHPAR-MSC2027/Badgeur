@@ -64,6 +64,7 @@ services:
           ignore:
             - ./frontend/node_modules/
             - ./frontend/build/
+            - ./frontend/cypress/
 
 networks:
   badgeur-network:

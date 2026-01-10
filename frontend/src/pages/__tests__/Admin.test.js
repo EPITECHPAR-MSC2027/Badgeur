@@ -17,9 +17,6 @@ jest.mock('../../component/PointagesSection', () => ({ onEditPointage, onDeleteP
         <button onClick={() => onDeletePointage(1)}>Delete</button>
     </div>
 ));
-jest.mock('../../component/PlanningsSection', () => () => <div data-testid="plannings-section">PlanningsSection</div>);
-jest.mock('../../component/TypeDemandesSection', () => () => <div data-testid="typeDemandes-section">TypeDemandesSection</div>);
-jest.mock('../../component/SeedDataPanel', () => () => <div data-testid="seed-data-panel">SeedDataPanel</div>);
 
 describe('Admin Component', () => {
     beforeEach(() => {
@@ -58,14 +55,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('nav-button-users')).toHaveAttribute('data-active', 'true');
     });
 
-    // Test 4: Shows seed data panel on initial render
-    test('Shows seed data panel on initial render', () => {
-        render(<Admin />);
-
-        expect(screen.getByTestId('seed-data-panel')).toBeInTheDocument();
-    });
-
-    // Test 5: Switches to teams section when teams button is clicked
+    // Test 4: Switches to teams section when teams button is clicked
     test('Switches to teams section when teams button is clicked', () => {
         render(<Admin />);
 
@@ -77,7 +67,7 @@ describe('Admin Component', () => {
         expect(teamsButton).toHaveAttribute('data-active', 'true');
     });
 
-    // Test 6: Switches to pointages section when pointages button is clicked
+    // Test 5: Switches to pointages section when pointages button is clicked
     test('Switches to pointages section when pointages button is clicked', () => {
         render(<Admin />);
 
@@ -89,31 +79,7 @@ describe('Admin Component', () => {
         expect(pointagesButton).toHaveAttribute('data-active', 'true');
     });
 
-    // Test 7: Switches to plannings section when plannings button is clicked
-    test('Switches to plannings section when plannings button is clicked', () => {
-        render(<Admin />);
-
-        const planningsButton = screen.getByTestId('nav-button-plannings');
-        fireEvent.click(planningsButton);
-
-        expect(screen.getByTestId('plannings-section')).toBeInTheDocument();
-        expect(screen.queryByTestId('users-section')).not.toBeInTheDocument();
-        expect(planningsButton).toHaveAttribute('data-active', 'true');
-    });
-
-    // Test 8: Switches to type demandes section when type demandes button is clicked
-    test('Switches to type demandes section when type demandes button is clicked', () => {
-        render(<Admin />);
-
-        const typeDemandesButton = screen.getByTestId('nav-button-typeDemandes');
-        fireEvent.click(typeDemandesButton);
-
-        expect(screen.getByTestId('typeDemandes-section')).toBeInTheDocument();
-        expect(screen.queryByTestId('users-section')).not.toBeInTheDocument();
-        expect(typeDemandesButton).toHaveAttribute('data-active', 'true');
-    });
-
-    // Test 9: Active button has correct active state
+    // Test 6: Active button has correct active state
     test('Active button has correct active state', () => {
         render(<Admin />);
 
@@ -129,7 +95,7 @@ describe('Admin Component', () => {
         expect(teamsButton).toHaveAttribute('data-active', 'true');
     });
 
-    // Test 10: Only one section is visible at a time
+    // Test 7: Only one section is visible at a time
     test('Only one section is visible at a time', () => {
         render(<Admin />);
 
@@ -140,11 +106,9 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('teams-section')).toBeInTheDocument();
         expect(screen.queryByTestId('users-section')).not.toBeInTheDocument();
         expect(screen.queryByTestId('pointages-section')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('plannings-section')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('typeDemandes-section')).not.toBeInTheDocument();
     });
 
-    // Test 11: Navigating between sections updates active section
+    // Test 8: Navigating between sections updates active section
     test('Navigating between sections updates active section', () => {
         render(<Admin />);
 
@@ -158,7 +122,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('users-section')).toBeInTheDocument();
     });
 
-    // Test 12: HandleDeletePointage shows confirmation dialog
+    // Test 9: HandleDeletePointage shows confirmation dialog
     test('HandleDeletePointage shows confirmation dialog', async () => {
         window.confirm.mockReturnValue(false);
         authService.delete = jest.fn().mockResolvedValue({ ok: true });
@@ -174,7 +138,7 @@ describe('Admin Component', () => {
         expect(authService.delete).not.toHaveBeenCalled();
     });
 
-    // Test 13: HandleDeletePointage calls delete API when confirmed
+    // Test 10: HandleDeletePointage calls delete API when confirmed
     test('HandleDeletePointage calls delete API when confirmed', async () => {
         window.confirm.mockReturnValue(true);
         authService.delete = jest.fn().mockResolvedValue({ ok: true });
@@ -191,7 +155,7 @@ describe('Admin Component', () => {
         });
     });
 
-    // Test 14: HandleDeletePointage shows alert on error
+    // Test 11: HandleDeletePointage shows alert on error
     test('HandleDeletePointage shows alert on error', async () => {
         window.confirm.mockReturnValue(true);
         window.alert = jest.fn();
@@ -209,7 +173,7 @@ describe('Admin Component', () => {
         });
     });
 
-    // Test 15: HandleDeletePointage handles network errors
+    // Test 12: HandleDeletePointage handles network errors
     test('HandleDeletePointage handles network errors', async () => {
         window.confirm.mockReturnValue(true);
         window.alert = jest.fn();
@@ -235,7 +199,7 @@ describe('Admin Component', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    // Test 16: HandleEditPointage calls put API with correct data
+    // Test 13: HandleEditPointage calls put API with correct data
     test('HandleEditPointage calls put API with correct data', async () => {
         authService.put = jest.fn().mockResolvedValue({ ok: true });
 
@@ -251,7 +215,7 @@ describe('Admin Component', () => {
         });
     });
 
-    // Test 17: HandleEditPointage shows alert on error
+    // Test 14: HandleEditPointage shows alert on error
     test('HandleEditPointage shows alert on error', async () => {
         window.alert = jest.fn();
         authService.put = jest.fn().mockResolvedValue({ ok: false });
@@ -268,7 +232,7 @@ describe('Admin Component', () => {
         });
     });
 
-    // Test 18: HandleEditPointage handles network errors
+    // Test 15: HandleEditPointage handles network errors
     test('HandleEditPointage handles network errors', async () => {
         window.alert = jest.fn();
         authService.put = jest.fn().mockRejectedValue(new Error('Network error'));
@@ -286,14 +250,14 @@ describe('Admin Component', () => {
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
-        await waitFor(() => { 
+        await waitFor(() => {
             expect(window.alert).toHaveBeenCalled();
         });
 
         consoleErrorSpy.mockRestore();
     });
 
-    // Test 19: Passes correct props to PointagesSection
+    // Test 16: Passes correct props to PointagesSection
     test('Passes correct props to PointagesSection', () => {
         render(<Admin />);
 
@@ -302,7 +266,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('pointages-section')).toBeInTheDocument();
     });
 
-    // Test 20: Admin page container is always rendered
+    // Test 17: Admin page container is always rendered
     test('Admin page container is always rendered', () => {
         render(<Admin />);
 
@@ -315,7 +279,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('admin-page')).toBeInTheDocument();
     });
 
-    // Test 21: All navigation buttons remain visible across sections
+    // Test 18: All navigation buttons remain visible across sections
     test('All navigation buttons remain visible across sections', () => {
         render(<Admin />);
 
@@ -338,7 +302,7 @@ describe('Admin Component', () => {
         });
     });
 
-    // Test 22: Navigation preserves component mount state
+    // Test 19: Navigation preserves component mount state
     test('Navigation preserves component mount state', () => {
         render(<Admin />);
 
@@ -352,7 +316,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('teams-section')).toBeInTheDocument();
     });
 
-    // Test 23: Clicking same navigation button maintains current section
+    // Test 20: Clicking same navigation button maintains current section
     test('Clicking same navigation button maintains current section', () => {
         render(<Admin />);
 
@@ -365,7 +329,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('users-section')).toBeInTheDocument();
     });
 
-    // Test 24: Navigation buttons have correct text content
+    // Test 21: Navigation buttons have correct text content
     test('Navigation buttons have correct text content', () => {
         render(<Admin />);
 
@@ -376,7 +340,7 @@ describe('Admin Component', () => {
         expect(screen.getByTestId('nav-button-typeDemandes')).toHaveTextContent('Types de demande');
     });
 
-    // Test 25: Component structure is correctly nested
+    // Test 22: Component structure is correctly nested
     test('Component structure is correctly nested', () => {
         render(<Admin />);
 
