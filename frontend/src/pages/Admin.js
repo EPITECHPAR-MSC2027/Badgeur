@@ -4,9 +4,6 @@ import authService from '../services/authService';
 import UsersSection from '../component/UsersSection';
 import TeamsSection from '../component/TeamsSection';
 import PointagesSection from '../component/PointagesSection';
-import PlanningsSection from '../component/PlanningsSection';
-import TypeDemandesSection from '../component/TypeDemandesSection';
-import SeedDataPanel from '../component/SeedDataPanel';
 
 function Admin() {
     const [activeSection, setActiveSection] = useState('users');

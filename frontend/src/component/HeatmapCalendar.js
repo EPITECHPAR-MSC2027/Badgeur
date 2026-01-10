@@ -6,7 +6,9 @@ function HeatmapCalendar({ month, year, data }) {
     };
 
     const getFirstDayOfMonth = (month, year) => {
-        return new Date(year, month - 1, 1).getDay();
+        const day = new Date(year, month - 1, 1).getDay();
+        // Convert Sunday (0) to 6, and shift other days by -1 to align with Monday-first week
+        return day === 0 ? 6 : day - 1;
     };
 
     const getPresenceRate = (day) => {
@@ -14,7 +16,9 @@ function HeatmapCalendar({ month, year, data }) {
         
         const dayEvents = data.filter(event => {
             const eventDate = new Date(event.badgedAt);
-            return eventDate.getDate() === day;
+            return eventDate.getDate() === day &&
+                   eventDate.getMonth() + 1 === month &&
+                   eventDate.getFullYear() === year;
         });
 
         // Simple presence calculation: if there are events, consider it present

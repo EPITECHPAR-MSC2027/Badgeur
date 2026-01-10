@@ -581,7 +581,9 @@ function TeamHeatmapCalendar({ month, year, memberData }) {
     };
 
     const getFirstDayOfMonth = (month, year) => {
-        return new Date(year, month - 1, 1).getDay();
+        const day = new Date(year, month - 1, 1).getDay();
+        // Convert Sunday (0) to 6, and shift other days by -1 to align with Monday-first week
+        return day === 0 ? 6 : day - 1;
     };
 
     const getPresenceRate = (day) => {
