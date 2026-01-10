@@ -44,31 +44,53 @@ function WeeklyHoursChart({ data }) {
         weeklyData[weekKey].push(date);
     });
 
-    // Calculate average hours per week
-    const weeks = Object.keys(weeklyData).sort();
+    // Calculate total hours per week using the same logic as UserAnalytics
+    // Sort weeks numerically (S1, S2, ..., S10, S11, etc.)
+    const weeks = Object.keys(weeklyData).sort((a, b) => {
+        const numA = parseInt(a.replace('S', ''));
+        const numB = parseInt(b.replace('S', ''));
+        return numA - numB;
+    });
     const hoursData = weeks.map(week => {
         const weekEvents = weeklyData[week];
         if (weekEvents.length < 2) return 0;
         
-        // Group by day and calculate daily hours
-        const dailyHours = {};
+        // Group by day and calculate daily hours using pairing logic (entry-exit)
+        const eventsByDay = {};
         weekEvents.forEach(event => {
-            const day = event.toDateString();
-            if (!dailyHours[day]) dailyHours[day] = [];
-            dailyHours[day].push(event);
+            const dayKey = event.toDateString();
+            if (!eventsByDay[dayKey]) {
+                eventsByDay[dayKey] = [];
+            }
+            eventsByDay[dayKey].push(event);
         });
 
-        // Calculate total hours for the week
+        // Calculate total hours for the week using paired events (entry-exit)
         let totalHours = 0;
-        Object.values(dailyHours).forEach(dayEvents => {
-            if (dayEvents.length >= 2) {
-                const sorted = dayEvents.sort((a, b) => a - b);
-                const hours = (sorted[sorted.length - 1] - sorted[0]) / (1000 * 60 * 60);
-                totalHours += Math.max(0, hours);
+        let totalMinutes = 0;
+        
+        Object.values(eventsByDay).forEach(dayEvents => {
+            // Sort events by time
+            dayEvents.sort((a, b) => a - b);
+
+            // Pair events (entry-exit, entry-exit, ...)
+            for (let i = 0; i < dayEvents.length - 1; i += 2) {
+                const entry = dayEvents[i];
+                const exit = dayEvents[i + 1];
+                const diffMs = exit - entry;
+                const hours = Math.floor(diffMs / 3600000);
+                const minutes = Math.floor((diffMs % 3600000) / 60000);
+                totalHours += hours;
+                totalMinutes += minutes;
             }
         });
 
-        return totalHours;
+        // Normalize minutes to hours
+        totalHours += Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+        
+        // Return total hours as decimal (e.g., 35.5 for 35h30min)
+        return totalHours + (remainingMinutes / 60);
     });
 
     const chartData = {
@@ -99,6 +121,19 @@ function WeeklyHoursChart({ data }) {
             },
             title: {
                 display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const hours = context.parsed.y;
+                        const hoursInt = Math.floor(hours);
+                        const minutes = Math.round((hours - hoursInt) * 60);
+                        if (minutes > 0) {
+                            return `${context.dataset.label}: ${hoursInt}h${minutes}min`;
+                        }
+                        return `${context.dataset.label}: ${hoursInt}h`;
+                    }
+                }
             }
         },
         scales: {
@@ -107,6 +142,11 @@ function WeeklyHoursChart({ data }) {
                 title: {
                     display: true,
                     text: 'Heures'
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value + 'h';
+                    }
                 }
             },
             x: {
