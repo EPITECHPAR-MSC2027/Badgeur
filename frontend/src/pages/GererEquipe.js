@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import authService from '../services/authService'
 import statsService from '../services/statsService'
-import planningService from '../services/planningService'
 import profilImg from '../assets/profil.png'
 import ValidationPlanning from './ValidationPlanning'
 import ManagerAnalytics from './ManagerAnalytics'
@@ -15,9 +14,6 @@ function GererEquipe() {
     const [error, setError] = useState('')
     const [teamMembers, setTeamMembers] = useState([]) // [{id, firstName, lastName, email, roleId, teamId}]
     const [lastPunchByUserId, setLastPunchByUserId] = useState({}) // { [userId]: Date | null }
-    const [allTeams, setAllTeams] = useState([]) // Pour le RH
-    const [allUsers, setAllUsers] = useState([]) // Pour le RH
-    const [userPlannings, setUserPlannings] = useState({}) // { [userId]: [plannings] } Pour le RH
 
     const loadData = useCallback(async () => {
         setLoading(true)
@@ -34,20 +30,9 @@ function GererEquipe() {
 
             // Pour le RH, charger toutes les équipes et tous les utilisateurs
             if (isRH) {
-                setAllTeams(Array.isArray(teams) ? teams : [])
-                setAllUsers(Array.isArray(users) ? users : [])
-
-                // Charger les plannings de tous les utilisateurs
-                const planningEntries = await Promise.all(users.map(async (u) => {
-                    try {
-                        const plannings = await planningService.listByUser(u.id)
-                        return [u.id, Array.isArray(plannings) ? plannings : []]
-                    } catch (e) {
-                        console.warn('Erreur chargement planning user', u.id, e)
-                        return [u.id, []]
-                    }
-                }))
-                setUserPlannings(Object.fromEntries(planningEntries))
+                // Les données RH pourront être utilisées dans le futur
+                // setAllTeams(Array.isArray(teams) ? teams : [])
+                // setAllUsers(Array.isArray(users) ? users : [])
             } else {
                 // Pour les managers, charger seulement leur équipe
                 const currentUserId = parseInt(localStorage.getItem('userId'))

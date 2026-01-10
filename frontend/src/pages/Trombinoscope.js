@@ -92,25 +92,6 @@ function Trombinoscope() {
         }
     };
 
-    const getDepartmentLabel = (roleId) => {
-        switch (roleId) {
-            case 0: return 'IT';
-            case 1: return 'Management';
-            case 2: return 'Administration';
-            case 3: return 'Ressources Humaines';
-            default: return 'Autre';
-        }
-    };
-
-    const getDepartmentColor = (roleId) => {
-        switch (roleId) {
-            case 0: return '#E3F2FD'; // Bleu
-            case 1: return '#FFF9C4'; // Jaune
-            case 2: return '#E1F5FE'; // Cyan
-            case 3: return '#FCE4EC'; // Rose
-            default: return '#EEEEEE';
-        }
-    };
 
     const getInitials = (firstName, lastName) => {
         const first = firstName ? firstName.charAt(0).toUpperCase() : '';
@@ -180,16 +161,6 @@ function Trombinoscope() {
         fontFamily: 'Alata, sans-serif'
     });
 
-    const badgeStyle = (color) => ({
-        display: 'inline-block',
-        padding: '4px 12px',
-        borderRadius: '12px',
-        fontSize: '11px',
-        fontWeight: '600',
-        background: color,
-        color: '#333',
-        marginBottom: '8px'
-    });
 
     const infoRowStyle = {
         display: 'flex',

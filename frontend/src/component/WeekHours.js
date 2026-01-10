@@ -7,7 +7,6 @@ function WeekHours() {
     const [targetMs, setTargetMs] = useState(35 * 60 * 60 * 1000)
     const [progress, setProgress] = useState(0)
     const [fullDays, setFullDays] = useState(0)
-    const [absences, setAbsences] = useState(0)
 
     useEffect(() => {
         const userId = localStorage.getItem('userId')
@@ -22,7 +21,6 @@ function WeekHours() {
                 setTargetMs(week.targetMs)
                 setProgress(week.progress)
                 setFullDays(week.fullDays)
-                setAbsences(week.absences)
             } catch (e) {
                 console.error('Erreur chargement stats semaine:', e)
             } finally {
