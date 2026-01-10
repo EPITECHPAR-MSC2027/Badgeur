@@ -45,13 +45,22 @@ function ReservationVehicule() {
         }
     };
 
-    const getVehiculeTypeIcon = (type) => {
+    const getVehiculeTypeIcon = (type, fuelType) => {
+        // Vérifier d'abord si c'est électrique (dans fuelType ou type)
+        const fuelLower = fuelType?.toLowerCase() || '';
         const typeLower = type?.toLowerCase() || '';
-        if (typeLower.includes('citadine')) return '🚗';
-        if (typeLower.includes('berline')) return '🚗';
+        
+        if (fuelLower.includes('électrique') || fuelLower.includes('electrique') || 
+            typeLower.includes('électrique') || typeLower.includes('electrique')) {
+            return '⚡';
+        }
+        
+        // Ensuite vérifier le type de véhicule
         if (typeLower.includes('suv')) return '🚙';
         if (typeLower.includes('utilitaire')) return '🚐';
-        if (typeLower.includes('électrique') || typeLower.includes('electrique')) return '⚡';
+        if (typeLower.includes('citadine')) return '🚗';
+        if (typeLower.includes('berline')) return '🚗';
+        
         return '🚗';
     };
 
@@ -184,7 +193,7 @@ function ReservationVehicule() {
                                         className={`vehicule-card ${isSelected ? 'selected' : ''} ${!isAvailable ? 'unavailable' : ''}`}
                                         onClick={() => setSelectedVehicule(vehicule)}
                                     >
-                                        <div className="vehicule-icon" data-testid={`vehicule-icon-${vehicule.id}`}>{getVehiculeTypeIcon(vehiculeType)}</div>
+                                        <div className="vehicule-icon" data-testid={`vehicule-icon-${vehicule.id}`}>{getVehiculeTypeIcon(vehiculeType, vehicule.fuelType)}</div>
                                         <div className="vehicule-type" data-testid={`vehicule-type-${vehicule.id}`}>{vehiculeType}</div>
                                         <div className="vehicule-name" data-testid={`vehicule-name-${vehicule.id}`}>{vehicule.name}</div>
                                         <div className="vehicule-plate" data-testid={`vehicule-plate-${vehicule.id}`}>{vehicule.licensePlate}</div>

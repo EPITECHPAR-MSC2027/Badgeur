@@ -189,7 +189,7 @@ function ValidationPlanning() {
                                                 type="button"
                                                 onClick={() => updateStatut(plan, 1)}
                                                 disabled={savingId === plan.id}
-                                                style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid #22c55e', background: '#ecfdf3', color: '#15803d', cursor: 'pointer' }}
+                                                style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid #22c55e', background: 'var(-color-secondary)', color: '#15803d', cursor: 'pointer' }}
                                                 data-testid={`approve-button-${plan.id}`}
                                             >
                                                 Valider
