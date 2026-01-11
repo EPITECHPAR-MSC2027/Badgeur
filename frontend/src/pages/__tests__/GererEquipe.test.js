@@ -580,7 +580,8 @@ describe('GererEquipe Component', () => {
         });
 
         const mockUsers = [
-            { id: 1, firstName: 'User', lastName: 'One', email: 'user1@example.com' }
+            { id: 1, firstName: 'User', lastName: 'One', email: 'user1@example.com' },
+            { id: 2, firstName: 'User', lastName: 'Two', email: 'user2@example.com' }
         ];
 
         authService.get.mockImplementation((url) => {
@@ -589,12 +590,14 @@ describe('GererEquipe Component', () => {
             return Promise.resolve({ ok: false });
         });
 
-        planningService.listByUser.mockResolvedValue([]);
-
         render(<GererEquipe />);
 
         await waitFor(() => {
-            expect(planningService.listByUser).toHaveBeenCalledWith(1);
+            expect(authService.get).toHaveBeenCalledWith('/users');
         });
+
+        // RH role loads users and teams but does not currently call planningService
+        expect(authService.get).toHaveBeenCalledWith('/teams');
+        expect(planningService.listByUser).not.toHaveBeenCalled();
     });
 });
