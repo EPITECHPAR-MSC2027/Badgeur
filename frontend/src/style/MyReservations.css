@@ -106,6 +106,54 @@
         border-color: var(--color-third-text) !important;
     }
 
+    /* Boutons de navigation avec icônes personnalisées */
+    .fc .fc-button-prev,
+    .fc .fc-button-next {
+        position: relative;
+        min-width: 40px;
+        font-size: 18px;
+        line-height: 1.5;
+        padding: 8px 12px;
+    }
+
+    /* Masquer complètement le contenu par défaut */
+    .fc .fc-button-prev > *,
+    .fc .fc-button-next > * {
+        display: none !important;
+    }
+
+    /* Ajouter des flèches avec ::before */
+    .fc .fc-button-prev::before {
+        content: '◀';
+        display: inline-block !important;
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--color-primary);
+        line-height: 1;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .fc .fc-button-next::before {
+        content: '▶';
+        display: inline-block !important;
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--color-primary);
+        line-height: 1;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .fc .fc-button-prev:disabled::before,
+    .fc .fc-button-next:disabled::before {
+        opacity: 0.3;
+    }
+
 .fc-event {
     cursor: pointer;
     border-radius: 4px;

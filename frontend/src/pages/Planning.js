@@ -390,7 +390,7 @@ function Planning() {
                     )}
 
                     <div>
-                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: 'var(--hightlight1)', color: '#fff', border: 'none', cursor: 'pointer' }} data-testid="submit-button">
+                        <button type="submit" disabled={submitting} style={{ padding: '10px 16px', borderRadius: 8, background: 'var(--color-primary)', color: 'var(--color-text)', border: 'none', cursor: 'pointer' }} data-testid="submit-button">
                             {submitting ? 'Envoi...' : 'Valider la demande'}
                         </button>
                     </div>
