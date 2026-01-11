@@ -265,7 +265,9 @@ function MyReservations() {
                             today: "Aujourd'hui",
                             month: 'Mois',
                             week: 'Semaine',
-                            list: 'Liste'
+                            list: 'Liste',
+                            prev: '◀',
+                            next: '▶'
                         }}
                         slotLabelFormat={{
                             hour: '2-digit',
