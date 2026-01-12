@@ -68,12 +68,12 @@
 .mfa-user-name {
     font-size: 18px;
     font-weight: 600;
-    color: var(--color-third);
+    color: var(--color-third-text);
 }
 
 .mfa-user-email {
     font-size: 14px;
-    color: var(--color-second-text);
+    color: var(--color-third-text);
 }
 
 /* ---- Messages ---- */
@@ -102,18 +102,18 @@
 .mfa-section-title {
     margin-top: 0;
     margin-bottom: 16px;
-    color: var(--color-third);
+    color: var(--color-text);
 }
 
 .mfa-section-subtitle {
     margin-top: 0;
     margin-bottom: 12px;
-    color: var(--color-third);
+    color: var(--color-text);
     font-size: 16px;
 }
 
 .mfa-description {
-    color: var(--color-second-text);
+    color: var(--color-third-text);
     line-height: 1.6;
     margin-bottom: 20px;
     margin-top: 0;
@@ -130,7 +130,7 @@
 .mfa-apps-list {
     margin: 0;
     padding-left: 20px;
-    color: var(--color-second-text);
+    color: var(--color-third-text);
     line-height: 1.8;
 }
 
@@ -140,7 +140,7 @@
 }
 
 .mfa-label {
-    color: var(--color-second-text);
+    color: var(--color-third-text);
     font-size: 14px;
     margin-bottom: 8px;
     font-weight: 600;
@@ -228,19 +228,19 @@
     letter-spacing: 2px;
     text-align: center;
     word-break: break-all;
-    color: var(--color-third);
+    color: var(--color-third-text);
 }
 
 .mfa-secret-help {
     font-size: 12px;
-    color: var(--color-second-text);
+    color: var(--color-text);
     margin-top: 8px;
     margin-bottom: 0;
 }
 
 .mfa-code-help {
     font-size: 13px;
-    color: var(--color-second-text);
+    color: var(--color-text);
     margin-top: 8px;
     text-align: center;
     margin-bottom: 0;
