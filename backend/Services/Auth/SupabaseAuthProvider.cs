@@ -53,10 +53,34 @@ namespace badgeur_backend.Services.Auth
             }
         }
 
-        public async Task<MfaEnrollResponse?> EnrollMfa(string accessToken)
+        public async Task<MfaEnrollResponse?> EnrollMfa(string accessToken, string refreshToken)
         {
             try
             {
+                // First, check for existing factors
+                await _client.Auth.SetSession(accessToken, refreshToken);
+
+                var existingFactors = await _client.Auth.ListFactors();
+
+                if (existingFactors?.All != null)
+                {
+                    // Check for verified factors
+                    var verifiedFactor = existingFactors.All.FirstOrDefault(f => f.Status == "verified");
+                    if (verifiedFactor != null)
+                    {
+                        Console.WriteLine($"MFA Enroll: User already has a verified factor (ID: {verifiedFactor.Id})");
+                        throw new InvalidOperationException("MFA is already enabled for this user");
+                    }
+
+                    // Remove any unverified factors
+                    var unverifiedFactors = existingFactors.All.Where(f => f.Status == "unverified").ToList();
+                    foreach (var factor in unverifiedFactors)
+                    {
+                        Console.WriteLine($"MFA Enroll: Removing unverified factor (ID: {factor.Id})");
+                        await _client.Auth.Unenroll(new MfaUnenrollParams { FactorId = factor.Id });
+                    }
+                }
+
                 var enrollResponse = await _client.Auth.Enroll(new MfaEnrollParams
                 {
                     FactorType = "totp"
@@ -83,6 +107,11 @@ namespace badgeur_backend.Services.Auth
                 Console.WriteLine($"MFA Enroll Gotrue error: {ex.Message} (StatusCode: {ex.StatusCode})");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return null;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"MFA Enroll validation error: {ex.Message}");
+                throw;
             }
             catch (HttpRequestException ex)
             {

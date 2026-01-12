@@ -14,7 +14,7 @@
         Task<AuthSession?> SignInWithPassword(string email, string password);
 
         // MFA
-        Task<MfaEnrollResponse?> EnrollMfa(string accessToken);
+        Task<MfaEnrollResponse?> EnrollMfa(string accessToken, string refreshToken);
         Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken, string refreshToken);
         Task<MfaVerifyResponse?> ChallengeMfa(string factorId, string accessToken, string refreshToken);
         Task<MfaVerifyResponse?> VerifyMfaChallenge(string factorId, string challengeId, string code, string accessToken, string refreshToken);

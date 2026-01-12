@@ -163,7 +163,7 @@ namespace badgeur_backend.Endpoints
                     return Results.Unauthorized();
                 }
 
-                var enrollResponse = await authProvider.EnrollMfa(session.AccessToken);
+                var enrollResponse = await authProvider.EnrollMfa(session.AccessToken, session.RefreshToken);
 
                 if (enrollResponse == null)
                 {
@@ -181,6 +181,11 @@ namespace badgeur_backend.Endpoints
                 };
 
                 return Results.Ok(response);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"HandleMfaEnroll validation error: {ex.Message}");
+                return Results.Conflict(ex.Message);
             }
             catch (Exception ex)
             {
