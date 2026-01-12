@@ -24,7 +24,7 @@ namespace badgeur_backend_tests.Endpoints
 
             public Task<AuthSession?> SignInWithPassword(string email, string password) => Task.FromResult(_session);
 
-            public Task<badgeur_backend.Services.Auth.MfaEnrollResponse?> EnrollMfa(string accessToken)
+            public Task<badgeur_backend.Services.Auth.MfaEnrollResponse?> EnrollMfa(string accessToken, string refreshToken)
                 => Task.FromResult<badgeur_backend.Services.Auth.MfaEnrollResponse?>(null);
 
             public Task<MfaVerifyResponse?> VerifyMfaEnrollment(string factorId, string code, string accessToken, string refreshToken)
